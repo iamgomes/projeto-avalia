@@ -201,3 +201,10 @@ def change_resposta_validacao(request, id):
         messages.success(request, "Resposta de validação alterada com sucesso!")
 
         return redirect(reverse('avaliacao'))
+    
+
+def minhas_avaliacoes(request):
+    avaliacoes = UsuarioAvaliacao.objects.filter(usuario=request.user)
+    validacoes = UsuarioAvaliacaoValidacao.objects.filter(usuario=request.user)
+    
+    return render(request, 'minhas_avaliacoes.html', {'avaliacoes':avaliacoes, 'validacoes':validacoes})
