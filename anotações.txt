@@ -1,0 +1,2 @@
+Comando para gerar diagrama de classe
+python manage.py graph_models --pydot -a -g -o meu_diagrama.png

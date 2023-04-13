@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block 'body' %}
+
+{% block 'head' %}
+
+        <!-- Sweet Alert-->
+        <link href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock 'head' %}
+
+
+{% if messages %}
+    {% for message in messages  %}
+        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-check-all me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                        <p class="text-truncate font-size-14 mb-2">Avaliações Recebidas</p>
+                        <h4 class="mb-2">{{avaliacoes_recebidas}}</h4>
+                    </div>
+                    <div class="avatar-sm">
+                        <span class="avatar-title bg-light text-primary rounded-3">
+                            <i class="ri-file-copy-2-line font-size-24"></i>  
+                        </span>
+                    </div>
+                </div>                                              
+            </div><!-- end cardbody -->
+        </div><!-- end card -->
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title mb-4">Últimas Avaliações Recebidas</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-centered mb-0 align-middle table-hover table-nowrap table-responsive">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Entidade</th>
+                                <th>Exercício</th>
+                                <th>Município</th>
+                                <th>UF</th>
+                                <th>Status</th>
+                                <th>Data envio</th>
+                                <th>Nota</th>
+                                <th>Nota Valida</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead><!-- end thead -->
+                        <tbody>
+                            {% for f in formularios  %}
+                            <tr>
+                                <td>
+                                    <h6 class="mb-0">{{ f.entidade }}</h6>
+                                    <footer class="blockquote-footer font-size-12 m-0">{{f.avaliacao}}</footer>
+                                </td>
+                                <td>{{f.avaliacao.ano_exercicio}}</td>
+                                <td>{{ f.entidade.municipio }}</td>
+                                <td>{{ f.entidade.municipio.uf }}</td>
+                                <td>
+                                    <span class="badge 
+                                    {% if f.status == 'I' %} 
+                                        bg-primary
+                                    {% elif f.status == 'F' %}
+                                        bg-success
+                                    {% elif f.status == 'E' %}
+                                        bg-warning
+                                    {% elif f.status == 'EV' %}
+                                        bg-warning
+                                    {% elif f.status == 'A' %}
+                                        bg-secondary
+                                    {% elif f.status == 'NS' %}
+                                        bg-danger
+                                    {% elif f.status == 'V' %}
+                                        bg-info
+                                    {% endif %}
+                                    font-size-12">{{ f.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
+                                <td>{{ f.nota }}</td>
+                                <td>{{ f.usuarioavaliacaovalidacao.nota }}</td>
+                                <td>
+                                    {% if not f.resposta_set.all %}
+                                        {% if not f.status == 'NS' %}
+                                        <a href="{% url 'add_resposta' f.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder">
+                                            <i class="mdi mdi-arrow-right-circle"></i>
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if f.resposta_set.all %}
+                                        {% if f.status == 'F' or f.status == 'E' %}
+                                        <a href="{% url 'change_resposta' f.id %}" class="btn btn-warning waves-effect waves-light btn-sm" data-toggle="tooltip" title="Editar">
+                                            <i class="mdi mdi-pencil"></i>
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if f.status == 'F' %}
+                                    <a onclick="envia_para_validacao({{f.id}})" class="btn btn-outline-info waves-effect waves-light btn-sm" data-toggle="tooltip" title="Enviar para Validação">
+                                        <i class="fas fa-user-clock"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if f.status == 'A' or f.status == 'EV' %}
+                                    <a href="{% url 'add_usuario_validacao' f.id %}" class="btn btn-info waves-effect waves-light btn-sm" data-toggle="tooltip" title="Validar">
+                                        <i class="fas fa-user-check"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if  f.status == 'V' %}
+                                    <a href="{% url 'change_resposta_validacao' f.usuarioavaliacaovalidacao.id %}" class="btn btn-warning waves-effect waves-light btn-sm" data-toggle="tooltip" title="Editar Validação">
+                                        <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    {% endif %}
+                                    <a onclick="delete_avaliacao({{f.id}})" class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
+                                        <i class="mdi mdi-trash-can"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                             <!-- end -->
+                             {% endfor %}
+                        </tbody><!-- end tbody -->
+                    </table> <!-- end table -->
+                </div>
+            </div><!-- end card -->
+        </div><!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+
+
+{% block 'script' %}
+
+        <!-- Sweet Alerts js -->
+        <script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+        <!-- Sweet alert init js-->
+        <script src="{% static 'sweetalert/js/script.js' %}"></script>
+
+{% endblock 'script' %}
+
+
+
+{% endblock 'body' %}

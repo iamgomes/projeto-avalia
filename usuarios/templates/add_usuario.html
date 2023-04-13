@@ -1,0 +1,152 @@
+{% load widget_tweaks %}
+{% load i18n static %}
+
+<!doctype html>
+<html lang="en">
+
+    <head>
+        
+        <meta charset="utf-8" />
+        <title>Cadatro de Usuário | Avalia</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+        <meta content="Themesdesign" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+        <!-- Bootstrap Css -->
+        <link href="{% static 'assets/css/bootstrap.min.css' %}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+
+    </head>
+
+    <body class="auth-body-bg">
+        <div class="bg-overlay"></div>
+        <div class="wrapper-page">
+            <div class="container-fluid p-0">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="text-center mt-4">
+                            <div class="mb-3">
+                                <a href="index.html" class="auth-logo"/>
+                                <h1>Avalia</h1>
+                                <h4 class="text-muted text-center font-size-18"><b>Cadastro de Usuário</b></h4>
+                                <!--
+                                    <img src="{% static 'assets/images/logo-dark.png' %}" height="30" class="logo-dark mx-auto" alt="">
+                                    <img src="{% static 'assets/images/logo-light.png' %}" height="30" class="logo-light mx-auto" alt="">
+                                -->
+                                </a>
+                            </div>
+                        </div>
+
+                    {% if messages %}
+                        {% for message in messages  %}
+                            <div class="alert {{message.tags}}">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if form.errors and not form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% if form.errors.items|length == 1 %}
+                        Please correct the error below.
+                        {% else %}
+                        Please correct the errors below.
+                        {% endif %}
+                    </div>
+                    {% endif %}
+            
+                    {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <div class="alert {{message.tags}}">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <div id="content-main">
+        
+                        <div class="p-3">
+                            <form class="form-horizontal mt-3" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group mb-3 row">
+                                    <div class="col-12">
+                                        {% render_field form.username class="form-control" placeholder="Usuário" %}
+                                        {{ form.username.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {% render_field form.first_name class="form-control" placeholder="Primeiro Nome" %}
+                                            {{ form.first_name.errors }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {% render_field form.last_name class="form-control" placeholder="Último Nome" %}
+                                            {{ form.last_name.errors }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3 row">
+                                    <div class="col-12">
+                                        {% render_field form.email class="form-control" placeholder="E-mail" %}
+                                        {{ form.email.errors }}
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3 row">
+                                    <div class="col-12">
+                                        {% render_field form.municipio class="form-control" placeholder="Município" %}
+                                        {{ form.municipio.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {% render_field form.password1 class="form-control" placeholder="Senha" %}
+                                            {{ form.password1.errors }}
+                                            {% if form.new_password1.help_text %}
+                                            <div class="help"{% if form.new_password1.id_for_label %} id="{{ form.new_password1.id_for_label }}_helptext"{% endif %}>{{ form.new_password1.help_text|safe }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {% render_field form.password2 class="form-control" placeholder="Confirmação de senha" %}
+                                            {{ form.password2.errors }}
+                                            {% if form.new_password2.help_text %}
+                                            <div class="help"{% if form.new_password2.id_for_label %} id="{{ form.new_password2.id_for_label }}_helptext"{% endif %}>{{ form.new_password2.help_text|safe }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3 text-center row mt-3 pt-1">
+                                    <div class="col-12">
+                                        <button class="btn btn-info w-100 waves-effect waves-light" type="submit">Cadastrar</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="form-group mt-2 mb-0 row">
+                                <div class="col-12 mt-3 text-center">
+                                    <a href="pages-login.html" class="text-muted">Já possui uma conta?</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end -->
+                    </div>
+                    <!-- end cardbody -->
+                </div>
+                <!-- end card -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end -->
+    </body>
+</html>
+
