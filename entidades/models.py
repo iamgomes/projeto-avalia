@@ -10,10 +10,13 @@ class Municipio(models.Model):
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
-        return self.nome
+        return '{} ({})'.format(self.nome, self.uf)
     
     def municipio_uf(self):
         return '{}-{}'.format(self.nome, self.uf)
+    
+    class Meta:
+        ordering = ['nome']
     
 
 class Entidade(models.Model):
@@ -42,7 +45,7 @@ class Entidade(models.Model):
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
-        return self.nome
+        return '{} ({})'.format(self.nome, self.municipio.uf)
     
     def entidade_uf(self):
         return '{} ({})'.format(self.nome, self.municipio.uf)

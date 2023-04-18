@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure--y9z1ulhe4&duk3kpq5h#0m1%e&+#6#w1sh)^000^7%^&xmdr8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['locahost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'usuarios.User'
 
@@ -30,8 +30,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'usuarios',
-    'avaliacoes',
     'entidades',
+    'avaliacoes',
+    'questionarios',
+    'validacoes',
 
     'django_extensions',
     'widget_tweaks',
@@ -62,7 +64,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         'libraries':{
-            'filters':'avaliacoes.templatetags.filters'
+            'filters':'questionarios.templatetags.filters'
         }
         },
     },

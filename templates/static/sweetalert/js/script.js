@@ -1,4 +1,4 @@
-function delete_avaliacao(id) { 
+function delete_questionario(id) { 
     Swal.fire({
         title: 'Você tem certeza?',
         text: "Esta ação não poderá ser revertida.",
@@ -18,7 +18,7 @@ function delete_avaliacao(id) {
         });
         $.ajax({
         type:"GET",
-        url : `/avaliacoes/${id}/delete/`,
+        url : `/questionarios/${id}/delete/`,
         data:{
             id:id //id get from button delete
         },

@@ -24,19 +24,17 @@
 
 <div class="row">
 
-    {% include "card_perfil.html" %}
-
-    <div class="col-xl-8">
+    <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title mb-4">Minhas Avaliações</h4>
+                <h3 class="mb-4">Minhas Avaliações</h3>
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
-                    {% if avaliacoes %}
+                    {% if questionario %}
                     <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#home1" role="tab">
                             <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
-                            <span class="d-none d-sm-block">Avaliações Respondidas ({{avaliacoes.count}})</span> 
+                            <span class="d-none d-sm-block">Avaliações Respondidas ({{questionario.count}})</span> 
                         </a>
                     </li>
                     {% endif %}
@@ -49,6 +47,7 @@
                     </li>
                     {% endif %}
                 </ul>
+                {% if questionario or validacoes %}
                 <div class="tab-content p-3 text-muted">
                     <div class="tab-pane active" id="home1" role="tabpanel">
                         <div class="table-responsive">
@@ -67,7 +66,7 @@
                                     </tr>
                                 </thead><!-- end thead -->
                                 <tbody>
-                                    {% for f in avaliacoes  %}
+                                    {% for f in questionario  %}
                                     <tr>
                                         <td>
                                             <h6 class="mb-0">{{ f.entidade }}</h6>
@@ -98,7 +97,7 @@
                                         </td>
                                         <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
                                         <td>{{ f.nota }}</td>
-                                        <td>{{ f.usuarioavaliacaovalidacao.nota }}</td>
+                                        <td>{{ f.validacao.nota }}</td>
                                         <td>
                                             {% if not f.resposta_set.all %}
                                                 {% if not f.status == 'NS' %}
@@ -120,7 +119,7 @@
                                             </a>
                                             {% endif %}
                                             {% if f.status == 'A' or f.status == 'EV' %}
-                                            <a href="{% url 'add_usuario_validacao' f.id %}" class="btn btn-info waves-effect waves-light btn-sm" data-toggle="tooltip" title="Validar">
+                                            <a href="{% url 'add_questionario' f.id %}" class="btn btn-info waves-effect waves-light btn-sm" data-toggle="tooltip" title="Validar">
                                                 <i class="fas fa-user-check"></i>
                                             </a>
                                             {% endif %}
@@ -129,7 +128,7 @@
                                                 <i class="mdi mdi-pencil"></i>
                                             </a>
                                             {% endif %}
-                                            <a onclick="delete_avaliacao({{f.id}})" class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
+                                            <a onclick="delete_questionario({{f.id}})" class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                                 <i class="mdi mdi-trash-can"></i>
                                             </a>
                                         </td>
@@ -160,34 +159,34 @@
                                     {% for f in validacoes  %}
                                     <tr>
                                         <td>
-                                            <h6 class="mb-0">{{ f.usuario_avaliacao.entidade }}</h6>
-                                            <footer class="blockquote-footer font-size-12 m-0">{{f.usuario_avaliacao.avaliacao}}</footer>
+                                            <h6 class="mb-0">{{ f.questionario.entidade }}</h6>
+                                            <footer class="blockquote-footer font-size-12 m-0">{{f.questionario.avaliacao}}</footer>
                                         </td>
-                                        <td>{{f.usuario_avaliacao.avaliacao.ano_exercicio}}</td>
-                                        <td>{{ f.usuario_avaliacao.entidade.municipio }}</td>
-                                        <td>{{ f.usuario_avaliacao.entidade.municipio.uf }}</td>
+                                        <td>{{f.questionario.avaliacao.ano_exercicio}}</td>
+                                        <td>{{ f.questionario.entidade.municipio }}</td>
+                                        <td>{{ f.questionario.entidade.municipio.uf }}</td>
                                         <td>
                                             <span class="badge 
-                                            {% if f.usuario_avaliacao.status == 'I' %} 
+                                            {% if f.questionario.status == 'I' %} 
                                                 bg-primary
-                                            {% elif f.usuario_avaliacao.status == 'F' %}
+                                            {% elif f.questionario.status == 'F' %}
                                                 bg-success
-                                            {% elif f.usuario_avaliacao.status == 'E' %}
+                                            {% elif f.questionario.status == 'E' %}
                                                 bg-warning
-                                            {% elif f.usuario_avaliacao.status == 'EV' %}
+                                            {% elif f.questionario.status == 'EV' %}
                                                 bg-warning
-                                            {% elif f.usuario_avaliacao.status == 'A' %}
+                                            {% elif f.questionario.status == 'A' %}
                                                 bg-secondary
-                                            {% elif f.usuario_avaliacao.status == 'NS' %}
+                                            {% elif f.questionario.status == 'NS' %}
                                                 bg-danger
-                                            {% elif f.usuario_avaliacao.status == 'V' %}
+                                            {% elif f.questionario.status == 'V' %}
                                                 bg-info
                                             {% endif %}
-                                            font-size-12">{{ f.usuario_avaliacao.get_status_display }}
+                                            font-size-12">{{ f.questionario.get_status_display }}
                                             </span>
                                         </td>
-                                        <td>{{ f.usuario_avaliacao.created_at|date:'d/m/Y H:i' }}</td>
-                                        <td>{{ f.usuario_avaliacao.nota }}</td>
+                                        <td>{{ f.questionario.created_at|date:'d/m/Y H:i' }}</td>
+                                        <td>{{ f.questionario.nota }}</td>
                                         <td>{{ f.nota }}</td>
                                         <td>
                                             {% if not f.respostavalidacao_set.all %}
@@ -195,12 +194,12 @@
                                                 <i class="mdi mdi-arrow-right-circle"></i>
                                             </a>
                                             {% endif %}
-                                            {% if f.usuario_avaliacao.status == 'V' %}
+                                            {% if f.questionario.status == 'V' %}
                                             <a href="{% url 'change_resposta_validacao' f.id %}" class="btn btn-warning waves-effect waves-light btn-sm" data-toggle="tooltip" title="Editar Validação">
                                                 <i class="mdi mdi-pencil"></i>
                                             </a>
                                             {% endif %}
-                                            <a onclick="delete_avaliacao({{f.id}})" class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
+                                            <a onclick="delete_questionario({{f.id}})" class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                                 <i class="mdi mdi-trash-can"></i>
                                             </a>
                                         </td>
@@ -211,6 +210,11 @@
                             </table> <!-- end table -->
                     </div>
                 </div>
+                {% else %}
+                <div class="alert alert-primary" role="alert">
+                    Você não possui avalições no momento.
+                </div>
+                {% endif %}
             </div><!-- end card -->
         </div><!-- end card -->
     </div>

@@ -10,6 +10,6 @@ class UserAdmin(admin_auth_django.UserAdmin):
     model = User
     fieldsets = admin_auth_django.UserAdmin.fieldsets + (
         ('Função', {'fields':('funcao',)}),
-        ('Município', {'fields':('municipio',)}),
+        ('Município', {'fields':('municipio', 'entidade',)}),
         ('Foto', {'fields':('foto',)}),
     )

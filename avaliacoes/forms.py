@@ -5,4 +5,4 @@ class RespostaForm(ModelForm):
     class Meta:
         model = Resposta
         #fields = '__all__'
-        exclude = ['usuarioavaliacao', 'criterio']
+        exclude = ['questionario', 'criterio']

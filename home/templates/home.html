@@ -115,7 +115,7 @@
                     <div class="card-body">
                         <div class="d-flex">
                             <div class="flex-grow-1">
-                                <p class="text-truncate font-size-14 mb-2">Avaliações Recebidas</p>
+                                <p class="text-truncate font-size-14 mb-2">Questionários Recebidos</p>
                                 <h4 class="mb-2">{{ avaliacoes_recebidas }}</h4>
                             </div>
                             <div class="avatar-sm">
@@ -147,7 +147,7 @@
                     <div class="card-body">
                         <h4 class="card-title">{{a.titulo}} </h4>
                         <p class="card-text">{{a.descricao}}</p>
-                        <a href="{% url 'add_usuario_avaliacao' a.id %}" class="btn-lg btn-primary waves-effect waves-light">
+                        <a href="{% url 'add_questionario' a.id %}" class="btn-lg btn-primary waves-effect waves-light">
                             Avaliar agora <i class="ri-arrow-right-line align-middle ms-2"></i> </a>
                     </div>
                     <div class="card-footer text-muted">
@@ -179,8 +179,9 @@
                     </div>
                 </div>
 
-                <h4 class="card-title mb-4">Últimas Avaliações Recebidas</h4>
-
+                <h4 class="card-title mb-4">Últimos Questionários Recebidos</h4>
+                
+                {% if questionarios %}
                 <div class="table-responsive">
                     <table class="table table-centered mb-0 align-middle table-hover table-nowrap">
                         <thead class="table-light">
@@ -193,22 +194,27 @@
                             </tr>
                         </thead><!-- end thead -->
                         <tbody>
-                            {% for f in formularios  %}
+                            {% for q in questionarios  %}
                             <tr>
                                 <td>
-                                    <h6 class="mb-0">{{ f.entidade }}</h6>
-                                    <footer class="blockquote-footer font-size-12 m-0">{{f.avaliacao}}</footer>
+                                    <h6 class="mb-0">{{ q.entidade }}</h6>
+                                    <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
                                 </td>
-                                <td>{{f.avaliacao.ano_exercicio}}</td>
-                                <td>{{ f.entidade.municipio }}</td>
-                                <td>{{ f.entidade.municipio.get_uf_display }}</td>
-                                <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
+                                <td>{{ q.avaliacao.ano_exercicio }}</td>
+                                <td>{{ q.entidade.municipio }}</td>
+                                <td>{{ q.entidade.municipio.get_uf_display }}</td>
+                                <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
                             </tr>
                              <!-- end -->
                              {% endfor %}
                         </tbody><!-- end tbody -->
                     </table> <!-- end table -->
                 </div>
+                {% else %}
+                <div class="alert alert-primary" role="alert">
+                    Nenhuma avaliação recebida até o momento.
+                </div>
+                {% endif %}
             </div><!-- end card -->
         </div><!-- end card -->
     </div>

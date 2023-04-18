@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block 'body' %}
+
+<div class="row">
+    <div class="col-lg-3">
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Entidade e Site</h2>
+                <p class="card-title-desc">Por favor, selecione a entidade que deseja avaliar e informe se esta possui site.</p>
+                <div>
+                    <div>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label>Selecione a entidade avaliada</label>
+                                <div>
+                                    <select name="entidade" class="form-control form-control-lg" Required>
+                                        <option selected disabled value="">Selecione</option>
+                                        {% for e in entidades %}
+                                            <option value="{{e.id}}">{{e.entidade_uf}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label>Esta entidade possui site oficial?</label>
+                                <div>
+                                    <select name="site" class="form-control form-control-lg" Required>
+                                        <option selected disabled value="">Selecione</option>
+                                        <option value="S">Sim</option>
+                                        <option value="N">Não</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <input type="submit" class="btn btn-success btn-lg waves-effect waves-light" value="Iniciar avaliação"></input>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div>
+    <!-- end col -->
+</div>
+
+{% endblock %}

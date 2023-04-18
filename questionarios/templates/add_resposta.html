@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load filters %}
+
+
+{% block 'head' %}
+
+        <link href="{% static 'stepform/css/jquery.steps.css' %}" rel="stylesheet">
+        <link href="{% static 'stepform/css/main.css' %}" rel="stylesheet">
+
+{% endblock 'head' %}
+
+
+{% block 'body' %}
+
+{% if messages %}
+    {% for message in messages  %}
+        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-bullseye-arrow me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Formulário de <strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
+                
+                <form id="my-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div>
+                        {% for u in questionario.avaliacao.criterio_set.all  %}
+                        {% ifchanged  %}
+                        <h3>{{ u.dimensao }}</h3>
+                        <section>
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Critério</th>
+                                            <th>Itens de Avaliação</th>
+                                            <th class="w-25">Evidências</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for a in questionario.avaliacao.criterio_set.all %}
+                                        {% if a.dimensao == u.dimensao %}
+                                        <tr>
+                                            <td class="align-middle">{{ a.id }}</td>
+                                            <td class="align-middle">
+                                                <p>
+                                                    <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#CriterioInformação-{{a.id}}" data-toggle="tooltip" >
+                                                    {{ a.criterio_texto }} <span class="badge bg-primary">{{ a.get_exigibilidade_display }}</span>
+                                                    </a>
+                                                
+                                                    <!-- sample modal content -->
+                                                    <div id="CriterioInformação-{{a.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="myModalLabel">
+                                                                        <i class="mdi mdi-information"></i>
+                                                                        {{a.criterio_texto}} ({{a.get_exigibilidade_display}})
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>{{a.descricao}}</p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
+                                                                </div>
+                                                            </div><!-- /.modal-content -->
+                                                        </div><!-- /.modal-dialog -->
+                                                    </div><!-- /.modal -->
+
+                                                </p>
+                                            </td>
+                                            <td class="align-middle">
+                                                {% for d in a.itens_avaliacao.all  %}
+                                                <div id="disponibilidade" class="form-check form-switch" dir="ltr">
+                                                    <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
+                                                    <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
+                                                </div>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for d in a.itens_avaliacao.all|slice:":1" %}
+                                                <div class="row mt-1">
+                                                    <div class="co-lg-12">
+                                                        <a onclick='add_link("form-link-{{a.id}}-{{d.id}}", "{{a.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Link">
+                                                            <i class="mdi mdi-link-variant-plus"></i> Link
+                                                        </a>  
+                                                        <a onclick='MudarEstado("imagem-{{a.id}}-{{d.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Imagem">
+                                                            <i class="mdi mdi-image-plus"></i> Imagem
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div id="form-link-{{a.id}}-{{d.id}}">
+                                                </div>
+                                                <div class='input-group'>
+                                                <input type="file" class="form-control-sm mt-2" id="imagem-{{a.id}}-{{d.id}}" name="imagem-{{a.id}}" 
+                                                    style="display: none;">
+                                                </div>
+                                                {% endfor %}                                              
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        {% endifchanged %}
+                        {% endfor %}
+
+                        <h3>Conclusão</h3>
+                        <section>
+                            <div class="row justify-content-center">
+                                <div class="col-lg-6">
+                                    <div class="text-center">
+                                        <div class="mb-4">
+                                            <i class="mdi mdi-check-circle-outline text-success display-4"></i>
+                                        </div>
+                                        <div>
+                                            <h5>Quase lá, {{ user.first_name }}!</h5>
+                                            <p class="text-muted">Confirme os dados antes de enviar. Lembrando que após o envio, as respostas ainda poderão ser editadas por você.</p>
+                                        </div>
+                                        <input id="acceptTerms" name="acceptTerms" type="checkbox" class="required"> <label for="acceptTerms">Eu confirmo as informações.</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <div>
+</div> <!-- row end -->
+
+{% block 'script' %}
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
+        <script src="{% static 'stepform/js/script.js' %}"></script>
+        <script src="{% static 'js/link_evidencia.js' %}"></script>
+
+{% endblock 'script' %}
+
+{% endblock 'body' %}

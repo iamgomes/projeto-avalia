@@ -6,10 +6,10 @@
     <head>
         
         <meta charset="utf-8" />
-        <title>{% block 'title' %}{% endblock 'title' %}</title>
+        <title>{% block 'title' %}Home{% endblock 'title' %} | PNTP</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-        <meta content="Themesdesign" name="author" />
+        <meta content="Sistema de Avaliação de Portais Transparência." name="description" />
+        <meta content="William Gomes" name="author" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
 
@@ -218,11 +218,11 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
-                                <a class="dropdown-item" href="{% url 'perfil' %}"><i class="ri-user-line align-middle me-1"></i> Perfil</a>
-                                <a class="dropdown-item" href="{% url 'password_change' %}"><i class="ri-lock-password-fill align-middle me-1"></i> Alterar senha</a>
-                                <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class="ri-bill-fill me-1"></i> Minhas avaliaçõoes</a>
+                                <a class="dropdown-item" href="{% url 'perfil' %}"><i class="ri-user-line align-middle me-1"></i>Perfil</a>
+                                <a class="dropdown-item" href="{% url 'password_change' %}"><i class="ri-lock-password-fill align-middle me-1"></i>Alterar senha</a>
+                                <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class="ri-bill-fill me-1"></i>Minhas avaliaçõoes</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="ri-shut-down-line align-middle me-1 text-danger"></i> Sair</a>
+                                <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="ri-shut-down-line align-middle me-1 text-danger"></i>Sair</a>
                             </div>
                         </div>
             
@@ -239,13 +239,13 @@
 
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'home' %}">
-                                            <i class="ri-dashboard-line me-2"></i> Início
+                                            <i class="ri-dashboard-line me-2"></i>Início
                                         </a>
                                     </li>
 
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'avaliacao' %}">
-                                            <i class="ri-file-copy-2-line me-2"></i> Avaliações
+                                            <i class="ri-file-copy-2-line me-2"></i>Avaliações
                                         </a>
                                     </li>
                                     

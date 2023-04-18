@@ -14,6 +14,8 @@
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
 
+        <link href="{% static 'assets/libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css">
+
         <!-- Bootstrap Css -->
         <link href="{% static 'assets/css/bootstrap.min.css' %}" id="bootstrap-style" rel="stylesheet" type="text/css" />
         <!-- Icons Css -->
@@ -102,8 +104,14 @@
                                 </div>
                                 <div class="form-group mb-3 row">
                                     <div class="col-12">
-                                        {% render_field form.municipio class="form-control" placeholder="Município" %}
+                                        {% render_field form.municipio class="form-control select2" data-placeholder="Município"%}
                                         {{ form.municipio.errors }}
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3 row">
+                                    <div class="col-12">
+                                        {% render_field form.entidade class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Unidade Gestora" %}
+                                        {{ form.entidade.errors }}
                                     </div>
                                 </div>
                                 <div class="row">
@@ -134,7 +142,7 @@
                             </form>
                             <div class="form-group mt-2 mb-0 row">
                                 <div class="col-12 mt-3 text-center">
-                                    <a href="pages-login.html" class="text-muted">Já possui uma conta?</a>
+                                    <a href="{% url 'login' %}" class="text-muted">Já possui uma conta?</a>
                                 </div>
                             </div>
                         </div>
@@ -147,6 +155,11 @@
             <!-- end container -->
         </div>
         <!-- end -->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="{% static  'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'assets/libs/select2/js/select2.min.js' %}"></script>
+        <script src="{% static 'assets/js/pages/form-advanced.init.js' %}"></script>
     </body>
 </html>
 

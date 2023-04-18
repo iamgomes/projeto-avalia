@@ -106,7 +106,17 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label>Unidad{{request.user.entidade.all|pluralize:"e,es"}} Gestor{{request.user.entidade.all|pluralize:"a,as"}}</label>
+                                        <textarea required="" class="form-control" rows="5" cols="50" disabled name="unidade_gestora">{% for e in request.user.entidade.all %}{{e}}  
+{% endfor %}</textarea>
+                                        <div class="valid-feedback">
+                                            Tudo certo!
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label>E-mail</label>
                                         <input type="email" class="form-control" required name="email"
