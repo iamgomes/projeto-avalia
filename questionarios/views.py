@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
-    CriterioItem, Tramitaca
+    CriterioItem, Tramitacao
 from usuarios.models import User
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
@@ -43,7 +43,8 @@ def add_questionario(request, id):
                     identificacao.save()
                     id_identificaca = identificacao.id
 
-                    tramitacao = Tramitaca(questionario_id=id_identificaca, )
+                    tramitacao = Tramitacao(questionario_id=id_identificaca, usuario=usuario)
+                    tramitacao.save()
 
                     messages.success(request, "Muito bom! Você iniciou uma avaliação.")
 
@@ -55,7 +56,7 @@ def add_questionario(request, id):
                 messages.error(request, "Desculpe, o prazo desta avaliação já esgotou.")
                 return redirect(reverse('home'))
         else:
-            messages.error(request, "Desculpe, esta entidade já possui possui avaliação.")
+            messages.error(request, "Desculpe, esta entidade já possui avaliação respondida.")
             return redirect(reverse('home'))
 
 
@@ -68,6 +69,14 @@ def delete_questionario(request, id):
 
 
 @login_required
+def view_questionario(request, id):
+    questionario = get_object_or_404(Questionario, pk=id)
+    tramitacao = Tramitacao.objects.filter(questionario_id=questionario.id)
+    
+    return render(request, 'view_questionario.html', {'questionario':questionario, 'tramitacao':tramitacao})
+
+
+@login_required
 def add_resposta(request, id):
     questionario = Questionario.objects.get(pk=id)
 
@@ -76,10 +85,12 @@ def add_resposta(request, id):
     
     elif request.method == 'POST':
         for c in questionario.avaliacao.criterio_set.all():
+            
+            links = request.POST.getlist('link-{}'.format(c.id))
+
             for d in c.itens_avaliacao.all():
                 form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
-                links = request.POST.getlist('link-{}'.format(c.id))
-                imagens = request.FILES.getlist('imagem-{}'.format(c.id))
+                imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
 
                 criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
                 
@@ -92,7 +103,7 @@ def add_resposta(request, id):
                             link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=l)
                             link_evidencia.save()
 
-                if form == None:
+                else: 
                     resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id)
                     resposta.save()
 

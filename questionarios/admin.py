@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Criterio, Questionario, Resposta, Dimensao, Tramitaca, \
+from .models import Criterio, Questionario, Resposta, Dimensao, Tramitacao, \
                     ImagemEvidencia, ItemAvaliacao, LinkEvidencia, CriterioItem
 
 
@@ -23,4 +23,4 @@ admin.site.register(ImagemEvidencia)
 admin.site.register(ItemAvaliacao)
 admin.site.register(LinkEvidencia)
 admin.site.register(CriterioItem)
-admin.site.register(Tramitaca)
+admin.site.register(Tramitacao)

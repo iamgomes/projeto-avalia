@@ -127,12 +127,12 @@ class LinkEvidencia(models.Model):
 
 class ImagemEvidencia(models.Model):
     resposta = models.ForeignKey(Resposta, on_delete=models.CASCADE)
-    imagem = models.ImageField(upload_to='imagem_evidencia')
+    imagem = models.FileField(upload_to='imagem_evidencia')
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
 
-class Tramitaca(models.Model):
+class Tramitacao(models.Model):
     SETOR_CHOICES = (
         ('C', 'Controle Interno'),
         ('T', 'Tribunal de Contas'),
@@ -140,14 +140,17 @@ class Tramitaca(models.Model):
     )
 
     SITUACAO_CHOICES = (
-        ('C', 'Criação'),
+        ('AI', 'Andamento Iniciado'),
         ('ET', 'Enviado para o Tribunal'),
         ('EA', 'Enviado para Atricon'),
         ('EC', 'Enviado para o Controle Interno'),
     )
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     setor = models.CharField(max_length=1, choices=SETOR_CHOICES, default='C')
-    situacao = models.CharField(max_length=2, choices=SITUACAO_CHOICES, default='C')
+    situacao = models.CharField(max_length=2, choices=SITUACAO_CHOICES, default='AI')
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    class Meta:
+        ordering = ('-created_at', )

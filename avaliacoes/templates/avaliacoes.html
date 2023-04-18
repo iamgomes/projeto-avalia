@@ -99,6 +99,9 @@
                                 <td>{{ q.nota }}</td>
                                 <td>{{ q.validacao.nota }}</td>
                                 <td>
+                                    <a href="{% url 'view_questionario' q.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
+                                        <i class="mdi mdi-eye"></i>
+                                    </a>
                                     {% if not q.resposta_set.all %}
                                         {% if not q.status == 'NS' %}
                                         <a href="{% url 'add_resposta' q.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder">
