@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'widget_tweaks',
+    'smart_selects',
 ]
 
 MIDDLEWARE = [
@@ -63,9 +64,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-        'libraries':{
-            'filters':'questionarios.templatetags.filters'
-        }
+
         },
     },
 ]
@@ -149,3 +148,6 @@ MESSAGE_TAGS = {
     constants.INFO: 'alert-info',
     constants.WARNING: 'alert-warning'
 }
+
+JQUERY_URL = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+

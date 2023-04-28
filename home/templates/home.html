@@ -175,7 +175,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item">Ver todas</a>
+                        <a href="{% url 'avaliacao' %}" class="dropdown-item">Ver todas</a>
                     </div>
                 </div>
 
@@ -186,23 +186,23 @@
                     <table class="table table-centered mb-0 align-middle table-hover table-nowrap">
                         <thead class="table-light">
                             <tr>
-                                <th>Entidade</th>
                                 <th>Exercício</th>
-                                <th>Município</th>
-                                <th>UF</th>
-                                <th>Data envio</th>
+                                <th>Unidade Gestora</th>
+                                <th>Nota</th>
+                                <th>Classificação</th>
+                                <th>Data Envio</th>
                             </tr>
                         </thead><!-- end thead -->
                         <tbody>
                             {% for q in questionarios  %}
                             <tr>
+                                <td>{{ q.avaliacao.ano_exercicio }}</td>
                                 <td>
                                     <h6 class="mb-0">{{ q.entidade }}</h6>
                                     <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
                                 </td>
-                                <td>{{ q.avaliacao.ano_exercicio }}</td>
-                                <td>{{ q.entidade.municipio }}</td>
-                                <td>{{ q.entidade.municipio.get_uf_display }}</td>
+                                <td>{{ q.nota }}</td>
+                                <td>Intermediário</td>
                                 <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
                             </tr>
                              <!-- end -->

@@ -23,12 +23,19 @@
                 <div>
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <div class="input-group">
+                        {% if user.foto %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <img class="rounded mx-auto d-block" alt="300x300" width="300" src="{{ user.foto.url }}" data-holder-rendered="true">
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="input-group mt-4">
                             <input type="file" class="form-control" name="foto" id="id_foto">
                         </div>
 
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light">Enviar arquivo</button>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light">Enviar Imagem</button>
                         </div>  
 
                     </form>

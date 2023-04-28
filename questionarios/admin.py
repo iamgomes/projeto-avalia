@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Criterio, Questionario, Resposta, Dimensao, Tramitacao, \
+from .models import Criterio, Questionario, Resposta, Dimensao, Tramitacao,\
                     ImagemEvidencia, ItemAvaliacao, LinkEvidencia, CriterioItem
 
 

@@ -13,21 +13,14 @@
         <!-- App favicon -->
         <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
 
-        <!-- jquery.vectormap css -->
-        <link href="{% static 'assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet" type="text/css"  />
-
-        <!-- DataTables -->
-        <link href="{% static 'assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
-
-        <!-- Responsive datatable examples -->
-        <link href="{% static 'assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />  
-
         <!-- Bootstrap Css -->
         <link href="{% static 'assets/css/bootstrap.min.css' %}" id="bootstrap-style" rel="stylesheet" type="text/css" />
         <!-- Icons Css -->
         <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css"/>
         <!-- App Css-->
         <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 
         {% block 'head' %}{% endblock 'head' %}
 
@@ -52,28 +45,16 @@
                     <div class="d-flex">
                         <!-- LOGO -->
                         <div class="navbar-brand-box">
-                            <h1>
-                            <a href="{% url 'home' %}">Avalia</a>
-                            </h1>
-                            <!--
-                            <a href="index.html" class="logo logo-dark">
-                                <span class="logo-sm">
-                                    <img src="assets/images/logo-sm.png" alt="logo-sm" height="22">
-                                </span>
-                                <span class="logo-lg">
-                                    <img src="assets/images/logo-dark.png" alt="logo-dark" height="20">
-                                </span>
-                            </a>
 
-                            <a href="index.html" class="logo logo-light">
+                            <a href="{% url 'home' %}" class="logo logo-light">
                                 <span class="logo-sm">
-                                    <img src="assets/images/logo-sm.png" alt="logo-sm-light" height="22">
+                                    <img src="{% static 'assets/images/logo_pntp_sm.png' %}" alt="logo-sm-light" height="56">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="assets/images/logo-light.png" alt="logo-light" height="20">
+                                    <img src="{% static 'assets/images/logo_pntp_branca.png' %}" alt="logo-light" height="56">
                                 </span>
                             </a>
-                            -->
+                            
                         </div>
                         
                         <button type="button" class="btn btn-sm px-3 font-size-24 d-lg-none header-item" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
@@ -242,50 +223,18 @@
                                             <i class="ri-dashboard-line me-2"></i>Início
                                         </a>
                                     </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{% url 'avaliacao' %}">
-                                            <i class="ri-file-copy-2-line me-2"></i>Avaliações
-                                        </a>
-                                    </li>
                                     
-                                    <!--
                                     <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-layout" role="button">
-                                            <i class="ri-layout-3-line me-2"></i><span key="t-layouts">Layouts</span> <div class="arrow-down"></div>
+                                        <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-apps" role="button">
+                                            <i class="ri-file-copy-2-line me-2"></i>Avaliações <div class="arrow-down"></div>
                                         </a>
-                                        <div class="dropdown-menu" aria-labelledby="topnav-layout">
-                                            <div class="dropdown">
-                                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-layout-verti"
-                                                    role="button">
-                                                    <span key="t-vertical">Vertical</span> <div class="arrow-down"></div>
-                                                </a>
-                                                <div class="dropdown-menu" aria-labelledby="topnav-layout-verti">
-                                                    <a href="layouts-dark-sidebar.html" class="dropdown-item" key="t-dark-sidebar">Dark Sidebar</a>
-                                                    <a href="layouts-compact-sidebar.html" class="dropdown-item" key="t-compact-sidebar">Compact Sidebar</a>
-                                                    <a href="layouts-icon-sidebar.html" class="dropdown-item" key="t-icon-sidebar">Icon Sidebar</a>
-                                                    <a href="layouts-boxed.html" class="dropdown-item" key="t-boxed-width">Boxed Width</a>
-                                                    <a href="layouts-preloader.html" class="dropdown-item" key="t-preloader">Preloader</a>
-                                                    <a href="layouts-colored-sidebar.html" class="dropdown-item" key="t-colored-sidebar">Colored Sidebar</a>
-                                                </div>
-                                            </div>
-    
-                                            <div class="dropdown">
-                                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-layout-hori"
-                                                    role="button">
-                                                    <span key="t-horizontal">Horizontal</span> <div class="arrow-down"></div>
-                                                </a>
-                                                <div class="dropdown-menu" aria-labelledby="topnav-layout-hori">
-                                                    <a href="layouts-horizontal.html" class="dropdown-item" key="t-horizontal">Horizontal</a>
-                                                    <a href="layouts-hori-topbar-light.html" class="dropdown-item" key="t-topbar-light">Topbar light</a>
-                                                    <a href="layouts-hori-boxed-width.html" class="dropdown-item" key="t-boxed-width">Boxed width</a>
-                                                    <a href="layouts-hori-preloader.html" class="dropdown-item" key="t-preloader">Preloader</a>
-                                                    <a href="layouts-hori-colored-header.html" class="dropdown-item" key="t-colored-topbar">Colored Header</a>
-                                                </div>
-                                            </div>
+                                        <div class="dropdown-menu" aria-labelledby="topnav-apps">
+
+                                            <a href="#" class="dropdown-item">Avaliações disponíveis</a>
+                                            <a href="{% url 'avaliacao' %}" class="dropdown-item">Questionários recebidos</a>
                                         </div>
                                     </li>
-                                -->
+                                
                                 </ul>
                             </div>
                         </nav>
@@ -311,7 +260,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-sm-6">
-                                <script>document.write(new Date().getFullYear())</script> © William Gomes.
+                                <script>document.write(new Date().getFullYear())</script> © Programa Nacional de Transparência Pública.
                             </div>
 
                         </div>
@@ -328,28 +277,10 @@
         <div class="rightbar-overlay"></div>
 
         <!-- JAVASCRIPT -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="{% static  'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
         <script src="{% static  'assets/libs/metismenu/metisMenu.min.js' %}"></script>
         <script src="{% static  'assets/libs/simplebar/simplebar.min.js' %}"></script>
         <script src="{% static  'assets/libs/node-waves/waves.min.js' %}"></script>
-
-        <!-- apexcharts -->
-        <script src="{% static  'assets/libs/apexcharts/apexcharts.min.js' %}"></script>
-
-        <!-- jquery.vectormap map -->
-        <script src="{% static  'assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js' %}"></script>
-        <script src="{% static  'assets/libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-us-merc-en.js' %}"></script>
-
-        <!-- Required datatable js -->
-        <script src="{% static  'assets/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-        <script src="{% static  'assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-        
-        <!-- Responsive examples -->
-        <script src="{% static  'assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
-        <script src="{% static  'assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
-
-        <script src="{% static  'assets/js/pages/dashboard.init.js' %}"></script>
 
         {% block 'script' %}{% endblock 'script' %}
 

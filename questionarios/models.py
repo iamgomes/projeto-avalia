@@ -120,7 +120,7 @@ class Resposta(models.Model):
 
 class LinkEvidencia(models.Model):
     resposta = models.ForeignKey(Resposta, on_delete=models.CASCADE)
-    link = models.CharField(max_length=200)
+    link = models.TextField()
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
     
@@ -139,18 +139,34 @@ class Tramitacao(models.Model):
         ('A', 'Atricon')
     )
 
-    SITUACAO_CHOICES = (
-        ('AI', 'Andamento Iniciado'),
-        ('ET', 'Enviado para o Tribunal'),
-        ('EA', 'Enviado para Atricon'),
-        ('EC', 'Enviado para o Controle Interno'),
+    MOTIVO_CHOICES = (
+        #Controle Interno
+        ('C', (
+            ('AI', 'Andamento Iniciado'),
+            ('PC', 'Envio Para Revisão da Avaliação'),
+        )),
+
+        #Tribunal
+        ('T', (
+            ('IT', 'Andamento Iniciado pelo Tribunal'),
+            ('EA', 'Envio para Análise do Tribunal'),
+            ('RT', 'Envio para Revisão do Tribunal'),
+        )),
+        #Atricon
+        ('A', (
+            ('EC', 'Envio para Conclusão'),
+        )),
     )
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
-    setor = models.CharField(max_length=1, choices=SETOR_CHOICES, default='C')
-    situacao = models.CharField(max_length=2, choices=SITUACAO_CHOICES, default='AI')
+    setor = models.CharField(max_length=1, choices=SETOR_CHOICES)
+    motivo = models.CharField(max_length=2, choices=MOTIVO_CHOICES)
+    observacao = models.TextField(null=True,blank=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    def __str__(self):
+        return self.get_motivo_display()
 
     class Meta:
         ordering = ('-created_at', )

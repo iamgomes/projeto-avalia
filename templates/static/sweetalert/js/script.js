@@ -1,6 +1,6 @@
 function delete_questionario(id) { 
     Swal.fire({
-        title: 'Você tem certeza?',
+        title: `Você tem certeza?`,
         text: "Esta ação não poderá ser revertida.",
         icon: 'warning',
         showCancelButton: true,

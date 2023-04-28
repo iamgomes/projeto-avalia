@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load filters %}
 
+{% block 'title' %}Edição Validação{% endblock 'title' %}
 
 {% block 'head' %}
 
         <link href="{% static 'stepform/css/jquery.steps.css' %}" rel="stylesheet">
         <link href="{% static 'stepform/css/main.css' %}" rel="stylesheet">
+        <!-- Lightbox css -->
+        <link href="{% static 'assets/libs/magnific-popup/magnific-popup.css' %}" rel="stylesheet" type="text/css" />
 
+        <style>white-space: pre-wrap;</style>
 {% endblock 'head' %}
 
 
@@ -32,9 +35,9 @@
                 <form id="my-form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div>
-                        {% for u in validacao.respostavalidacao_set.all %}
-                        {% ifchanged %}
-                        <h3>{{u.resposta.criterio_item.criterio.dimensao}}</h3>
+                        {% for u in validacao.questionario.avaliacao.criterio_set.all  %}
+                        {% ifchanged  %}
+                        <h3>{{ u.dimensao }}</h3>
                         <section>
                             <div class="table-responsive">
                                 <table class="table table-striped mb-0">
@@ -47,82 +50,141 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for a in validacao.respostavalidacao_set.all %}
-                                        {% if a.resposta.criterio_item.criterio.dimensao.id == u.resposta.criterio_item.criterio.dimensao.id %}
-                                        {% ifchanged %}
+                                        {% for a in validacao.questionario.avaliacao.criterio_set.all %}
+                                        {% if a.dimensao == u.dimensao %}
                                         <tr>
-                                            <td class="align-middle"></td>
+                                            <td class="align-middle">{{ a.id }}</td>
                                             <td class="align-middle">
                                                 <p>
-                                                    <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#CriterioInformação-{{a.resposta.criterio_item.criterio.id}}" data-toggle="tooltip" >
-                                                    {{ a.resposta.criterio_item.criterio.criterio_texto }} <span class="badge bg-primary">{{ a.resposta.criterio_item.criterio.get_exigibilidade_display }}</span>
+                                                    <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#CriterioInformação-{{a.id}}" data-toggle="tooltip" >
+                                                    {{ a.criterio_texto }} <span class="badge bg-primary">{{ a.get_exigibilidade_display }}</span>
                                                     </a>
-    
-                                                    <!-- sample modal content -->
-                                                    <div id="CriterioInformação-{{a.resposta.criterio_item.criterio.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="myModalLabel">
-                                                                        <i class="mdi mdi-information"></i>
-                                                                        {{a.resposta.criterio_item.criterio.criterio_texto}} ({{a.resposta.criterio_item.criterio.get_exigibilidade_display}})
-                                                                    </h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <p>{{a.resposta.criterio_item.criterio.descricao}}</p>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
-                                                                </div>
-                                                            </div><!-- /.modal-content -->
-                                                        </div><!-- /.modal-dialog -->
-                                                    </div><!-- /.modal -->
+                                                
+                                                    <!--Modal-->
+                                                    {% include 'modal_descricao.html' %}
+
                                                 </p>
                                             </td>
                                             <td class="align-middle">
-                                            {% for d in validacao.respostavalidacao_set.all %}
-                                            {% if d.resposta.criterio_item.criterio.id == a.resposta.criterio_item.criterio.id %}
-                                            {% ifchanged %}
-                                                <input class="hidden" name="id_resposta-{{ d.id }}" value="{{ d.id }}">
+                                                {% for d in a.criterioitem_set.all %}
+                                                {% for r in d.respostavalidacao_set.all %}
+                                                {% if r.validacao.id == validacao.id %}
+                                                <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                 <div id="disponibilidade" class="form-check form-switch" dir="ltr">
-                                                    <input type="checkbox" class="form-check-input" id="customSwitch-{{a.resposta.criterio_item.criterio.id}}-{{d.id}}" 
-                                                        name="resposta-{{ d.id }}" 
-                                                        {% if d.resposta_validacao == True %}
+                                                    <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
+                                                        name="resposta-{{ r.id }}" 
+                                                        {% if r.resposta_validacao == True %}
                                                             checked
                                                         {% endif %}
                                                     >
-                                                    <label class="form-check-label" for="customSwitch-{{a.resposta.criterio_item.criterio.id}}-{{d.id}}">{{ d.resposta.criterio_item.item_avaliacao }}</label>
+                                                    <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                 </div>
-                                            {% endifchanged %}
-                                            {% endif %}
-                                            {% endfor %}
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endfor %}
                                             </td>
                                             <td>
-                                            {% for d in validacao.respostavalidacao_set.all|slice:":1" %}
-                                            {% ifchanged %}
-                                                <div class="row mt-1">
-                                                    <div class="co-lg-12">
-                                                        <a onclick='add_link("form-link-{{a.resposta.criterio_item.criterio.id}}-{{d.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Link">
-                                                            <i class="mdi mdi-link-variant-plus"></i> Link
-                                                        </a>  
-                                                        <a onclick='MudarEstado("imagem-{{a.resposta.criterio_item.criterio.id}}-{{d.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Imagem">
-                                                            <i class="mdi mdi-image-plus"></i> Imagem
-                                                        </a>
+                                                <!--Faz o laço apenas no primeiro item da lista. Os links ficarão vinculados apenas no primeiro registro da lista de itens-->
+                                                <div class='input-group'>
+                                                    <div class="mb-3">
+                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
+                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
+                                                            {% for r in c.resposta_set.all %}
+                                                            {% if r.questionario.id == validacao.questionario.id %}
+                                                            {% if r.linkevidencia_set.all %}
+                                                            {% for link in r.linkevidencia_set.all %}
+                                                            <div class="card">
+                                                                <div class="card-header">
+                                                                    Links do Controlador Interno
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <blockquote class="card-blockquote">
+                                                                        <ol>
+                                                                            {% for i  in link.link.split %}
+                                                                            <li><a href="{{ i }}" target="_blank">{{ i }}</a></li>
+                                                                            {% endfor %}
+                                                                        </ol>
+                                                                    </blockquote>
+                                                                </div>
+                                                            </div>
+                                                            {% endfor %}
+                                                            {% endif %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        {% for r in c.respostavalidacao_set.all %}
+                                                        {% if r.validacao.id == validacao.id %}
+                                                        {% if r.linkevidenciavalidacao_set.all %}
+                                                        {% for link in r.linkevidenciavalidacao_set.all %}
+                                                            <label for="links" class="form-label">Links do Auditor</label>
+                                                            <input class="hidden" name="id_link-{{r.id}}" value="{{link.id}}">
+                                                            <textarea id="links" class="form-control" rows="4" cols="50" name="link-{{r.id}}">{{link.link_validacao}}</textarea>
+                                                        {% endfor %}
+                                                        {% else %}
+                                                            <label for="links" class="form-label">Links do Auditor</label>
+                                                            <textarea id="links" class="form-control" rows="4" cols="50" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
+                                                        {% endif %}
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                        {% endfor %}
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
-                                                <div id="form-link-{{a.resposta.criterio_item.criterio.id}}-{{d.id}}">
-                                                </div>
                                                 <div class='input-group'>
-                                                <input type="file" class="form-control-sm mt-2" id="imagem-{{a.resposta.criterio_item.criterio.id}}-{{d.id}}" name="imagens" 
-                                                    multiple style="display: none;">
-                                                </div>
-                                            {% endifchanged %}
-                                            {% endfor %} 
-                                                                                         
+                                                    <div class="popup-gallery mt-2">
+                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
+                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
+                                                            {% for r in c.resposta_set.all %}
+                                                            {% if r.questionario.id == validacao.questionario.id %}
+                                                            {% if r.imagemevidencia_set.all %}
+                                                            {% for img in r.imagemevidencia_set.all %}
+                                                            <div class="card">
+                                                                <div class="card-header">
+                                                                    Imagem do Controlador Interno
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <blockquote class="card-blockquote">
+                                                                        <a  href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                            <div class="img-fluid">
+                                                                                <img src="{{ img.imagem.url }}" alt="img-1" width="100">
+                                                                            </div>
+                                                                        </a>
+                                                                    </blockquote>
+                                                                </div>
+                                                            </div>
+
+                                                            {% endfor %}
+                                                            {% endif %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        {% for r in c.respostavalidacao_set.all %}
+                                                        {% if r.validacao.id == validacao.id %}
+                                                        {% if r.imagemevidenciavalidacao_set.all %}
+                                                        {% for img in r.imagemevidenciavalidacao_set.all %}
+                                                            <label for="imagem" class="form-label">Imagem</label>
+                                                            <a  href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
+                                                                <div class="img-fluid">
+                                                                    <img src="{{ img.imagem_validacao.url }}" alt="img-1" width="100">
+                                                                </div>
+                                                            </a>
+                                                            <spam>Substiuir imagem</spam>
+                                                            <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
+                                                            <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" >
+                                                        {% endfor %}
+                                                        {% else %}
+                                                    </div>
+                                                    <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
+                                                    <div class='input-group'>
+                                                        <label for="imagem" class="form-label mt-3">Imagem do Auditor</label>
+                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" >
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                </div>                                   
                                             </td>
                                         </tr>
-                                        {% endifchanged %}
                                         {% endif %}
                                         {% endfor %}
                                     </tbody>
@@ -131,6 +193,7 @@
                         </section>
                         {% endifchanged %}
                         {% endfor %}
+
                         <h3>Conclusão</h3>
                         <section>
                             <div class="row justify-content-center">
@@ -161,6 +224,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
         <script src="{% static 'stepform/js/script.js' %}"></script>
         <script src="{% static 'js/link_evidencia.js' %}"></script>
+        <!-- Magnific Popup-->
+        <script src="{% static 'assets/libs/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+        <!-- lightbox init js-->
+        <script src="{% static 'assets/js/pages/lightbox.init.js' %}"></script>
 
 {% endblock 'script' %}
 

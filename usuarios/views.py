@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
+import os
 
 
 
@@ -17,7 +18,13 @@ def add_usuario(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            entidade = form.cleaned_data['entidade']            
+            user.save()
+
+            # this will save by itself
+            user.entidade.set(entidade)
+
             login(request, user)
             messages.success(request, "Usuário cadastrado com sucesso!")
             return redirect(reverse('home'))
@@ -48,14 +55,17 @@ def perfil(request):
 
 @login_required
 def change_foto(request):
+    user = User.objects.get(pk=request.user.id)
+
     if request.method == 'GET':
         return render(request, 'change_foto.html')
     
     if request.method == 'POST':
-        user = get_object_or_404(User, pk=request.user.id)
-        foto = request.FILES.get('foto')
-        user.foto = foto
-        user.save()
+        if len(request.FILES) != 0:
+            if len(user.foto) > 0:
+                os.remove(user.foto.path)     
+            user.foto = request.FILES['foto']
+        user.save()   
 
         messages.success(request, "Foto de Usuário alterada com sucesso!")
 

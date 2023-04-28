@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load filters %}
 
+{% block 'title' %}Edição Questionário{% endblock 'title' %}
 
 {% block 'head' %}
 
         <link href="{% static 'stepform/css/jquery.steps.css' %}" rel="stylesheet">
         <link href="{% static 'stepform/css/main.css' %}" rel="stylesheet">
+        <!-- Lightbox css -->
+        <link href="{% static 'assets/libs/magnific-popup/magnific-popup.css' %}" rel="stylesheet" type="text/css" />
 
+        <style>white-space: pre-wrap;</style>
 {% endblock 'head' %}
 
 
@@ -57,64 +60,84 @@
                                                     {{ a.criterio_texto }} <span class="badge bg-primary">{{ a.get_exigibilidade_display }}</span>
                                                     </a>
                                                 
-                                                    <!-- sample modal content -->
-                                                    <div id="CriterioInformação-{{a.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="myModalLabel">
-                                                                        <i class="mdi mdi-information"></i>
-                                                                        {{a.criterio_texto}} ({{a.get_exigibilidade_display}})
-                                                                    </h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <p>{{a.descricao}}</p>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
-                                                                </div>
-                                                            </div><!-- /.modal-content -->
-                                                        </div><!-- /.modal-dialog -->
-                                                    </div><!-- /.modal -->
+                                                    <!--Modal-->
+                                                    {% include 'modal_descricao.html' %}
 
                                                 </p>
                                             </td>
                                             <td class="align-middle">
                                                 {% for d in a.criterioitem_set.all %}
-                                                <input class="hidden" name="id_resposta-{{d.resposta_set.all.first.id }}" value="{{ d.resposta_set.all.first.id }}">
+                                                {% for r in d.resposta_set.all %}
+                                                {% if r.questionario.id == questionario.id %}
+                                                <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                 <div id="disponibilidade" class="form-check form-switch" dir="ltr">
                                                     <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
-                                                        name="resposta-{{d.resposta_set.all.first.id }}" 
-                                                        {% if d.resposta_set.all.first.resposta == True %}
+                                                        name="resposta-{{r.id }}" 
+                                                        {% if r.resposta == True %}
                                                             checked
                                                         {% endif %}
                                                     >
                                                     <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                 </div>
+                                                {% endif %}
+                                                {% endfor %}
                                                 {% endfor %}
                                             </td>
                                             <td>
-                                                {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                {% if d.criterio == a.criterio %}
-                                                <div class="row mt-1">
-                                                    <div class="co-lg-12">
-                                                        <a onclick='add_link("form-link-{{a.id}}-{{d.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Link">
-                                                            <i class="mdi mdi-link-variant-plus"></i> Link
-                                                        </a>  
-                                                        <a onclick='MudarEstado("imagem-{{a.id}}-{{d.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Imagem">
-                                                            <i class="mdi mdi-image-plus"></i> Imagem
-                                                        </a>
+                                                <!--Faz o laço apenas no primeiro item da lista. Os links ficarão vinculados apenas no primeiro registro da lista de itens-->
+                                                <div class='input-group'>
+                                                    <div class="mb-3">
+                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
+                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
+                                                        {% for r in c.resposta_set.all %}
+                                                        {% if r.questionario.id == questionario.id %}
+                                                        {% if r.linkevidencia_set.all %}
+                                                        {% for link in r.linkevidencia_set.all %}
+                                                            <label for="links" class="form-label">Links</label>
+                                                            <input class="hidden" name="id_link-{{r.id}}" value="{{link.id}}">
+                                                            <textarea id="links" class="form-control" rows="4" cols="50" name="link-{{r.id}}">{{link.link}}</textarea>
+                                                        {% endfor %}
+                                                        {% else %}
+                                                            <label for="links" class="form-label">Links</label>
+                                                            <textarea id="links" class="form-control" rows="4" cols="50" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
+                                                        {% endif %}
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                        {% endfor %}
+                                                        {% endfor %}
                                                     </div>
                                                 </div>
-                                                <div id="form-link-{{a.id}}-{{d.id}}">
-                                                </div>
                                                 <div class='input-group'>
-                                                <input type="file" class="form-control-sm mt-2" id="imagem-{{a.id}}-{{d.id}}" name="imagens" 
-                                                    multiple style="display: none;">
-                                                </div>
-                                                {% endif %}
-                                                {% endfor %}                                              
+                                                    <div class="popup-gallery mt-2">
+                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
+                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
+                                                        {% for r in c.resposta_set.all %}
+                                                        {% if r.questionario.id == questionario.id %}
+                                                        {% if r.imagemevidencia_set.all %}
+                                                        {% for img in r.imagemevidencia_set.all %}
+                                                            <label for="imagem" class="form-label">Imagem</label>
+                                                            <a  href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                <div class="img-fluid">
+                                                                    <img src="{{ img.imagem.url }}" alt="img-1" width="100">
+                                                                </div>
+                                                            </a>
+                                                            <spam>Substiuir imagem</spam>
+                                                            <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
+                                                            <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" >
+                                                        {% endfor %}
+                                                        {% else %}
+                                                    </div>
+                                                    <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
+                                                    <div class='input-group'>
+                                                        <label for="imagem" class="form-label">Imagem</label>
+                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" >
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                    {% endfor %}
+                                                </div>                                   
                                             </td>
                                         </tr>
                                         {% endif %}
@@ -156,6 +179,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
         <script src="{% static 'stepform/js/script.js' %}"></script>
         <script src="{% static 'js/link_evidencia.js' %}"></script>
+        <!-- Magnific Popup-->
+        <script src="{% static 'assets/libs/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+        <!-- lightbox init js-->
+        <script src="{% static 'assets/js/pages/lightbox.init.js' %}"></script>
 
 {% endblock 'script' %}
 

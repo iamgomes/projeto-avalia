@@ -1,40 +1,65 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from . models import Avaliacao
-from questionarios.models import Questionario
+from questionarios.models import Questionario, Tramitacao
 from validacoes.models import Validacao
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .forms import TramitacaoForm
+from django.core import serializers
+import json
 
 
 @login_required
 def avaliacao(request):
-    questionarios = Questionario.objects.all()
-    avaliacoes_recebidas = Questionario.objects.all().count()
+    if request.method == 'GET':
+        questionarios = Questionario.objects.all()
+        avaliacoes_recebidas = Questionario.objects.all().count()
+        form = TramitacaoForm()
+        setores = Tramitacao.SETOR_CHOICES
+        motivos = []
+        
+        return render(request, 'avaliacoes.html', {'questionarios':questionarios, 
+                                                   'avaliacoes_recebidas':avaliacoes_recebidas, 
+                                                   'form':form,
+                                                   'setores':setores,
+                                                   'motivos':motivos})
     
-    return render(request, 'avaliacoes.html', {'questionarios':questionarios, 'avaliacoes_recebidas':avaliacoes_recebidas})
+    if request.method == 'POST':
+        form = TramitacaoForm(request.POST)
+        if form.is_valid():
+            tramitacao = form.save(commit=False)
+            tramitacao.usuario_id = request.user.id
+            tramitacao.questionario_id = request.POST.get('id_questionario')
+            tramitacao.save()
+            
+        messages.success(request, "Questionário tramitado com sucesso!")
+        return redirect(reverse('avaliacao'))
 
 
 @login_required
-def envia_para_validacao(request, id):
-    avaliacao = get_object_or_404(Questionario, pk=id)
+def load_motivos(request):
+    setor_id = request.GET.get('setor')
 
-    avaliacao.status = 'A'
-    avaliacao.save()
+    if setor_id == 'C':
+        motivos = Tramitacao.MOTIVO_CHOICES[0][1]
+    if setor_id == 'T':
+        motivos = Tramitacao.MOTIVO_CHOICES[1][1]
+    if setor_id == 'A':
+        motivos = Tramitacao.MOTIVO_CHOICES[2][1]
 
-    messages.success(request, "Parabéns! Sua avaliação foi enviada para validação.")
+    return render(request, 'load_motivos.html', {'motivos':motivos})
 
-    return redirect(reverse('avaliacao'))
-    
 
 @login_required
 def minhas_avaliacoes(request):
-    questionario = Questionario.objects.filter(usuario=request.user)
+    questionarios = Questionario.objects.filter(usuario=request.user)
     validacoes = Validacao.objects.filter(usuario=request.user)
     
-    return render(request, 'minhas_avaliacoes.html', {'questionario':questionario, 'validacoes':validacoes})
+    return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios, 'validacoes':validacoes})
+
 
 
 def handler404(request, exception):

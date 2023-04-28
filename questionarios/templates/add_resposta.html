@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load filters %}
 
+{% block 'title' %}Add Resposta Questionários{% endblock 'title' %}
 
 {% block 'head' %}
 
         <link href="{% static 'stepform/css/jquery.steps.css' %}" rel="stylesheet">
         <link href="{% static 'stepform/css/main.css' %}" rel="stylesheet">
-
+        <style>white-space: pre-wrap;</style>
 {% endblock 'head' %}
 
 
@@ -57,27 +57,9 @@
                                                     {{ a.criterio_texto }} <span class="badge bg-primary">{{ a.get_exigibilidade_display }}</span>
                                                     </a>
                                                 
-                                                    <!-- sample modal content -->
-                                                    <div id="CriterioInformação-{{a.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="myModalLabel">
-                                                                        <i class="mdi mdi-information"></i>
-                                                                        {{a.criterio_texto}} ({{a.get_exigibilidade_display}})
-                                                                    </h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <p>{{a.descricao}}</p>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
-                                                                </div>
-                                                            </div><!-- /.modal-content -->
-                                                        </div><!-- /.modal-dialog -->
-                                                    </div><!-- /.modal -->
-
+                                                    <!--Modal-->
+                                                    {% include 'modal_descricao.html' %}
+                                                    
                                                 </p>
                                             </td>
                                             <td class="align-middle">
@@ -90,21 +72,17 @@
                                             </td>
                                             <td>
                                                 {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                <div class="row mt-1">
-                                                    <div class="co-lg-12">
-                                                        <a onclick='add_link("form-link-{{a.id}}-{{d.id}}", "{{a.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Link">
-                                                            <i class="mdi mdi-link-variant-plus"></i> Link
-                                                        </a>  
-                                                        <a onclick='MudarEstado("imagem-{{a.id}}-{{d.id}}")' class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Add Imagem">
-                                                            <i class="mdi mdi-image-plus"></i> Imagem
-                                                        </a>
+                                                <div class='input-group'>
+                                                    <div class="mb-3">
+                                                        <label for="links" class="form-label">Links</label>
+                                                        <textarea id="links" class="form-control" rows="4" cols="200" name="link-{{a.id}}" placeholder="Insira um link por linha."></textarea>
                                                     </div>
                                                 </div>
-                                                <div id="form-link-{{a.id}}-{{d.id}}">
-                                                </div>
                                                 <div class='input-group'>
-                                                <input type="file" class="form-control-sm mt-2" id="imagem-{{a.id}}-{{d.id}}" name="imagem-{{a.id}}-{{d.id}}" 
-                                                    style="display: none;">
+                                                    <div class="mb-3">
+                                                        <label for="imagem" class="form-label">Imagem</label>
+                                                        <input type="file" id="imagem" class="form-control-sm" name="imagem-{{a.id}}-{{d.id}}" >
+                                                    </div>
                                                 </div>
                                                 {% endfor %}                                              
                                             </td>

@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
 
-urlpatterns = [
+urlpatterns = [    
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('usuarios/', include('usuarios.urls')),
@@ -17,6 +17,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
     path('password_change_done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
+    path('chaining/', include('smart_selects.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = 'avaliacoes.views.handler404'

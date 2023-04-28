@@ -1,8 +1,8 @@
-from django.forms import ModelForm
-from . models import Resposta
+from django import forms
+from questionarios.models import Tramitacao
 
-class RespostaForm(ModelForm):
+class TramitacaoForm(forms.ModelForm):
     class Meta:
-        model = Resposta
+        model = Tramitacao
         #fields = '__all__'
-        exclude = ['questionario', 'criterio']
+        exclude = ['usuario','questionario']

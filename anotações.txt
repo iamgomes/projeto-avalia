@@ -1,2 +1,5 @@
 Comando para gerar diagrama de classe
 python manage.py graph_models --pydot -a -g -o meu_diagrama.png
+
+Django Server Error: port is already in use
+lsof -t -i tcp:8000 | xargs kill -9
