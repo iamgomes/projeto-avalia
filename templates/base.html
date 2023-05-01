@@ -19,7 +19,6 @@
         <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css"/>
         <!-- App Css-->
         <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
         {% block 'head' %}{% endblock 'head' %}
@@ -201,7 +200,7 @@
                                 <!-- item-->
                                 <a class="dropdown-item" href="{% url 'perfil' %}"><i class="ri-user-line align-middle me-1"></i>Perfil</a>
                                 <a class="dropdown-item" href="{% url 'password_change' %}"><i class="ri-lock-password-fill align-middle me-1"></i>Alterar senha</a>
-                                <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class="ri-bill-fill me-1"></i>Minhas avaliaçõoes</a>
+                                <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class="ri-bill-fill me-1"></i>Minhas avaliações</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="ri-shut-down-line align-middle me-1 text-danger"></i>Sair</a>
                             </div>
@@ -229,9 +228,9 @@
                                             <i class="ri-file-copy-2-line me-2"></i>Avaliações <div class="arrow-down"></div>
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="topnav-apps">
-
                                             <a href="#" class="dropdown-item">Avaliações disponíveis</a>
-                                            <a href="{% url 'avaliacao' %}" class="dropdown-item">Questionários recebidos</a>
+                                            <a href="{% url 'avaliacao' %}" class="dropdown-item">Todos Questionários Recebidos</a>
+                                            <a href="{% url 'avaliacoes_setor' %}" class="dropdown-item">Avaliações no meu setor</a>
                                         </div>
                                     </li>
                                 
@@ -277,6 +276,8 @@
         <div class="rightbar-overlay"></div>
 
         <!-- JAVASCRIPT -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
         <script src="{% static  'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
         <script src="{% static  'assets/libs/metismenu/metisMenu.min.js' %}"></script>
         <script src="{% static  'assets/libs/simplebar/simplebar.min.js' %}"></script>

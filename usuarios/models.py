@@ -6,7 +6,8 @@ from smart_selects.db_fields import ChainedManyToManyField
 class User(AbstractUser):
     FUNCAO_CHOICES = (
         ('C', 'Controlador Interno'),
-        ('A', 'Auditor')
+        ('T', 'Tribunal de Contas'),
+        ('A', 'Atricon')
     )
     
     funcao = models.CharField(max_length=1, choices=FUNCAO_CHOICES, default='C')

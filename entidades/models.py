@@ -6,6 +6,7 @@ class Municipio(models.Model):
     ibge = models.CharField(max_length=7, unique=True, primary_key=True) # chave primária da tabela
     nome = models.CharField(max_length=200)
     uf = models.CharField(max_length=2, choices=UfChoices.choices)
+    capital = models.BooleanField(default=False)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 

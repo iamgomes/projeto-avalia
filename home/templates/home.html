@@ -186,6 +186,7 @@
                     <table class="table table-centered mb-0 align-middle table-hover table-nowrap">
                         <thead class="table-light">
                             <tr>
+                                <th>ID</th>
                                 <th>Exercício</th>
                                 <th>Unidade Gestora</th>
                                 <th>Nota</th>
@@ -196,6 +197,7 @@
                         <tbody>
                             {% for q in questionarios  %}
                             <tr>
+                                <td>{{ q.id }}/{{ q.avaliacao.ano_exercicio}}</td>
                                 <td>{{ q.avaliacao.ano_exercicio }}</td>
                                 <td>
                                     <h6 class="mb-0">{{ q.entidade }}</h6>

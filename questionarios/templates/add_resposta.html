@@ -8,6 +8,7 @@
         <link href="{% static 'stepform/css/jquery.steps.css' %}" rel="stylesheet">
         <link href="{% static 'stepform/css/main.css' %}" rel="stylesheet">
         <style>white-space: pre-wrap;</style>
+
 {% endblock 'head' %}
 
 
@@ -64,15 +65,23 @@
                                             </td>
                                             <td class="align-middle">
                                                 {% for d in a.itens_avaliacao.all  %}
-                                                <div id="disponibilidade" class="form-check form-switch" dir="ltr">
-                                                    <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
+                                                <div class="form-check form-switch" dir="ltr">
+                                                    <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
                                                     <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                 </div>
+                                                <script>
+                                                $(document).ready(function(){
+                                                    $('#disponibilidade-{{a.id}}').on('click',function() {
+                                                       $("#box-{{a.id}}").toggle(this.checked);
+                                                   });
+                                               });
+                                                </script>
+
                                                 {% endfor %}
                                             </td>
                                             <td>
                                                 {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                <div class='input-group'>
+                                                <div id="box-{{a.id}}" class='input-group' style="display:none">
                                                     <div class="mb-3">
                                                         <label for="links" class="form-label">Links</label>
                                                         <textarea id="links" class="form-control" rows="4" cols="200" name="link-{{a.id}}" placeholder="Insira um link por linha."></textarea>
@@ -125,7 +134,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
         <script src="{% static 'stepform/js/script.js' %}"></script>
-        <script src="{% static 'js/link_evidencia.js' %}"></script>
 
 {% endblock 'script' %}
 

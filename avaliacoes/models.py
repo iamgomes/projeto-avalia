@@ -18,6 +18,8 @@ class Avaliacao(models.Model):
     descricao = models.TextField(null=True,blank=True)
     data_inicial = models.DateTimeField(null=True, blank=True)
     data_final = models.DateTimeField(null=True, blank=True)
+    data_inicial_validacao= models.DateTimeField(null=True, blank=True)
+    data_final_validacao = models.DateTimeField(null=True, blank=True)
     ativo = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
