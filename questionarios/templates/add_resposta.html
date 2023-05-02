@@ -69,12 +69,20 @@
                                                     <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
                                                     <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                 </div>
+                                                
                                                 <script>
                                                 $(document).ready(function(){
+                                                    var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
+                                                    var $link = document.getElementById('link-{{a.id}}');
                                                     $('#disponibilidade-{{a.id}}').on('click',function() {
-                                                       $("#box-{{a.id}}").toggle(this.checked);
+                                                    $("#box-{{a.id}}").toggle(this.checked);
+                                                    if ($activeBtn.checked) {
+                                                        $link.required = true;
+                                                    }else{
+                                                        $link.required = false;
+                                                    }
                                                    });
-                                               });
+                                                });
                                                 </script>
 
                                                 {% endfor %}
@@ -83,8 +91,8 @@
                                                 {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                 <div id="box-{{a.id}}" class='input-group' style="display:none">
                                                     <div class="mb-3">
-                                                        <label for="links" class="form-label">Links</label>
-                                                        <textarea id="links" class="form-control" rows="4" cols="200" name="link-{{a.id}}" placeholder="Insira um link por linha."></textarea>
+                                                        <label for="link-{{a.id}}" class="form-label">Links</label>
+                                                        <textarea id="link-{{a.id}}" class="form-control" rows="4" cols="200" name="link-{{a.id}}" placeholder="Insira um link por linha."></textarea>
                                                     </div>
                                                 </div>
                                                 <div class='input-group'>
