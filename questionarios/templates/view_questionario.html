@@ -54,22 +54,29 @@
             </div>
         </div>
     </div>
-
+        
     <div class="col-xl-8">
-        <div class="card">
+        {% if questionario.resposta_set.all %}
+        <a href="{% url 'change_resposta' questionario.id %}" class="btn btn-primary d-inline" type="button" >
+            <i class="mdi mdi-pencil"></i> Editar Questionário
+        </a>
+        {% endif %}
+        {% if questionario.valiadacao.respostavalidacao_set.all  %}
+        <a class="btn btn-primary d-inline" type="button" >
+            <i class="mdi mdi-pencil"></i> Editar Validação
+        </a>
+        {% endif %}
+        <div class="dropdown d-inline">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Exportar <i class="mdi mdi-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Excel</a>
+                <a class="dropdown-item" href="#">CSV</a>
+            </div>
+        </div>
+        <div class="card mt-3">
             <div class="card-body">
-                <div class="float-end d-none d-md-inline-block">
-                    <div class="dropdown card-header-dropdown">
-                        <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="text-muted"><i class="mdi mdi-file-export-outline me-1"></i>Exportar<i class="mdi mdi-chevron-down ms-1"></i></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">PDF</a>
-                            <a class="dropdown-item" href="#">Excel</a>
-                            <a class="dropdown-item" href="#">CSV</a>
-                        </div>
-                    </div>
-                </div>
 
                 <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ questionario.id }}/{{ questionario.avaliacao.ano_exercicio }}</i></h4>
                 <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
@@ -104,10 +111,10 @@
                                                 <div class="col-md-12">
                                                     <div class="card-body">
                                                         <h5 class="card-title">{{ a.id}} - {{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
-                         
+                        
                                                         <footer class="blockquote-footer font-size-15 m-0">
-                                                         Itens atendidos pela avaliação: <br>
-                                                           {% for c in a.criterioitem_set.all %}
+                                                        Itens atendidos pela avaliação: <br>
+                                                        {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
                                                                 {% if r.questionario.id == questionario.id %}
                                                                     {% if r.resposta == True %}
@@ -150,33 +157,33 @@
                                                                 {% endif %}
                                                                 {% endfor %}
                                                                 {% endfor %}
-                                                               </div>
+                                                            </div>
                                                         </footer>
                                                         <br>
                                                         <footer class="blockquote-footer font-size-15 m-0">
                                                             Itens atendidos pela validação do Tribunal: <br>
-                                                              {% for c in a.criterioitem_set.all %}
-                                                                   {% for r in c.respostavalidacao_set.all %}
-                                                                   {% if r.resposta_validacao == True %}
+                                                            {% for c in a.criterioitem_set.all %}
+                                                                {% for r in c.respostavalidacao_set.all %}
+                                                                {% if r.resposta_validacao == True %}
                                                                         <mark>{{c.item_avaliacao}}</mark>
                                                                     {% else %}
                                                                         <del>{{c.item_avaliacao}}</del>
                                                                     {% endif %}
-                                                                   {% endfor %}
-                                                               {% endfor %}
-   
-                                                               <p class="card-text">
-                                                                   <small >
-                                                                   {% for c in a.criterioitem_set.all %}
-                                                                       {% for r in c.respostavalidacao_set.all %}
-                                                                           {% for link in r.linkevidenciavalidacao_set.all %}
-                                                                               <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
-                                                                           {% endfor %}
-                                                                       {% endfor %}
-                                                                   {% endfor %}
-                                                                   </small>
-                                                               </p>
-                                                               <div class='input-group'>
+                                                                {% endfor %}
+                                                            {% endfor %}
+
+                                                            <p class="card-text">
+                                                                <small >
+                                                                {% for c in a.criterioitem_set.all %}
+                                                                    {% for r in c.respostavalidacao_set.all %}
+                                                                        {% for link in r.linkevidenciavalidacao_set.all %}
+                                                                            <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
+                                                                        {% endfor %}
+                                                                    {% endfor %}
+                                                                {% endfor %}
+                                                                </small>
+                                                            </p>
+                                                            <div class='input-group'>
                                                                 {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
                                                                 {% for img in r.imagemevidenciavalidacao_set.all %}
@@ -192,8 +199,8 @@
                                                                 {% endfor %}
                                                                 {% endfor %}
                                                                 {% endfor %}
-                                                               </div>
-                                                           </footer>
+                                                            </div>
+                                                        </footer>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">

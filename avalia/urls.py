@@ -22,3 +22,6 @@ urlpatterns = [
 
 handler404 = 'avaliacoes.views.handler404'
 handler500 = 'avaliacoes.views.handler500'
+
+admin.site.site_header = 'PNTP'
+admin.site.index_title = 'Administração'

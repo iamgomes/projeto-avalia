@@ -133,7 +133,7 @@ def add_resposta(request, id):
             
         messages.success(request, "Resposta cadastrada com sucesso!")
 
-        return redirect(reverse('avaliacao'))
+        return redirect(reverse('minhas_avaliacoes'))
     
 
 @login_required
@@ -201,4 +201,4 @@ def change_resposta(request, id):
 
         messages.success(request, "Resposta de avaliação alterada com sucesso!")
 
-        return redirect(reverse('avaliacao'))
+        return redirect(reverse('minhas_avaliacoes'))

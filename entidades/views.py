@@ -11,16 +11,17 @@ from django.urls import reverse
 
 class MunicipioBulk(LoginRequiredMixin, View):
     def get(self, request):
+        
         municipios_api = requests.get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios')
-        capitais = ['1200401','2704302','1302603','1600303','2927408','2304400','5300108','3205309','5208707',
-                    '2111300','3106200','5103403','1501402','2507507','2611606','2211001','4106902','3304557',
-                    '2408102','1100205','1400100','4314902','4205407','2800308','3550308','1721000']
+        capitais = [1200401,2704302,1302603,1600303,2927408,2304400,5300108,3205309,5208707,
+                    2111300,3106200,5103403,1501402,2507507,2611606,2211001,4106902,3304557,
+                    2408102,1100205,1400100,4314902,4205407,2800308,3550308,1721000]
         
         #Inserindo os municípios do Brasil
         lista_municipios = []
 
         for municipio in municipios_api.json():
-            if municipio in capitais:
+            if municipio['id'] in capitais:
                 m = Municipio(ibge=municipio['id'], nome=municipio['nome'], uf=municipio['microrregiao']['mesorregiao']['UF']['sigla'], capital=True)
                 lista_municipios.append(m)
             else:
@@ -34,7 +35,7 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_prefeituras = []
 
         for municipio in municipios:
-            if municipio.ibge != 5300108:
+            if municipio.ibge != '5300108':
                 nome = 'Prefeitura Municipal de {}'.format(municipio.nome)
                 entidade = Entidade(nome=nome, municipio=municipio, poder='E', esfera='M')
                 lista_prefeituras.append(entidade)
@@ -45,7 +46,7 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_camaras = []
 
         for municipio in municipios:
-            if municipio.ibge != 5300108:
+            if municipio.ibge != '5300108':
                 nome = 'Câmara Municipal de {}'.format(municipio.nome)
                 entidade = Entidade(nome=nome, municipio=municipio, poder='L', esfera='M')
                 lista_camaras.append(entidade)
@@ -56,8 +57,8 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_governo = []
 
         for municipio in municipios:
-            if municipio.capital == True and municipio.ibge != 5300108:
-                nome = 'Governo do Estado de {}'.format(municipio.nome)
+            if municipio.capital == True and municipio.ibge != '5300108':
+                nome = 'Governo do Estado de {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=nome, municipio=municipio, poder='E', esfera='E')
                 lista_governo.append(entidade)
         Entidade.objects.bulk_create(lista_governo)
@@ -67,8 +68,8 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_tces = []
 
         for municipio in municipios:
-            if municipio.capital == True and municipio.ibge != 5300108:
-                nome = 'Tribunal de Contas do Estado de {}'.format(municipio.nome)
+            if municipio.capital == True and municipio.ibge != '5300108':
+                nome = 'Tribunal de Contas do Estado de {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=nome, municipio=municipio, poder='T', esfera='E')
                 lista_tces.append(entidade)
         Entidade.objects.bulk_create(lista_tces)
@@ -78,8 +79,8 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_tjs = []
 
         for municipio in municipios:
-            if municipio.capital == True and municipio.ibge != 5300108:
-                nome = 'Tribunal de Justiça do Estado de {}'.format(municipio.nome)
+            if municipio.capital == True and municipio.ibge != '5300108':
+                nome = 'Tribunal de Justiça do Estado de {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=nome, municipio=municipio, poder='J', esfera='E')
                 lista_tjs.append(entidade)
         Entidade.objects.bulk_create(lista_tjs)
@@ -89,8 +90,8 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_assembleias = []
 
         for municipio in municipios:
-            if municipio.capital == True and municipio.ibge != 5300108:
-                nome = 'Assembleia Legislativa do Estado de {}'.format(municipio.nome)
+            if municipio.capital == True and municipio.ibge != '5300108':
+                nome = 'Assembleia Legislativa do Estado de {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=nome, municipio=municipio, poder='L', esfera='E')
                 lista_assembleias.append(entidade)
         Entidade.objects.bulk_create(lista_assembleias)
@@ -100,8 +101,8 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_defensorias = []
 
         for municipio in municipios:
-            if municipio.capital == True and municipio.ibge != 5300108:
-                nome = 'Defensoria Pública do Estado de {}'.format(municipio.nome)
+            if municipio.capital == True and municipio.ibge != '5300108':
+                nome = 'Defensoria Pública do Estado de {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=nome, municipio=municipio, poder='D', esfera='E')
                 lista_defensorias.append(entidade)
         Entidade.objects.bulk_create(lista_defensorias)
@@ -111,8 +112,8 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_mps = []
 
         for municipio in municipios:
-            if municipio.capital == True and municipio.ibge != 5300108:
-                nome = 'Ministério Público do Estado de {}'.format(municipio.nome)
+            if municipio.capital == True and municipio.ibge != '5300108':
+                nome = 'Ministério Público do Estado de {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=nome, municipio=municipio, poder='M', esfera='E')
                 lista_mps.append(entidade)
         Entidade.objects.bulk_create(lista_mps)
@@ -122,28 +123,28 @@ class MunicipioBulk(LoginRequiredMixin, View):
         lista_bsb = []
 
         for municipio in municipios:
-            if municipio.ibge == 5300108:
-                governo = 'Governo Distrital do {}'.format(municipio.nome)
-                entidade = Entidade(nome=governo, municipio=municipio, poder='E', esfera='D')
+            if municipio.capital == True and municipio.ibge == '5300108':
+                nome = 'Governo Distrital do {}'.format(municipio.get_uf_display())
+                entidade = Entidade(nome=nome, municipio=municipio, poder='E', esfera='D')
                 lista_bsb.append(entidade)
 
-                defensoria = 'Defensoria Pública Distrital do {}'.format(municipio.nome)
+                defensoria = 'Defensoria Pública Distrital do {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=defensoria, municipio=municipio, poder='D', esfera='D')
                 lista_bsb.append(entidade)
 
-                tc = 'Tribunal de Contas Distrital do {}'.format(municipio.nome)
+                tc = 'Tribunal de Contas Distrital do {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=tc, municipio=municipio, poder='T', esfera='D')
                 lista_bsb.append(entidade)
 
-                tj = 'Tribunal de Justiça Distrital do {}'.format(municipio.nome)
+                tj = 'Tribunal de Justiça Distrital do {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=tj, municipio=municipio, poder='J', esfera='D')
                 lista_bsb.append(entidade)
 
-                mp = 'Ministério Público Distrital do {}'.format(municipio.nome)
+                mp = 'Ministério Público Distrital do {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=mp, municipio=municipio, poder='M', esfera='D')
                 lista_bsb.append(entidade)
 
-                camara = 'Câmara Legislativa do {}'.format(municipio.nome)
+                camara = 'Câmara Legislativa do {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=camara, municipio=municipio, poder='L', esfera='D')
                 lista_bsb.append(entidade)
 
@@ -174,8 +175,7 @@ class MunicipioBulk(LoginRequiredMixin, View):
                 senado = 'Senado Federal'
                 entidade = Entidade(nome=senado, municipio=municipio, poder='L', esfera='F')
                 lista_bsb.append(entidade)
-
         Entidade.objects.bulk_create(lista_bsb)
-        messages.success(request, "UGs Distritais e Federais Inseridas com sucesso!")
+        messages.success(request, "Governo Distrital e Federal inseridos com sucesso!")
 
         return redirect(reverse('home'))

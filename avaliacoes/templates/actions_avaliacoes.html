@@ -1,0 +1,14 @@
+{% if not q.resposta_set.all %}
+    {% if not q.status == 'NS' %}
+    <a href="{% url 'add_resposta' q.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder">
+        <i class="mdi mdi-file-document-edit font-size-16"></i>
+    </a>
+    {% endif %}
+{% endif %}
+    <a type="buton" class="btn btn-info waves-effect waves-light btn-sm" data-bs-toggle="modal" data-bs-target="#tramitacao-{{q.id}}" 
+        data-toggle="tooltip" title="Tramitar">
+        <i class="mdi mdi-arrow-right-circle font-size-16"></i>
+    </a>
+    <a onclick='delete_questionario({{q.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
+        <i class="mdi mdi-trash-can font-size-16"></i>
+    </a>

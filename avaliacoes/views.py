@@ -82,16 +82,35 @@ def load_motivos(request):
 
 @login_required
 def minhas_avaliacoes(request):
-    questionarios = Questionario.objects.filter(usuario=request.user)
-    validacoes = Validacao.objects.filter(usuario=request.user)
+    if request.method == 'GET':
+        questionarios = Questionario.objects.filter(usuario=request.user)
+        validacoes = Validacao.objects.filter(usuario=request.user)
+        form = TramitacaoForm()
+        setores = Tramitacao.SETOR_CHOICES
+        motivos = []
     
-    return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios, 'validacoes':validacoes})
+        return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios, 
+                                                          'validacoes':validacoes,
+                                                            'form':form,
+                                                            'setores':setores,
+                                                            'motivos':motivos,})
+    if request.method == 'POST':
+        form = TramitacaoForm(request.POST)
+        if form.is_valid():
+            tramitacao = form.save(commit=False)
+            tramitacao.usuario_id = request.user.id
+            tramitacao.questionario_id = request.POST.get('id_questionario')
+            tramitacao.save()
+            
+        messages.success(request, "Questionário tramitado com sucesso!")
+        return redirect(reverse('minhas_avaliacoes'))
 
 
 @login_required
 def avaliacoes_setor(request):
     questionarios = Questionario.objects.filter(entidade__municipio__uf=request.user.municipio.uf).\
         filter(pk__in=Tramitacao.objects.filter(setor=request.user.funcao).values_list('questionario', flat=True))
+    avaliacoes_recebidas = questionarios.count()
     validacoes = Validacao.objects.filter(usuario=request.user)
     municipios = Municipio.objects.filter(pk__in=questionarios.values_list('entidade__municipio', flat=True))
     entidades =  Entidade.objects.filter(pk__in=questionarios.values_list('entidade', flat=True))
@@ -114,7 +133,8 @@ def avaliacoes_setor(request):
     if status_filtro != '' and status_filtro is not None:
         questionarios = questionarios.filter(status=status_filtro)
     
-    return render(request, 'avaliacoes_setor.html', {'questionarios':questionarios, 
+    return render(request, 'avaliacoes_setor.html', {'questionarios':questionarios,
+                                                     'avaliacoes_recebidas':avaliacoes_recebidas, 
                                                     'validacoes':validacoes,
                                                     'municipios':municipios,
                                                     'entidades':entidades,
