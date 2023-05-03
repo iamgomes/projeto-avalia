@@ -18,9 +18,13 @@ class CriterioAdmin(admin.ModelAdmin):
 
 admin.site.register(Criterio, CriterioAdmin)
 
+class CriterioItemAdmin(admin.ModelAdmin):
+    list_display = ['criterio', 'item_avaliacao']
+
+admin.site.register(CriterioItem, CriterioItemAdmin)
+
 admin.site.register(Dimensao)
 admin.site.register(ImagemEvidencia)
 admin.site.register(ItemAvaliacao)
 admin.site.register(LinkEvidencia)
-admin.site.register(CriterioItem)
 admin.site.register(Tramitacao)
