@@ -41,9 +41,8 @@
                                 <table class="table table-striped mb-0">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th>Critério</th>
-                                            <th>Itens de Avaliação</th>
+                                            <th># Critério</th>
+                                            <th class="w-25">Itens de Avaliação</th>
                                             <th class="w-25">Evidências</th>
                                         </tr>
                                     </thead>
@@ -51,7 +50,6 @@
                                         {% for a in questionario.avaliacao.criterio_set.all %}
                                         {% if a.dimensao == u.dimensao %}
                                         <tr>
-                                            <td class="align-middle">{{ a.id }}</td>
                                             <td class="align-middle">
                                                 <p>
                                                     <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#CriterioInformação-{{a.id}}" data-toggle="tooltip" >
