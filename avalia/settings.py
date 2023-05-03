@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'avaliacoes',
     'questionarios',
     'validacoes',
-
+    ##APP terceiros
     'django_extensions',
     'widget_tweaks',
     'smart_selects',
