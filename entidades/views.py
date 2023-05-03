@@ -1,7 +1,6 @@
 from django.shortcuts import render
 import requests
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 from django.http import HttpResponse
 from .models import Municipio, Entidade
 from django.views.generic import View
@@ -10,21 +9,17 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 import time
+from entidades.municipios_ibge import municipios
+import json
 
-
+municipios = municipios()
 
 class MunicipioBulk(LoginRequiredMixin, View):
+    
     def get(self, request):
 
-        url = 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios'
-        
-        headers={
-            'Referer': 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
-            }
-
-        url = requests.get(url, headers=headers)
-
+        #url = 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios'
+        #response = requests.get(url)
         capitais = [1200401,2704302,1302603,1600303,2927408,2304400,5300108,3205309,5208707,
                     2111300,3106200,5103403,1501402,2507507,2611606,2211001,4106902,3304557,
                     2408102,1100205,1400100,4314902,4205407,2800308,3550308,1721000]
@@ -32,7 +27,9 @@ class MunicipioBulk(LoginRequiredMixin, View):
         #Inserindo os municípios do Brasil
         lista_municipios = []
 
-        for municipio in url.json():
+        global municipios
+
+        for municipio in municipios:
             if municipio['id'] in capitais:
                 m = Municipio(ibge=municipio['id'], nome=municipio['nome'], uf=municipio['microrregiao']['mesorregiao']['UF']['sigla'], capital=True)
                 lista_municipios.append(m)
