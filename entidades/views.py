@@ -12,7 +12,7 @@ from django.urls import reverse
 class MunicipioBulk(LoginRequiredMixin, View):
     def get(self, request):
         
-        municipios_api = requests.get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios')
+        municipios_api = requests.get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios', verify=False)
         capitais = [1200401,2704302,1302603,1600303,2927408,2304400,5300108,3205309,5208707,
                     2111300,3106200,5103403,1501402,2507507,2611606,2211001,4106902,3304557,
                     2408102,1100205,1400100,4314902,4205407,2800308,3550308,1721000]
