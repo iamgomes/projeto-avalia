@@ -35,11 +35,22 @@ class Criterio(models.Model):
         ('R','Recomendado'),
     )
 
+    MATRIZ_CHOICES = (
+        ('C','Comum'),
+        ('E','Executivo'),
+        ('L','Legislativo'),
+        ('J','Judiciário'),
+        ('T','Tribunal de Contas'),
+        ('M','Ministério Púbico'),
+        ('D','Defensoria Pública'),
+    )
+
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE)
     dimensao = models.ForeignKey(Dimensao, on_delete=models.CASCADE)
     criterio_texto = models.CharField(max_length=200)
     itens_avaliacao = models.ManyToManyField(ItemAvaliacao, through='CriterioItem')
     exigibilidade = models.CharField(max_length=1, choices=EXIGIBILIDADE_CHOICES)
+    matriz = models.CharField(max_length=1, choices=MATRIZ_CHOICES)
     descricao = models.TextField(null=True,blank=True)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
