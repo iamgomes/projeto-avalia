@@ -66,8 +66,9 @@ def change_foto(request):
     
     if request.method == 'POST':
         if len(request.FILES) != 0:
-            if len(user.foto) > 0:
-                os.remove(user.foto.path)     
+            if user.foto:
+                if len(user.foto) > 0:
+                    os.remove(user.foto.path)     
             user.foto = request.FILES['foto']
         user.save()   
 
