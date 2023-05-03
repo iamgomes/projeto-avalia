@@ -17,7 +17,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com']
+ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com', 'servicodados.ibge.gov.br/api/v1/localidades/municipios']
 
 AUTH_USER_MODEL = 'usuarios.User'
 

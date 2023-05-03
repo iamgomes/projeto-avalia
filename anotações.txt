@@ -6,3 +6,4 @@ lsof -t -i tcp:8000 | xargs kill -9
 
 Tags Anotadas Github
 git tag -a v0.1 -m "version 0.1"
+git push origin v0.1
