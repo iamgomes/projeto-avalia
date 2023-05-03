@@ -78,7 +78,7 @@ def delete_questionario(request, id):
     questionario = get_object_or_404(Questionario, pk=id)
     questionario.delete()
     
-    return redirect(reverse('avaliacao'))
+    return redirect(reverse('minhas_avaliacoes'))
 
 
 @login_required

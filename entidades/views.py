@@ -132,7 +132,7 @@ class MunicipioBulk(LoginRequiredMixin, View):
                 entidade = Entidade(nome=defensoria, municipio=municipio, poder='D', esfera='D')
                 lista_bsb.append(entidade)
 
-                tc = 'Tribunal de Contas Distrital do {}'.format(municipio.get_uf_display())
+                tc = 'Tribunal de Contas do {}'.format(municipio.get_uf_display())
                 entidade = Entidade(nome=tc, municipio=municipio, poder='T', esfera='D')
                 lista_bsb.append(entidade)
 
@@ -152,7 +152,7 @@ class MunicipioBulk(LoginRequiredMixin, View):
                 entidade = Entidade(nome=presidencia, municipio=municipio, poder='E', esfera='F')
                 lista_bsb.append(entidade)
 
-                defensoria = 'Defensoria Pública Federal'
+                defensoria = 'Defensoria Pública da União'
                 entidade = Entidade(nome=defensoria, municipio=municipio, poder='D', esfera='F')
                 lista_bsb.append(entidade)
 

@@ -93,10 +93,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group mb-3 row">
-                                    <div class="col-12">
-                                        {% render_field form.email class="form-control" placeholder="E-mail" %}
-                                        {{ form.email.errors }}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            {% render_field form.email class="form-control" placeholder="E-mail" %}
+                                            {{ form.email.errors }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <input id="input-mask" name="celular" class="form-control input-mask" data-inputmask="'mask': '(99) 99999-9999'" placeholder="Celular">
+                                            {{ form.celular.errors }}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group mb-3 row">
@@ -156,6 +164,11 @@
         <script src="{% static  'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
         <script src="{% static 'assets/libs/select2/js/select2.min.js' %}"></script>
         <script src="{% static 'assets/js/pages/form-advanced.init.js' %}"></script>
+        <!-- form mask -->
+        <script src="{% static 'assets/libs/inputmask/jquery.inputmask.min.js' %}"></script>
+
+        <!-- form mask init -->
+        <script src="{% static 'assets/js/pages/form-mask.init.js' %}"></script>
     </body>
 </html>
 

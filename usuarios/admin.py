@@ -12,4 +12,5 @@ class UserAdmin(admin_auth_django.UserAdmin):
         ('Função', {'fields':('funcao',)}),
         ('Município', {'fields':('municipio', 'entidade',)}),
         ('Foto', {'fields':('foto',)}),
+        ('Celular', {'fields':('celular',)}),
     )

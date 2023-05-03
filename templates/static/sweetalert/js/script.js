@@ -12,7 +12,7 @@ function delete_questionario(id) {
     if (result.value) {
         Swal.fire({
         title: 'Excluído!',
-        text: 'O registro foi excluído com sucesso.',
+        text: 'O questionário foi excluído com sucesso.',
         icon: 'success',
         showConfirmButton: false
         });
@@ -32,11 +32,12 @@ function delete_questionario(id) {
     })
 }
 
-function envia_para_validacao(id) { 
+
+function delete_validacao(id) { 
     Swal.fire({
-        title: 'Tudo pronto?',
-        text: "Após o envio para validação, você não poderá mais editar as respostas.",
-        icon: 'question',
+        title: `Você tem certeza?`,
+        text: "Esta ação não poderá ser revertida.",
+        icon: 'warning',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#0f9cf3',
@@ -45,14 +46,14 @@ function envia_para_validacao(id) {
     }).then((result) => {
     if (result.value) {
         Swal.fire({
-        title: 'Enviada!',
-        text: 'Esta avaliação foi enviada para validação. Aguarde!',
+        title: 'Excluído!',
+        text: 'A validação foi excluído com sucesso.',
         icon: 'success',
         showConfirmButton: false
         });
         $.ajax({
         type:"GET",
-        url : `/avaliacoes/${id}/envia_para_validacao/`,
+        url : `/validacoes/${id}/delete/`,
         data:{
             id:id //id get from button delete
         },

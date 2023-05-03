@@ -14,4 +14,4 @@ class UserCreationForm(forms.UserCreationForm):
 
     class Meta(forms.UserCreationForm):
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'municipio', 'entidade', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'email', 'celular', 'municipio', 'entidade', 'password1', 'password2')

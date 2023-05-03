@@ -232,7 +232,9 @@
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="topnav-apps">
                                             <a href="#" class="dropdown-item">Avaliações disponíveis</a>
+                                            {% if user.funcao == 'A' or user.funcao == 'T' %}
                                             <a href="{% url 'avaliacoes_setor' %}" class="dropdown-item">Avaliações no meu setor</a>
+                                            {% endif %}
                                             {% if user.funcao == 'A' %}
                                                 <a href="{% url 'avaliacao' %}" class="dropdown-item">Todos Questionários Recebidos</a>
                                             {% endif %}

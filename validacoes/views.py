@@ -66,7 +66,7 @@ def add_resposta_validacao(request, id, id_validacao):
 
         messages.success(request, "Validação feita com sucesso!")
 
-        return redirect(reverse('avaliacao'))
+        return redirect(reverse('minhas_avaliacoes'))
 
 
 @login_required
@@ -134,4 +134,17 @@ def change_resposta_validacao(request, id):
 
         messages.success(request, "Resposta de validação alterada com sucesso!")
 
-        return redirect(reverse('avaliacao'))
+        return redirect(reverse('minhas_avaliacoes'))
+
+
+@login_required
+def delete_validacao(request, id):
+    validacao = get_object_or_404(Validacao, pk=id)
+    questionario = Questionario.objects.get(pk=validacao.questionario.id)
+
+    validacao.delete()
+
+    questionario.status = 'F'
+    questionario.save()
+    
+    return redirect(reverse('minhas_avaliacoes'))

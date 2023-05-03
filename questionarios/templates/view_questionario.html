@@ -61,7 +61,7 @@
             <i class="mdi mdi-pencil"></i> Editar Questionário
         </a>
         {% endif %}
-        {% if questionario.valiadacao.respostavalidacao_set.all  %}
+        {% if questionario.validacao.respostavalidacao_set.all  %}
         <a class="btn btn-primary d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Validação
         </a>
@@ -81,7 +81,7 @@
                 <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ questionario.id }}/{{ questionario.avaliacao.ano_exercicio }}</i></h4>
                 <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
                 <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ questionario.usuario.nome_completo }} ({{questionario.usuario.get_funcao_display}}) - {{ questionario.nota }} (Intermediário)</i></h5>
-                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} - {{ questionario.validacao.nota }} (Intermediário)</i></h5>
+                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} ({{questionario.validacao.usuario.get_funcao_display}}) - {{ questionario.validacao.nota }} (Intermediário)</i></h5>
 
                 {% if respostas %}
 

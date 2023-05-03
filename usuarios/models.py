@@ -18,6 +18,7 @@ class User(AbstractUser):
                                       auto_choose=False
                                       )
     foto = models.ImageField(upload_to='perfil/', null=True, blank=True)
+    celular = models.CharField(max_length=15, null=True, blank=True)
 
     def nome_completo(self):
         return '{} {}'.format(self.first_name, self.last_name)
