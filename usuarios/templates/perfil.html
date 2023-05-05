@@ -137,7 +137,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label>Celular</label>
-                                        <input type="text" class="form-control" required name="celular"
+                                        <input type="text" id="input-mask" class="form-control input-mask" data-inputmask="'mask': '(99) 99999-9999'" required name="celular"
                                             parsley-type="celular" value="{{ user.celular }}"/>
                                         <div class="valid-feedback">
                                             Tudo certo!
@@ -178,6 +178,11 @@
 
         <script src="{% static 'assets/libs/parsleyjs/parsley.min.js' %}"></script>
         <script src="{% static 'assets/js/pages/form-validation.init.js' %}"></script>
+        <!-- form mask -->
+        <script src="{% static 'assets/libs/inputmask/jquery.inputmask.min.js' %}"></script>
+
+        <!-- form mask init -->
+        <script src="{% static 'assets/js/pages/form-mask.init.js' %}"></script>
 
 {% endblock 'script' %}
 

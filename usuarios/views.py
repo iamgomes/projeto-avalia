@@ -46,10 +46,12 @@ def perfil(request):
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
+        celular = request.POST.get('celular')
 
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
+        user.celular = celular
         user.save()
 
         messages.success(request, "Usuário alterado com sucesso!")

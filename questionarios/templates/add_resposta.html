@@ -62,18 +62,18 @@
                                                 </p>
                                             </td>
                                             <td class="align-middle">
-                                                {% for d in a.itens_avaliacao.all  %}
+                                                {% for d in a.itens_avaliacao.all|slice:":1"  %}
                                                 <div class="form-check form-switch" dir="ltr">
                                                     <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
                                                     <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                 </div>
-                                                
                                                 <script>
                                                 $(document).ready(function(){
                                                     var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
                                                     var $link = document.getElementById('link-{{a.id}}');
                                                     $('#disponibilidade-{{a.id}}').on('click',function() {
                                                     $("#box-{{a.id}}").toggle(this.checked);
+                                                    $("#box2-{{a.id}}").toggle(this.checked);
                                                     if ($activeBtn.checked) {
                                                         $link.required = true;
                                                     }else{
@@ -82,8 +82,15 @@
                                                    });
                                                 });
                                                 </script>
-
                                                 {% endfor %}
+                                                <div id="box2-{{a.id}}" style="display:none">
+                                                    {% for d in a.itens_avaliacao.all|slice:"1:"  %}
+                                                    <div class="form-check form-switch" dir="ltr">
+                                                        <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
+                                                        <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
                                             </td>
                                             <td>
                                                 {% for d in a.itens_avaliacao.all|slice:":1" %}
