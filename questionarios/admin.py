@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Criterio, Questionario, Resposta, Dimensao, Tramitacao,\
-                    ImagemEvidencia, ItemAvaliacao, LinkEvidencia, CriterioItem
+                    ImagemEvidencia, ItemAvaliacao, LinkEvidencia, CriterioItem, JustificativaEvidencia
 
 
 class QuestionarioAdmin(admin.ModelAdmin):
@@ -25,6 +25,7 @@ admin.site.register(CriterioItem, CriterioItemAdmin)
 
 admin.site.register(Dimensao)
 admin.site.register(ImagemEvidencia)
+admin.site.register(JustificativaEvidencia)
 admin.site.register(ItemAvaliacao)
 admin.site.register(LinkEvidencia)
 admin.site.register(Tramitacao)

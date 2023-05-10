@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
-    CriterioItem, Tramitacao
+    CriterioItem, Tramitacao, JustificativaEvidencia
 from validacoes.models import RespostaValidacao, Validacao
 from usuarios.models import User
 from django.shortcuts import redirect, get_object_or_404
@@ -105,6 +105,7 @@ def add_resposta(request, id):
             for d in c.itens_avaliacao.all():
                 form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
                 imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
+                justificativa = request.POST.get('justificativa-{}-{}'.format(c.id, d.id))
 
                 criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
                 
@@ -122,11 +123,17 @@ def add_resposta(request, id):
                     resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id)
                     resposta.save()
 
-                    if imagens:
-                        if d.id == 1:
-                            for i in imagens:
-                                imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
-                                imagem_evidencia.save()
+                if imagens:
+                    if d.id == 1:
+                        for i in imagens:
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                            imagem_evidencia.save()
+
+                if justificativa:
+                    if d.id == 1:
+                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
+                        justifica.save()
+
                 
         questionario.status = 'F'
         questionario.save()

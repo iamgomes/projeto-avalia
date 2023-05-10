@@ -38,10 +38,11 @@
                         <h3>{{ u.dimensao }}</h3>
                         <section>
                             <div class="table-responsive">
-                                <table class="table table-striped mb-0">
+                                <table class="table table-striped align-middle mb-0">
                                     <thead>
                                         <tr>
-                                            <th># Critério</th>
+                                            <th># Cod.</th>
+                                            <th>Critério</th>
                                             <th class="w-25">Itens de Avaliação</th>
                                             <th class="w-25">Evidências</th>
                                         </tr>
@@ -50,7 +51,8 @@
                                         {% for a in questionario.avaliacao.criterio_set.all %}
                                         {% if a.dimensao == u.dimensao %}
                                         <tr>
-                                            <td class="align-middle">
+                                            <td>{{ a.cod }}</td>
+                                            <td>
                                                 <p>
                                                     <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#CriterioInformação-{{a.id}}" data-toggle="tooltip" >
                                                     {{ a.criterio_texto }} <span class="badge bg-primary">{{ a.get_exigibilidade_display }}</span>
@@ -61,29 +63,31 @@
                                                     
                                                 </p>
                                             </td>
-                                            <td class="align-middle">
+                                            <td>
                                                 {% for d in a.itens_avaliacao.all|slice:":1"  %}
                                                 <div class="form-check form-switch" dir="ltr">
                                                     <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
                                                     <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                 </div>
-                                                <script>
-                                                $(document).ready(function(){
-                                                    var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
-                                                    var $link = document.getElementById('link-{{a.id}}');
-                                                    $('#disponibilidade-{{a.id}}').on('click',function() {
-                                                    $("#box-{{a.id}}").toggle(this.checked);
-                                                    $("#box2-{{a.id}}").toggle(this.checked);
-                                                    if ($activeBtn.checked) {
-                                                        $link.required = true;
-                                                    }else{
-                                                        $link.required = false;
-                                                    }
-                                                   });
-                                                });
-                                                </script>
                                                 {% endfor %}
-                                                <div id="box2-{{a.id}}" style="display:none">
+                                                <script>
+                                                    $(document).ready(function(){
+                                                        var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
+                                                        var $link = document.getElementById('link-{{a.id}}');
+                                                        $('#disponibilidade-{{a.id}}').on('click',function() {
+                                                        $("#box-{{a.id}}").toggle(this.checked);
+                                                        $("#sub-{{a.id}}").toggle(this.checked);
+                                                        if ($activeBtn.checked) {
+                                                            $link.required = true;
+                                                        } else{
+                                                            $link.required = false;
+                                                            $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
+                                                            $('#link-{{a.id}}').val('');
+                                                        }
+                                                       });
+                                                    });
+                                                </script>
+                                                <div id="sub-{{a.id}}" style="display:none">
                                                     {% for d in a.itens_avaliacao.all|slice:"1:"  %}
                                                     <div class="form-check form-switch" dir="ltr">
                                                         <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" name="item_avaliacao-{{a.id}}-{{d.id}}">
@@ -103,7 +107,8 @@
                                                 <div class='input-group'>
                                                     <div class="mb-3">
                                                         <label for="imagem" class="form-label">Imagem</label>
-                                                        <input type="file" id="imagem" class="form-control-sm" name="imagem-{{a.id}}-{{d.id}}" >
+                                                        <input class="form-control" name="justificativa-{{a.id}}-{{d.id}}" placeholder="Justificativa">
+                                                        <input type="file" id="imagem" multiple class="form-control-sm mt-2" name="imagem-{{a.id}}-{{d.id}}" accept="image/png, image/jpeg" >
                                                     </div>
                                                 </div>
                                                 {% endfor %}                                              

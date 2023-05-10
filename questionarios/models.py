@@ -47,6 +47,7 @@ class Criterio(models.Model):
 
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE)
     dimensao = models.ForeignKey(Dimensao, on_delete=models.CASCADE)
+    cod = models.CharField(max_length=10)
     criterio_texto = models.CharField(max_length=200)
     itens_avaliacao = models.ManyToManyField(ItemAvaliacao, through='CriterioItem')
     exigibilidade = models.CharField(max_length=1, choices=EXIGIBILIDADE_CHOICES)
@@ -139,6 +140,13 @@ class LinkEvidencia(models.Model):
 class ImagemEvidencia(models.Model):
     resposta = models.ForeignKey(Resposta, on_delete=models.CASCADE)
     imagem = models.FileField(upload_to='imagem_evidencia')
+    created_at = models.DateField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateField(auto_now=True, auto_now_add=False)
+
+
+class JustificativaEvidencia(models.Model):
+    resposta = models.ForeignKey(Resposta, on_delete=models.CASCADE)
+    justificativa = models.TextField()
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
