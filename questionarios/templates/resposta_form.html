@@ -40,10 +40,11 @@
                         <h3>{{ u.dimensao }}</h3>
                         <section>
                             <div class="table-responsive">
-                                <table class="table table-striped mb-0">
+                                <table class="table table-striped align-middle mb-0">
                                     <thead>
                                         <tr>
-                                            <th># Critério</th>
+                                            <th># Cod.</th>
+                                            <th>Critério</th>
                                             <th class="w-25">Itens de Avaliação</th>
                                             <th class="w-25">Evidências</th>
                                         </tr>
@@ -52,7 +53,8 @@
                                         {% for a in questionario.avaliacao.criterio_set.all %}
                                         {% if a.dimensao == u.dimensao %}
                                         <tr>
-                                            <td class="align-middle">
+                                            <td>{{ a.cod }}</td>
+                                            <td>
                                                 <p>
                                                     <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#CriterioInformação-{{a.id}}" data-toggle="tooltip" >
                                                     {{ a.criterio_texto }} <span class="badge bg-primary">{{ a.get_exigibilidade_display }}</span>
@@ -63,12 +65,55 @@
 
                                                 </p>
                                             </td>
-                                            <td class="align-middle">
-                                                {% for d in a.criterioitem_set.all %}
+                                            <td>
+                                                {% for d in a.criterioitem_set.all|slice:":1" %}
                                                 {% for r in d.resposta_set.all %}
                                                 {% if r.questionario.id == questionario.id %}
                                                 <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
-                                                <div id="disponibilidade" class="form-check form-switch" dir="ltr">
+                                                <div class="form-check form-switch" dir="ltr">
+                                                    <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
+                                                        name="resposta-{{r.id }}" 
+                                                        {% if r.resposta == True %}
+                                                            checked
+                                                        {% endif %}
+                                                    >
+                                                    <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
+                                                </div>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endfor %}
+                                                <script>
+                                                    $(document).ready(function(){
+                                                        var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
+                                                        var $link = document.getElementById('link-{{a.id}}');
+                                                        $("#sub-{{a.id}}").hide();
+                                                        $("#box-{{a.id}}").hide();
+                                                            if ($activeBtn.checked) {
+                                                                $("#sub-{{a.id}}").show();
+                                                                $("#box-{{a.id}}").show();
+                                                            } else{
+                                                                $("#sub-{{a.id}}").hide();
+                                                                $("#box-{{a.id}}").hide();
+                                                            }                                                        
+                                                        $('#disponibilidade-{{a.id}}').on('click',function() {
+                                                            if($(this).is(":checked")) {
+                                                                $("#sub-{{a.id}}").show();
+                                                                $("#box-{{a.id}}").show();
+                                                            } else {
+                                                                $("#sub-{{a.id}}").hide();
+                                                                $("#box-{{a.id}}").hide();
+                                                                $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
+                                                                $('#link-{{a.id}}').val('');
+                                                            }
+                                                       });
+                                                    });
+                                                </script>
+                                                <div id="sub-{{a.id}}">
+                                                {% for d in a.criterioitem_set.all|slice:"1:" %}
+                                                {% for r in d.resposta_set.all %}
+                                                {% if r.questionario.id == questionario.id %}
+                                                <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
+                                                <div class="form-check form-switch" dir="ltr">
                                                     <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
                                                         name="resposta-{{r.id }}" 
                                                         {% if r.resposta == True %}
@@ -80,9 +125,11 @@
                                                 {% endif %}
                                                 {% endfor %}
                                                 {% endfor %}
+                                                </div>
                                             </td>
                                             <td>
                                                 <!--Faz o laço apenas no primeiro item da lista. Os links ficarão vinculados apenas no primeiro registro da lista de itens-->
+                                                <div id="box-{{a.id}}">
                                                 <div class='input-group'>
                                                     <div class="mb-3">
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
@@ -91,13 +138,13 @@
                                                         {% if r.questionario.id == questionario.id %}
                                                         {% if r.linkevidencia_set.all %}
                                                         {% for link in r.linkevidencia_set.all %}
-                                                            <label for="links" class="form-label">Links</label>
+                                                            <label for="link-{{a.id}}" class="form-label">Links</label>
                                                             <input class="hidden" name="id_link-{{r.id}}" value="{{link.id}}">
-                                                            <textarea id="links" class="form-control" rows="4" cols="50" name="link-{{r.id}}">{{link.link}}</textarea>
+                                                            <textarea id="link-{{a.id}}" class="form-control" rows="3" cols="200" name="link-{{r.id}}" placeholder="Insira um link por linha.">{{link.link}}</textarea>
                                                         {% endfor %}
                                                         {% else %}
                                                             <label for="links" class="form-label">Links</label>
-                                                            <textarea id="links" class="form-control" rows="4" cols="50" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
+                                                            <textarea id="links" class="form-control" rows="3" cols="200" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
                                                         {% endif %}
                                                         {% endif %}
                                                         {% endfor %}
@@ -105,15 +152,30 @@
                                                         {% endfor %}
                                                     </div>
                                                 </div>
-                                                <div class='input-group'>
+                                                </div>
+                                                <div class='row'>
                                                     <div class="popup-gallery mt-2">
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.resposta_set.all %}
                                                         {% if r.questionario.id == questionario.id %}
+                                                            {% if r.justificativaevidencia_set.all %}
+                                                            {% for j in r.justificativaevidencia_set.all %}
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Justificativa</label>
+                                                                <input class="hidden" name="id_justificativa-{{r.id}}" value="{{j.id}}">
+                                                                <textarea rows="3" cols="200" class="form-control" name="justificativa-{{r.id}}" placeholder="Justifique aqui.">{{j.justificativa}}</textarea>
+                                                            </div>
+                                                            {% endfor %}
+                                                            {% else %}
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Justificativa</label>
+                                                                <textarea rows="3" cols="200" class="form-control" name="justificativa_novo-{{r.id}}" placeholder="Justifique aqui."></textarea>
+                                                            </div>
+                                                            {% endif %}
                                                         {% if r.imagemevidencia_set.all %}
+                                                        <label for="imagem" class="form-label">Imagem</label>
                                                         {% for img in r.imagemevidencia_set.all %}
-                                                            <label for="imagem" class="form-label">Imagem</label>
                                                             <a  href="{{ img.imagem.url }}" title="{{ img.imagem }}">
                                                                 <div class="img-fluid">
                                                                     <img src="{{ img.imagem.url }}" alt="img-1" width="100">
@@ -122,14 +184,16 @@
                                                             <spam>Substiuir imagem</spam>
                                                             <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
                                                             <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" >
+                                                            <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                         {% endfor %}
                                                         {% else %}
                                                     </div>
-                                                    <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
-                                                    <div class='input-group'>
-                                                        <label for="imagem" class="form-label">Imagem</label>
-                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" >
-                                                    </div>
+                                                        <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
+                                                        <div class="mb-3">
+                                                            <label for="imagem" class="form-label">Imagem</label>
+                                                            <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" >
+                                                            <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                        </div>
                                                     {% endif %}
                                                     {% endif %}
                                                     {% endfor %}

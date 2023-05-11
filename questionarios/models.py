@@ -150,6 +150,9 @@ class JustificativaEvidencia(models.Model):
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
+    def __str__(self):
+        return str(self.justificativa)
+
 
 class Tramitacao(models.Model):
     SETOR_CHOICES = (

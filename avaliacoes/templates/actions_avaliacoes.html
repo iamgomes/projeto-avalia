@@ -5,6 +5,11 @@
     </a>
     {% endif %}
 {% endif %}
+{% if q.status == 'F' or q.status == 'E' %}
+<a href="{% url 'change_resposta' q.id %}" class="btn btn-warning waves-effect waves-light btn-sm" data-toggle="tooltip" title="Editar Validação">
+    <i class="mdi mdi-pencil font-size-16"></i>
+</a>
+{% endif %}
 {% if q.resposta_set.all %}
     {% if q.tramitacao_set.all.first.setor == user.funcao%}
     {% if q.status == 'F' %}

@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
     CriterioItem, Tramitacao, JustificativaEvidencia
-from validacoes.models import RespostaValidacao, Validacao
 from usuarios.models import User
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
@@ -164,6 +163,9 @@ def change_resposta(request, id):
             id_imagens = request.POST.getlist('id_imagem-{}'.format(i.id))            
             imagens = request.FILES.getlist('imagem-{}'.format(i.id))
             imagens_novo = request.FILES.getlist('imagem_novo-{}'.format(i.id))
+            id_justificativa = request.POST.get('id_justificativa-{}'.format(i.id))
+            justificativa = request.POST.get('justificativa-{}'.format(i.id))
+            justificativa_novo = request.POST.get('justificativa_novo-{}'.format(i.id))
             
             resposta = get_object_or_404(Resposta, pk=id_resposta)
 
@@ -176,23 +178,23 @@ def change_resposta(request, id):
                         if form_link_novo:
                             link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=form_link_novo)
                             link_evidencia.save()
+
+                if id_link:
+                    for i, l in zip(id_link,form_link):
+                        link = get_object_or_404(LinkEvidencia, pk=i)
+                        link.link = l
+                        link.save()
                             
             else:
                 resposta.resposta = False
                 resposta.save()
 
-                if resposta.criterio_item.item_avaliacao.id == 1:
-                    if not resposta.imagemevidencia_set.all():
-                        if imagens_novo:
-                            for i in imagens_novo:
-                                imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
-                                imagem_evidencia.save()
-
-            if id_link:
-                for i, l in zip(id_link,form_link):
-                    link = get_object_or_404(LinkEvidencia, pk=i)
-                    link.link = l
-                    link.save()
+            if resposta.criterio_item.item_avaliacao.id == 1:
+                if not resposta.imagemevidencia_set.all():
+                    if imagens_novo:
+                        for i in imagens_novo:
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                            imagem_evidencia.save()
 
             if id_imagens:
                 for i, l in zip(id_imagens,imagens):
@@ -202,6 +204,17 @@ def change_resposta(request, id):
                             os.remove(imagem.imagem.path)     
                         imagem.imagem = l
                     imagem.save() 
+
+            if resposta.criterio_item.item_avaliacao.id == 1:
+                if not resposta.justificativaevidencia_set.all():
+                    if justificativa_novo:
+                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa_novo)
+                        justifica.save()
+
+            if id_justificativa:
+                justifica = get_object_or_404(JustificativaEvidencia, pk=id_justificativa)
+                justifica.justificativa = justificativa
+                justifica.save()
 
         questionario.status = 'F'
         questionario.save()
