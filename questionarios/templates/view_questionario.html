@@ -201,7 +201,7 @@
                                                             Itens atendidos pela validação do Tribunal: <br>
                                                             {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.respostavalidacao_set.all %}
-                                                                {% if r.questionario.id == questionario.id %}
+                                                                {% if r.validacao.questionario.id == questionario.id %}
                                                                 {% if r.resposta_validacao == True %}
                                                                         <mark>{{c.item_avaliacao}}</mark>
                                                                     {% else %}
@@ -215,7 +215,7 @@
                                                                 <small >
                                                                 {% for c in a.criterioitem_set.all %}
                                                                     {% for r in c.respostavalidacao_set.all %}
-                                                                    {% if r.questionario.id == questionario.id %}
+                                                                    {% if r.validacao.questionario.id == questionario.id %}
                                                                         {% for link in r.linkevidenciavalidacao_set.all %}
                                                                             <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
                                                                         {% endfor %}
