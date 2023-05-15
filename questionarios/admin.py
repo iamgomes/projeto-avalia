@@ -14,7 +14,7 @@ class RespostaoAdmin(admin.ModelAdmin):
 admin.site.register(Resposta, RespostaoAdmin)
 
 class CriterioAdmin(admin.ModelAdmin):
-    list_display = ['criterio_texto', 'exigibilidade', 'dimensao', 'avaliacao']
+    list_display = ['cod','criterio_texto', 'exigibilidade', 'dimensao', 'avaliacao']
 
 admin.site.register(Criterio, CriterioAdmin)
 

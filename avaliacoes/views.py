@@ -7,11 +7,10 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import TramitacaoForm
 import json
 from entidades.uf_choices import UfChoices
 from entidades.models import Municipio, Entidade
-
+from django.db.models import Max
 
 
 @login_required
@@ -19,9 +18,6 @@ def avaliacao(request):
     if request.method == 'GET':
         questionarios = Questionario.objects.all()
         avaliacoes_recebidas = questionarios.count()
-        form = TramitacaoForm()
-        setores = Tramitacao.SETOR_CHOICES
-        motivos = []
         estados = [c for c in UfChoices.choices if c[0] in (questionarios.values_list('entidade__municipio__uf', flat=True))]
         municipios = Municipio.objects.filter(pk__in=questionarios.values_list('entidade__municipio', flat=True))
         entidades =  Entidade.objects.filter(pk__in=questionarios.values_list('entidade', flat=True))
@@ -46,25 +42,10 @@ def avaliacao(request):
         
         return render(request, 'avaliacoes.html', {'questionarios':questionarios, 
                                                    'avaliacoes_recebidas':avaliacoes_recebidas, 
-                                                   'form':form,
-                                                   'setores':setores,
-                                                   'motivos':motivos,
                                                    'estados':estados,
                                                    'municipios':municipios,
                                                    'entidades':entidades,
                                                    'status':status})
-    
-    if request.method == 'POST':
-        form = TramitacaoForm(request.POST)
-        if form.is_valid():
-            tramitacao = form.save(commit=False)
-            tramitacao.usuario_id = request.user.id
-            tramitacao.questionario_id = request.POST.get('id_questionario')
-            tramitacao.save()
-            
-        messages.success(request, "Questionário tramitado com sucesso!")
-        return redirect(reverse('avaliacao'))
-
 
 @login_required
 def load_motivos(request):
@@ -85,31 +66,20 @@ def minhas_avaliacoes(request):
     if request.method == 'GET':
         questionarios = Questionario.objects.filter(usuario=request.user)
         validacoes = Validacao.objects.filter(usuario=request.user)
-        form = TramitacaoForm()
-        setores = Tramitacao.SETOR_CHOICES
-        motivos = []
     
         return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios, 
-                                                          'validacoes':validacoes,
-                                                            'form':form,
-                                                            'setores':setores,
-                                                            'motivos':motivos,})
-    if request.method == 'POST':
-        form = TramitacaoForm(request.POST)
-        if form.is_valid():
-            tramitacao = form.save(commit=False)
-            tramitacao.usuario_id = request.user.id
-            tramitacao.questionario_id = request.POST.get('id_questionario')
-            tramitacao.save()
-            
-        messages.success(request, "Questionário tramitado com sucesso!")
-        return redirect(reverse('minhas_avaliacoes'))
-
+                                                          'validacoes':validacoes,})
 
 @login_required
 def avaliacoes_setor(request):
-    questionarios = Questionario.objects.filter(entidade__municipio__uf=request.user.municipio.uf).\
-        filter(pk__in=Tramitacao.objects.filter(setor=request.user.funcao).values_list('questionario', flat=True))
+    q = Questionario.objects.filter(entidade__municipio__uf=request.user.municipio.uf)
+    # Para vc, meu caro mancebo, aqui temos um belíssimo exemplo de uma gambiarra. Na variavel "ultima_tramitacao", 
+    # é feita a verificação do último id na tabela Tramitação para cada questionário. Com o id, na variável "tramitação",
+    # utilizo o id retornado para filtrar o setor do usuario logado. e por fim, na variável "questionário", listo os questionários que contem os ids
+    # da variável "tramitação".
+    ultima_tramitacao = Tramitacao.objects.values('questionario').annotate(id_ultimo=Max('id'))
+    tramitacao = Tramitacao.objects.filter(pk__in=[i['id_ultimo'] for i in ultima_tramitacao]).filter(setor=request.user.funcao)
+    questionarios = q.filter(pk__in=[t.questionario.id for t in tramitacao])
     avaliacoes_recebidas = questionarios.count()
     validacoes = Validacao.objects.filter(usuario=request.user)
     municipios = Municipio.objects.filter(pk__in=questionarios.values_list('entidade__municipio', flat=True))
@@ -139,8 +109,6 @@ def avaliacoes_setor(request):
                                                     'municipios':municipios,
                                                     'entidades':entidades,
                                                     'status':status})
-
-
 
 def handler404(request, exception):
     return render(request, "404.html")

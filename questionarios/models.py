@@ -57,7 +57,7 @@ class Criterio(models.Model):
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
-        return self.criterio_texto
+        return '{} {}'.format(self.cod, self.criterio_texto)
 
 
 class CriterioItem(models.Model):

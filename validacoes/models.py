@@ -51,3 +51,13 @@ class ImagemEvidenciaValidacao(models.Model):
     imagem_validacao = models.FileField(upload_to='imagem_evidencia_validacao')
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
+
+
+class JustificativaEvidenciaValidacao(models.Model):
+    resposta_validacao = models.ForeignKey(RespostaValidacao, on_delete=models.CASCADE)
+    justificativa_validacao = models.TextField()
+    created_at = models.DateField(auto_now=False, auto_now_add=True)
+    updated_at = models.DateField(auto_now=True, auto_now_add=False)
+
+    def __str__(self):
+        return str(self.justificativa_validacao)

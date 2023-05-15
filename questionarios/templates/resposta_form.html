@@ -52,6 +52,7 @@
                                     <tbody>
                                         {% for a in questionario.avaliacao.criterio_set.all %}
                                         {% if a.dimensao == u.dimensao %}
+                                        {% if a.matriz == 'C' or a.matriz == questionario.entidade.poder %}
                                         <tr>
                                             <td>{{ a.cod }}</td>
                                             <td>
@@ -91,6 +92,7 @@
                                                             if ($activeBtn.checked) {
                                                                 $("#sub-{{a.id}}").show();
                                                                 $("#box-{{a.id}}").show();
+                                                                $link.required = true;
                                                             } else{
                                                                 $("#sub-{{a.id}}").hide();
                                                                 $("#box-{{a.id}}").hide();
@@ -104,6 +106,11 @@
                                                                 $("#box-{{a.id}}").hide();
                                                                 $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
                                                                 $('#link-{{a.id}}').val('');
+                                                            }
+                                                            if ($activeBtn.checked) {
+                                                                $link.required = true;
+                                                            } else{
+                                                                $link.required = false;
                                                             }
                                                        });
                                                     });
@@ -130,7 +137,6 @@
                                             <td>
                                                 <!--Faz o laço apenas no primeiro item da lista. Os links ficarão vinculados apenas no primeiro registro da lista de itens-->
                                                 <div id="box-{{a.id}}">
-                                                <div class='input-group'>
                                                     <div class="mb-3">
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
@@ -152,48 +158,45 @@
                                                         {% endfor %}
                                                     </div>
                                                 </div>
-                                                </div>
                                                 <div class='row'>
-                                                    <div class="popup-gallery mt-2">
+                                                    <div class="mb-3">
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.resposta_set.all %}
                                                         {% if r.questionario.id == questionario.id %}
                                                             {% if r.justificativaevidencia_set.all %}
                                                             {% for j in r.justificativaevidencia_set.all %}
-                                                            <div class="mb-3">
                                                                 <label class="form-label">Justificativa</label>
                                                                 <input class="hidden" name="id_justificativa-{{r.id}}" value="{{j.id}}">
                                                                 <textarea rows="3" cols="200" class="form-control" name="justificativa-{{r.id}}" placeholder="Justifique aqui.">{{j.justificativa}}</textarea>
-                                                            </div>
                                                             {% endfor %}
                                                             {% else %}
-                                                            <div class="mb-3">
                                                                 <label class="form-label">Justificativa</label>
                                                                 <textarea rows="3" cols="200" class="form-control" name="justificativa_novo-{{r.id}}" placeholder="Justifique aqui."></textarea>
-                                                            </div>
                                                             {% endif %}
-                                                        {% if r.imagemevidencia_set.all %}
-                                                        <label for="imagem" class="form-label">Imagem</label>
-                                                        {% for img in r.imagemevidencia_set.all %}
-                                                            <a  href="{{ img.imagem.url }}" title="{{ img.imagem }}">
-                                                                <div class="img-fluid">
-                                                                    <img src="{{ img.imagem.url }}" alt="img-1" width="100">
-                                                                </div>
-                                                            </a>
-                                                            <spam>Substiuir imagem</spam>
-                                                            <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
-                                                            <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" >
-                                                            <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
-                                                        {% endfor %}
-                                                        {% else %}
                                                     </div>
-                                                        <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
-                                                        <div class="mb-3">
-                                                            <label for="imagem" class="form-label">Imagem</label>
-                                                            <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" >
-                                                            <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                    <div class="mb-3">
+                                                        <label for="imagem" class="form-label">Imagem</label>
+                                                        {% if r.imagemevidencia_set.all %}
+                                                        <div class="popup-gallery">
+                                                            {% for img in r.imagemevidencia_set.all %}
+                                                                <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                    <div class="img-fluid">
+                                                                        <img src="{{ img.imagem.url }}" alt="{{ img.imagem }}" width="70">
+                                                                    </div>
+                                                                </a>
+                                                            {% endfor %}
                                                         </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <spam class="text-muted font-size-12">Substiuir imagem</spam>
+                                                        <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
+                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" multiple accept="image/png, image/jpeg">
+                                                        <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                        {% else %}
+                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" multiple accept="image/png, image/jpeg">
+                                                        <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                    </div>
                                                     {% endif %}
                                                     {% endif %}
                                                     {% endfor %}
@@ -202,6 +205,7 @@
                                                 </div>                                   
                                             </td>
                                         </tr>
+                                        {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </tbody>

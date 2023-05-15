@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
     CriterioItem, Tramitacao, JustificativaEvidencia
 from usuarios.models import User
+from .forms import TramitacaoForm
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from entidades.models import Entidade
@@ -83,10 +84,30 @@ def delete_questionario(request, id):
 @login_required
 def view_questionario(request, id):
     questionario = get_object_or_404(Questionario, pk=id)
-    tramitacao = Tramitacao.objects.filter(questionario_id=questionario.id)
-    respostas = Resposta.objects.filter(questionario_id=id)
-    
-    return render(request, 'view_questionario.html', {'questionario':questionario, 'tramitacao':tramitacao, 'respostas':respostas})
+
+    if request.method == 'GET':
+        tramitacao = Tramitacao.objects.filter(questionario_id=questionario.id)
+        respostas = Resposta.objects.filter(questionario_id=id)
+        form = TramitacaoForm()
+        setores = Tramitacao.SETOR_CHOICES
+        motivos = []
+        
+        return render(request, 'view_questionario.html', {'questionario':questionario, 
+                                                        'tramitacao':tramitacao, 
+                                                        'respostas':respostas,
+                                                        'form':form,
+                                                        'setores':setores,
+                                                        'motivos':motivos,})
+    if request.method == 'POST':
+        form = TramitacaoForm(request.POST)
+        if form.is_valid():
+            tramitacao = form.save(commit=False)
+            tramitacao.usuario_id = request.user.id
+            tramitacao.questionario_id = request.POST.get('id_questionario')
+            tramitacao.save()
+            
+        messages.success(request, "Questionário tramitado com sucesso!")
+        return redirect(reverse('view_questionario', args=(questionario.id,)))
 
 
 @login_required
@@ -98,41 +119,41 @@ def add_resposta(request, id):
     
     elif request.method == 'POST':
         for c in questionario.avaliacao.criterio_set.all():
-            
-            links = request.POST.get('link-{}'.format(c.id))
+            if c.matriz == 'C' or c.matriz == questionario.entidade.poder:
 
-            for d in c.itens_avaliacao.all():
-                form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
-                imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
-                justificativa = request.POST.get('justificativa-{}-{}'.format(c.id, d.id))
+                links = request.POST.get('link-{}'.format(c.id))
 
-                criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
-                
-                if form == 'on':
-                    resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id, resposta=True)
-                    resposta.save()
+                for d in c.itens_avaliacao.all():
+                    form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
+                    imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
+                    justificativa = request.POST.get('justificativa-{}-{}'.format(c.id, d.id))
 
-                    if links:
-                        #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
+                    criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
+                    
+                    if form == 'on':
+                        resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id, resposta=True)
+                        resposta.save()
+
+                        if links:
+                            #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
+                            if d.id == 1:
+                                link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
+                                link_evidencia.save()
+
+                    else: 
+                        resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id)
+                        resposta.save()
+
+                    if imagens:
                         if d.id == 1:
-                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
-                            link_evidencia.save()
+                            for i in imagens:
+                                imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                                imagem_evidencia.save()
 
-                else: 
-                    resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id)
-                    resposta.save()
-
-                if imagens:
-                    if d.id == 1:
-                        for i in imagens:
-                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
-                            imagem_evidencia.save()
-
-                if justificativa:
-                    if d.id == 1:
-                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
-                        justifica.save()
-
+                    if justificativa:
+                        if d.id == 1:
+                            justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
+                            justifica.save()
                 
         questionario.status = 'F'
         questionario.save()

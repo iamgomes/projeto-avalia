@@ -117,7 +117,7 @@
                                      <!-- end -->
         
                                      <!--Modal-->
-                                        {% include 'modal_tramitacao.html' %}
+                                    {% include 'modal_tramitacao.html' %}
         
                                      {% endfor %}
                                 </tbody><!-- end tbody -->
@@ -176,6 +176,16 @@
                                             <a href="{% url 'add_resposta_validacao' f.validacao.id f.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
                                                 <i class="mdi mdi-arrow-right-circle font-size-16"></i>
                                             </a>
+                                            {% endif %}
+                                            {% if f.respostavalidacao_set.all %}
+                                            {% if f.questionario.tramitacao_set.all.first.setor == user.funcao%}
+                                                {% if f.questionario.status == 'F' %}
+                                                <a type="buton" class="btn btn-info waves-effect waves-light btn-sm" data-bs-toggle="modal" data-bs-target="#tramitacao-{{f.questionario.id}}" 
+                                                    data-toggle="tooltip" title="Tramitar">
+                                                    <i class="mdi mdi-arrow-right-circle font-size-16"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% endif %}
                                             {% endif %}
                                             {% if f.questionario.status == 'V' or f.questionario.status == 'EV' %}
                                             <a href="{% url 'change_resposta_validacao' f.id %}" class="btn btn-warning waves-effect waves-light btn-sm" data-toggle="tooltip" title="Editar Validação">

@@ -51,15 +51,29 @@
                     </li>
                     {% endfor %}
                 </ol>
+                {% if questionario.resposta_set.all %}
+                {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
+                {% if questionario.status == 'F' %}
+                <a type="buton" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{questionario.id}}" 
+                    data-toggle="tooltip" title="Tramitar">
+                    Tramitar <i class="mdi mdi-arrow-right-circle"></i>
+                </a>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                <!--Modal-->
+                {% include 'modal_tramitacao.html' %}
             </div>
         </div>
     </div>
         
     <div class="col-xl-8">
         {% if questionario.resposta_set.all %}
+        {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
         <a href="{% url 'change_resposta' questionario.id %}" class="btn btn-primary d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Questionário
         </a>
+        {% endif %}
         {% endif %}
         {% if questionario.validacao.respostavalidacao_set.all  %}
         <a class="btn btn-primary d-inline" type="button" >
@@ -110,10 +124,10 @@
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-md-12">
                                                     <div class="card-body">
-                                                        <h5 class="card-title">{{ a.id}} - {{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
+                                                        <h5 class="card-title">{{ a.cod}} - {{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
                         
                                                         <footer class="blockquote-footer font-size-15 m-0">
-                                                        Itens atendidos pela avaliação: <br>
+                                                        Itens atendidos pela avaliação do controle interno: <br>
                                                         {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
                                                                 {% if r.questionario.id == questionario.id %}
@@ -132,13 +146,31 @@
                                                                     {% for r in c.resposta_set.all %}
                                                                     {% if r.questionario.id == questionario.id %}
                                                                         {% for link in r.linkevidencia_set.all %}
-                                                                            <a href="{{ link.link }}" target="_blank">{{ link.link }}</a>
+                                                                        <ol>
+                                                                            {% for i  in link.link.split %}
+                                                                            <li><a href="{{ i }}" target="_blank">{{ i }}</a></li>
+                                                                            {% endfor %}
+                                                                        </ol>                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                                                                {% endfor %}
+                                                                </small>
+                                                            </p>
+
+                                                            <p class="card-text">
+                                                                <small >
+                                                                {% for c in a.criterioitem_set.all %}
+                                                                    {% for r in c.resposta_set.all %}
+                                                                    {% if r.questionario.id == questionario.id %}
+                                                                        {% for j in r.justificativaevidencia_set.all %}
+                                                                           Justificativa: {{ j.justificativa }}
                                                                         {% endfor %}
                                                                     {% endif %}
                                                                     {% endfor %}
                                                                 {% endfor %}
                                                                 </small>
                                                             </p>
+
                                                             <div class='input-group'>
                                                                 {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
@@ -148,7 +180,7 @@
                                                                 <div class="popup-gallery">
                                                                     <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
                                                                         <div class="img-fluid">
-                                                                            <img width="80" src='{{ img.imagem.url }}' alt="Card image">
+                                                                            <img width="70" src='{{ img.imagem.url }}' alt="{{ img.imagem }}">
                                                                         </div>
                                                                     </a>
                                                                 </div>
