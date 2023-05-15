@@ -51,16 +51,15 @@
                     </li>
                     {% endfor %}
                 </ol>
-                {% if questionario.resposta_set.all %}
                 {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
-                {% if questionario.status == 'F' %}
+                {% if questionario.status == 'F' or  questionario.status == 'V' %}
                 <a type="buton" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{questionario.id}}" 
                     data-toggle="tooltip" title="Tramitar">
                     Tramitar <i class="mdi mdi-arrow-right-circle"></i>
                 </a>
                 {% endif %}
                 {% endif %}
-                {% endif %}
+
                 <!--Modal-->
                 {% include 'modal_tramitacao.html' %}
             </div>
@@ -70,13 +69,15 @@
     <div class="col-xl-8">
         {% if questionario.resposta_set.all %}
         {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
+        {% if questionario.usuario == user %}
         <a href="{% url 'change_resposta' questionario.id %}" class="btn btn-primary d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Questionário
         </a>
         {% endif %}
         {% endif %}
+        {% endif %}
         {% if questionario.validacao.respostavalidacao_set.all  %}
-        <a class="btn btn-primary d-inline" type="button" >
+        <a href="{% url 'change_resposta_validacao' questionario.validacao.id %}" class="btn btn-primary d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Validação
         </a>
         {% endif %}

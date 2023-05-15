@@ -51,6 +51,7 @@
                                     <tbody>
                                         {% for a in questionario.avaliacao.criterio_set.all %}
                                         {% if a.dimensao == u.dimensao %}
+                                        {% if a.matriz == 'C' or a.matriz == questionario.entidade.poder %}
                                         <tr>
                                             <td>{{ a.cod }}</td>
                                             <td>
@@ -214,6 +215,7 @@
                                                 </div>  
                                             </td>
                                         </tr>
+                                        {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </tbody>

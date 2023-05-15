@@ -145,8 +145,10 @@
                                     <tr>
                                         <td>{{ f.questionario.id }}/{{ f.questionario.avaliacao.ano_exercicio}}</td>
                                         <td>
-                                            <h6 class="mb-0">{{ f.questionario.entidade }}</h6>
-                                            <footer class="blockquote-footer font-size-12 m-0">{{f.questionario.avaliacao}}</footer>
+                                            <a href="{% url 'view_questionario' f.questionario.id %}">
+                                                <h6 class="mb-0">{{ f.questionario.entidade }}</h6>
+                                                <footer class="blockquote-footer font-size-12 m-0">{{f.questionario.avaliacao}}</footer>
+                                            </a>
                                         </td>
                                         <td>
                                             <span class="badge 
@@ -172,43 +174,11 @@
                                         <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
                                         <td>{{ f.nota }}</td>
                                         <td>
-                                            {% if not f.respostavalidacao_set.all %}
-                                            <a href="{% url 'add_resposta_validacao' f.validacao.id f.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
-                                                <i class="mdi mdi-arrow-right-circle font-size-16"></i>
-                                            </a>
-                                            {% endif %}
-                                            {% if f.respostavalidacao_set.all %}
-                                            {% if f.questionario.tramitacao_set.all.first.setor == user.funcao%}
-                                                {% if f.questionario.status == 'F' %}
-                                                <a type="buton" class="btn btn-info waves-effect waves-light btn-sm" data-bs-toggle="modal" data-bs-target="#tramitacao-{{f.questionario.id}}" 
-                                                    data-toggle="tooltip" title="Tramitar">
-                                                    <i class="mdi mdi-arrow-right-circle font-size-16"></i>
-                                                </a>
-                                                {% endif %}
-                                                {% endif %}
-                                            {% endif %}
-                                            {% if f.questionario.status == 'V' or f.questionario.status == 'EV' %}
-                                            <a href="{% url 'change_resposta_validacao' f.id %}" class="btn btn-warning waves-effect waves-light btn-sm" data-toggle="tooltip" title="Editar Validação">
-                                                <i class="mdi mdi-pencil font-size-16"></i>
-                                            </a>
-                                            {% endif %}
-                                            {% if f.respostavalidacao_set.all %}
-                                                {% if f.questionario.tramitacao_set.all.first.setor == user.funcao%}
-                                                {% if f.questionario.status == 'V' %}
-                                                <a type="buton" class="btn btn-info waves-effect waves-light btn-sm" data-bs-toggle="modal" data-bs-target="#tramitacao-{{f.questionario.id}}" 
-                                                    data-toggle="tooltip" title="Tramitar">
-                                                    <i class="mdi mdi-arrow-right-circle font-size-16"></i>
-                                                </a>
-                                                {% endif %}
-                                                {% endif %}
-                                            {% endif %}
                                             <a onclick='delete_validacao({{f.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                                 <i class="mdi mdi-trash-can font-size-16"></i>
                                             </a>
                                         </td>
                                     </tr>
-                                    <!--Modal-->
-                                    {% include 'modal_tramitacao_validacao.html' %}
 
                                     <!-- end -->
                                     {% endfor %}
