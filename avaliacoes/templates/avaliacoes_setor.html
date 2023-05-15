@@ -158,11 +158,13 @@
                                         </a>
                                         {% endif %}
                                         {% if not q.respostavalidacao_set.all %}
+                                        {% if q.validacao %}
                                             {% if not q.status == 'NS' %}
                                             <a href="{% url 'add_resposta_validacao' q.id q.validacao.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
                                             </a>
                                             {% endif %}
+                                        {% endif %}
                                         {% endif %}
                                         <a onclick='delete_questionario({{q.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                             <i class="mdi mdi-trash-can font-size-16"></i>
