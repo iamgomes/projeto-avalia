@@ -108,7 +108,7 @@
                                         {% if q.validacao.nota %}
                                             <td>{{ q.validacao.nota }}</td>
                                         {% else %}
-                                        <td>{{ q.nota }}</td>
+                                        <td>{{ q.nota }} <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
                                         {% endif %}
                                         <td>
                                             {% include 'actions_avaliacoes.html' %}

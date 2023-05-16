@@ -78,7 +78,6 @@ class Questionario(models.Model):
         ('I','Iniciado'),
         ('F','Finalizado'),
         ('E','Editando'),
-        ('A','Aguardando Validação'),
         ('EV','Em Validação'),
         ('V','Validado'),
         ('ER','Em Revisão'),
