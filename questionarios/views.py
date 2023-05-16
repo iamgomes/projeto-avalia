@@ -207,6 +207,10 @@ def change_resposta(request, id):
                         link.save()
                             
             else:
+                if resposta.criterio_item.item_avaliacao.id == 1:
+                    if resposta.linkevidencia_set.all():
+                        resposta.linkevidencia_set.all().delete()
+
                 resposta.resposta = False
                 resposta.save()
 

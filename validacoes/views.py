@@ -118,6 +118,10 @@ def change_resposta_validacao(request, id):
                         link.save()
 
             else:
+                if resposta.criterio_item.item_avaliacao.id == 1:
+                    if resposta.linkevidenciavalidacao_set.all():
+                        resposta.linkevidenciavalidacao_set.all().delete()
+
                 resposta.resposta_validacao = False
                 resposta.save()
 

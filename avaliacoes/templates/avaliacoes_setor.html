@@ -160,9 +160,11 @@
                                         {% if not q.respostavalidacao_set.all %}
                                         {% if q.validacao %}
                                             {% if not q.status == 'NS' %}
+                                            {% if not q.status == 'V' %}
                                             <a href="{% url 'add_resposta_validacao' q.id q.validacao.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
                                             </a>
+                                            {% endif %}
                                             {% endif %}
                                         {% endif %}
                                         {% endif %}
