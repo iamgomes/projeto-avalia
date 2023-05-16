@@ -52,7 +52,7 @@
                     {% endfor %}
                 </ol>
                 {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
-                {% if questionario.status == 'F' or  questionario.status == 'V' %}
+                {% if questionario.status == 'F' or  questionario.status == 'V' or  questionario.status == 'EV' %}
                 <a type="buton" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{questionario.id}}" 
                     data-toggle="tooltip" title="Tramitar">
                     Tramitar <i class="mdi mdi-arrow-right-circle"></i>

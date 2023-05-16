@@ -152,21 +152,13 @@
                                     <td>{{ q.nota }}</td>
                                     {% endif %}
                                     <td>
+                                        <a href="{% url 'view_questionario' q.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
+                                            <i class="mdi mdi-eye font-size-16"></i>
+                                        </a>
                                         {% if q.status == 'F' %}
                                         <a href="{% url 'add_validacao' q.id %}" class="btn btn-info waves-effect waves-light btn-sm" data-toggle="tooltip" title="Validar">
                                             <i class="mdi mdi-account-check font-size-16"></i>
                                         </a>
-                                        {% endif %}
-                                        {% if not q.respostavalidacao_set.all %}
-                                        {% if q.validacao %}
-                                            {% if not q.status == 'NS' %}
-                                            {% if not q.status == 'V' %}
-                                            <a href="{% url 'add_resposta_validacao' q.id q.validacao.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
-                                                <i class="mdi mdi-file-document-edit font-size-16"></i>
-                                            </a>
-                                            {% endif %}
-                                            {% endif %}
-                                        {% endif %}
                                         {% endif %}
                                         <a onclick='delete_questionario({{q.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                             <i class="mdi mdi-trash-can font-size-16"></i>

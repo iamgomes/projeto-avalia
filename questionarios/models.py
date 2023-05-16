@@ -80,7 +80,6 @@ class Questionario(models.Model):
         ('E','Editando'),
         ('EV','Em Validação'),
         ('V','Validado'),
-        ('ER','Em Revisão'),
     )
 
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE)

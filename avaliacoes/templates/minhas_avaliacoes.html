@@ -84,26 +84,49 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <span class="badge 
+                                            <i class="ri-checkbox-blank-circle-fill font-size-10
                                             {% if q.status == 'I' %} 
-                                                bg-primary
+                                                text-primary
                                             {% elif q.status == 'F' %}
-                                                bg-success
+                                                text-success
                                             {% elif q.status == 'E' %}
-                                                bg-warning
+                                                text-warning
                                             {% elif q.status == 'EV' %}
-                                                bg-warning
+                                                text-warning
                                             {% elif q.status == 'A' %}
-                                                bg-secondary
+                                                text-secondary
                                             {% elif q.status == 'NS' %}
-                                                bg-danger
+                                                text-danger
                                             {% elif q.status == 'V' %}
-                                                bg-info
+                                                text-info
                                             {% endif %}
-                                            font-size-12">{{ q.get_status_display }}
-                                            </span>
+                                            align-middle me-1">
+                                            </i>{{ q.get_status_display }}
                                         </td>
-                                        <td>{{ q.tramitacao_set.all.first.get_setor_display }}</td>
+                                        <td>
+                                            {% if q.tramitacao_set.all.first.setor == user.funcao %}
+                                                <span class="badge 
+                                                {% if q.status == 'I'  %} 
+                                                    bg-primary
+                                                {% elif q.status == 'F' %}
+                                                    bg-success
+                                                {% elif q.status == 'E' %}
+                                                    bg-warning
+                                                {% elif q.status == 'EV' %}
+                                                    bg-warning
+                                                {% elif q.status == 'A' %}
+                                                    bg-secondary
+                                                {% elif q.status == 'NS' %}
+                                                    bg-danger
+                                                {% elif q.status == 'V' %}
+                                                    bg-info
+                                                {% endif %}
+                                                font-size-13">{{ q.tramitacao_set.all.first.get_setor_display }}
+                                                </span>
+                                            {% else %}
+                                                {{ q.tramitacao_set.all.first.get_setor_display }}
+                                            {% endif %}
+                                        </td>
                                         <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
                                         {% if q.validacao.nota %}
                                             <td>{{ q.validacao.nota }}</td>
@@ -151,32 +174,68 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <span class="badge 
+                                            <i class="ri-checkbox-blank-circle-fill font-size-10
                                             {% if f.questionario.status == 'I' %} 
-                                                bg-primary
+                                                text-primary
                                             {% elif f.questionario.status == 'F' %}
-                                                bg-success
+                                                text-success
                                             {% elif f.questionario.status == 'E' %}
-                                                bg-warning
+                                                text-warning
                                             {% elif f.questionario.status == 'EV' %}
-                                                bg-warning
+                                                text-warning
                                             {% elif f.questionario.status == 'A' %}
-                                                bg-secondary
+                                                text-secondary
                                             {% elif f.questionario.status == 'NS' %}
-                                                bg-danger
+                                                text-danger
                                             {% elif f.questionario.status == 'V' %}
-                                                bg-info
+                                                text-info
                                             {% endif %}
-                                            font-size-12">{{ f.questionario.get_status_display }}
-                                            </span>
+                                            align-middle me-q">
+                                            </i>{{ f.questionario.get_status_display }}
                                         </td>
-                                        <td>{{ f.questionario.tramitacao_set.all.first.get_setor_display }}</td>
+                                        <td>
+                                            {% if f.questionario.tramitacao_set.all.first.setor == user.funcao %}
+                                                <span class="badge 
+                                                {% if f.questionario.status == 'I' %} 
+                                                    bg-primary
+                                                {% elif f.questionario.status == 'F' %}
+                                                    bg-success
+                                                {% elif f.questionario.status == 'E' %}
+                                                    bg-warning
+                                                {% elif f.questionario.status == 'EV' %}
+                                                    bg-warning
+                                                {% elif f.questionario.status == 'A' %}
+                                                    bg-secondary
+                                                {% elif f.questionario.status == 'NS' %}
+                                                    bg-danger
+                                                {% elif f.questionario.status == 'V' %}
+                                                    bg-info
+                                                {% endif %}
+                                                font-size-13">{{ f.questionario.tramitacao_set.all.first.get_setor_display }}
+                                                </span>
+                                            {% else %}
+                                                {{ f.questionario.tramitacao_set.all.first.get_setor_display }}
+                                            {% endif %}
+                                        </td>
                                         <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
                                         <td>{{ f.nota }}</td>
                                         <td>
                                             <a href="{% url 'view_questionario' f.questionario.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
                                                 <i class="mdi mdi-eye font-size-16"></i>
                                             </a>
+                                            {% if q.tramitacao_set.all.first.setor == user.funcao%}
+                                                {% if not f.questionario.respostavalidacao_set.all %}
+                                                {% if f.questionario.validacao %}
+                                                    {% if not f.questionario.status == 'NS' %}
+                                                    {% if not f.questionario.status == 'V' %}
+                                                    <a href="{% url 'add_resposta_validacao' f.questionario.id f.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
+                                                        <i class="mdi mdi-file-document-edit font-size-16"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% endif %}
+                                            {% endif %}
                                             <a onclick='delete_validacao({{f.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                                 <i class="mdi mdi-trash-can font-size-16"></i>
                                             </a>

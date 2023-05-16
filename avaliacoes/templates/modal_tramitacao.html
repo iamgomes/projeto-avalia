@@ -17,7 +17,20 @@
                                     <option selected disabled value="">Selecione</option>
                                     {% for setor in setores %}
                                         {% if setor.0 != questionario.tramitacao_set.all.first.setor %}
-                                        <option value="{{setor.0}}">{{setor.1}}</option>
+                                            {% if questionario.tramitacao_set.all.first.setor == 'C' %}
+                                                {% if setor.0 != 'A' %}
+                                                    <option value="{{setor.0}}">{{setor.1}}</option>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if questionario.tramitacao_set.all.first.setor == 'T' %}
+                                                {% if questionario.status == 'V' %}
+                                                    {% if setor.0 != 'C' %}
+                                                        <option value="{{setor.0}}">{{setor.1}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <option value="{{setor.0}}">{{setor.1}}</option>
+                                                {% endif %}
+                                            {% endif %}
                                         {% endif %}
                                     {% endfor %}
                                 </select>
