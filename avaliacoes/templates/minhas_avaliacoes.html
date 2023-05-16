@@ -174,6 +174,9 @@
                                         <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
                                         <td>{{ f.nota }}</td>
                                         <td>
+                                            <a href="{% url 'view_questionario' f.questionario.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
+                                                <i class="mdi mdi-eye font-size-16"></i>
+                                            </a>
                                             <a onclick='delete_validacao({{f.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                                 <i class="mdi mdi-trash-can font-size-16"></i>
                                             </a>
