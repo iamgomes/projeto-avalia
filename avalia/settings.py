@@ -36,10 +36,13 @@ INSTALLED_APPS = [
     'avaliacoes',
     'questionarios',
     'validacoes',
+    'notificacoes',
+    
     ##APP terceiros
     'django_extensions',
     'widget_tweaks',
     'smart_selects',
+    'notifications'
 ]
 
 MIDDLEWARE = [
@@ -65,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notificacoes.context_processors.notificacoes_unread',
             ],
 
         },

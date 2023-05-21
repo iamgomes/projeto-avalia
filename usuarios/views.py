@@ -77,6 +77,6 @@ def change_foto(request):
         messages.success(request, "Foto de Usuário alterada com sucesso!")
 
         return redirect(reverse('perfil'))
-
+    
 
     

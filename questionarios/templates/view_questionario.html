@@ -91,7 +91,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">Excel</a>
-                <a class="dropdown-item" href="#">CSV</a>
+                <a class="dropdown-item" href="{% url 'exporta_csv' questionario.id %}">CSV</a>
             </div>
         </div>
         <div class="card mt-3">
@@ -124,6 +124,7 @@
                             <div class="card-body">
                                 {% for a in questionario.avaliacao.criterio_set.all %}
                                 {% if a.dimensao == u.dimensao %}
+                                {% if a.matriz == 'C' or a.matriz == questionario.entidade.poder %}
                                     <div class="col-md-12">
                                         <div class="card">
                                             <div class="row no-gutters align-items-center">
@@ -252,6 +253,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                {% endif %}
                                 {% endif %}
                                 {% endfor %}
                             </div>

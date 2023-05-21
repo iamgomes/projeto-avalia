@@ -11,6 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import datetime
 import os
+import csv
+from notifications.signals import notify
 
 
 @login_required
@@ -105,6 +107,9 @@ def view_questionario(request, id):
             tramitacao.usuario_id = request.user.id
             tramitacao.questionario_id = request.POST.get('id_questionario')
             tramitacao.save()
+
+            # Envia notificação para o Usuário
+            notify.send(request.user, recipient=tramitacao.questionario.usuario, verb=f'{tramitacao.questionario.entidade}', target=tramitacao.questionario, description=f'{tramitacao.get_motivo_display()} por {request.user.first_name}.')
             
         messages.success(request, "Questionário tramitado com sucesso!")
         return redirect(reverse('view_questionario', args=(questionario.id,)))
@@ -247,3 +252,24 @@ def change_resposta(request, id):
         messages.success(request, "Resposta de avaliação alterada com sucesso!")
 
         return redirect(reverse('minhas_avaliacoes'))
+
+
+def exporta_csv(request, id):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Questionário-{}.csv"'.format(id)
+
+    questionario = Questionario.objects.get(pk=id)
+
+    writer = csv.writer(response)
+    writer.writerow(['Matriz','Dimensão', 'Cod.', 'Critério', 'Classificação', 'Item de Avaliação', 'Resposta'])
+
+    for q in questionario.avaliacao.criterio_set.all():
+        if q.matriz == 'C' or q.matriz == questionario.entidade.poder:
+            for c in q.criterioitem_set.all():
+                for r in c.resposta_set.all():
+                    if r.questionario.id == questionario.id:
+                        writer.writerow([q.get_matriz_display(), q.dimensao, q.cod, q.criterio_texto, 
+                                         q.get_exigibilidade_display(), r.criterio_item.item_avaliacao, 
+                                        'Atende' if r.resposta == True else 'Não Atende'])
+
+    return response

@@ -19,6 +19,7 @@ def home(request):
         'questionarios':questionarios,
         'total_usuarios':total_usuarios,
         'avaliacoes_recebidas':avaliacoes_recebidas,
-        'avaliacoes_respondidas':avaliacoes_respondidas}
+        'avaliacoes_respondidas':avaliacoes_respondidas,
+    }
     
     return render(request, 'home.html', context)
