@@ -1,214 +1,39 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 
-{% block 'title' %}Questionários{% endblock 'title' %}
-
-{% block 'head' %}
-
-        <!-- Sweet Alert-->
-        <link href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+{% block 'title' %}Avaliações Disponíveis{% endblock 'title' %}
 
 
-{% endblock 'head' %}
 
 {% block 'body' %}
 
-{% if messages %}
-    {% for message in messages  %}
-        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
-            <i class="mdi mdi-check-all me-2"></i>
-            {{message}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-{% endif %}
-
-<!-- start page title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0">Questionários Recebidos ({{avaliacoes_recebidas}})</h4>
-        </div>
-    </div>
-</div>
-<!-- end page title -->
-
 <div class="row">
     <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-
-                <h4 class="card-title">Filtro</h4>
-
-                <form>
-                    <div class="row">
-                        <div class="col-lg-2">
-                            <div class="mb-3">
-                                <select class="js-example-basic-single form-select" name="uf_filtro">
-                                    <option selected disabled value="">UF</option>
-                                    {% for estado in estados %}
-                                    <option value="{{estado.0}}">{{estado.1}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                            <div class="mb-3">
-                                <select class="js-example-basic-single form-select" name="municipio_filtro">
-                                    <option selected disabled value="">Município</option>
-                                    {% for municipio in municipios %}
-                                    <option value="{{municipio.ibge}}">{{municipio}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                            <div class="mb-3">
-                                <select class="js-example-basic-single form-select" name="ug_filtro">
-                                    <option selected disabled value="">Unidade Gestora</option>
-                                    {% for entidade in entidades %}
-                                    <option value="{{entidade.id}}">{{entidade}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                            <div class="mb-3">
-                                <select class="js-example-basic-single form-select" name="setor_filtro">
-                                    <option selected disabled value="">Setor</option>
-                                    {% for setor in setores %}
-                                    <option value="{{setor.0}}">{{setor.1}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                            <div class="mb-3">
-                                <select class="js-example-basic-single form-control" name="status_filtro">
-                                    <option selected disabled value="">Status</option>
-                                    {% for statu in status %}
-                                    <option value="{{statu.0}}">{{statu.1}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2">
-                            <div class="mb-3">
-                                <input type="submit" class="btn btn-secondary waves-effect waves-light" value="Filtrar">
-                                <button type="button" class="btn btn-outline-secondary waves-effect" onclick="window.location.href='../avaliacoes_setor/'">Limpar</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-
+        <div class="row align-items-center">
+            <div class="col">
+                <h4> Avaliações Disponíveis </h4>
             </div>
         </div>
-        <!-- end select2 -->
-    </div>
-</div>
-<!-- end row -->
 
-<div class="row">
-    <div class="col-xl-12">
+        {% for a in avaliacoes %}
+
         <div class="card">
+            <h5 class="card-header">{{a.grupo}}</h5>
             <div class="card-body">
-                {% if questionarios %}
-                <div class="table-responsive">
-                    <table class="table table-centered mb-0 align-middle table-hover table-nowrap table-responsive">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Unidade Gestora</th>
-                                <th>Status</th>
-                                <th>Setor Atual</th>
-                                <th>Data Envio</th>
-                                <th>Nota</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead><!-- end thead -->
-                        <tbody>
-                            {% for q in questionarios  %}
-                            <tr>
-                                <td>{{ q.id }}/{{ q.avaliacao.ano_exercicio}}</td>
-                                <td>
-                                    <a href="{% url 'view_questionario' q.id %}">
-                                        <h6 class="mb-0">{{ q.entidade }}</h6>
-                                        <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
-                                    </a>
-                                </td>
-                                <td>
-                                    <span class="badge 
-                                    {% if q.status == 'I' %} 
-                                        bg-primary
-                                    {% elif q.status == 'F' %}
-                                        bg-success
-                                    {% elif q.status == 'E' %}
-                                        bg-warning
-                                    {% elif q.status == 'EV' %}
-                                        bg-warning
-                                    {% elif q.status == 'A' %}
-                                        bg-secondary
-                                    {% elif q.status == 'NS' %}
-                                        bg-danger
-                                    {% elif q.status == 'V' %}
-                                        bg-info
-                                    {% endif %}
-                                    font-size-12">{{ q.get_status_display }}
-                                    </span>
-                                </td>
-                                <td>{{ q.tramitacao_set.all.first.get_setor_display }}</td>
-                                <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
-                                {% if q.validacao.nota %}
-                                    <td>{{ q.validacao.nota }}</td>
-                                {% else %}
-                                <td>{{ q.nota }}</td>
-                                {% endif %}
-                                <td>
-                                    
-                                </td>
-                            </tr>
-                             <!-- end -->
+                <h4 class="card-title">{{a.titulo}} </h4>
+                <p class="card-text">{{a.descricao}}</p>
+                <a href="{% url 'add_questionario' a.id %}" class="btn-lg btn-primary waves-effect waves-light">
+                    Avaliar agora <i class="ri-arrow-right-line align-middle ms-2"></i> </a>
+            </div>
+            <div class="card-footer text-muted">
+                <span class="badge badge-soft-primary font-size-15">{{a.ano_exercicio}}</span>
+                | Início: {{a.data_inicial|date:'d/m/Y'}} | Fim: {{a.data_final|date:'d/m/Y'}}
+            </div>
+        </div>
 
-                             <!--Modal-->
-                                {% include 'modal_tramitacao.html' %}
+        {% endfor %}
 
-                             {% endfor %}
-                        </tbody><!-- end tbody -->
-                    </table> <!-- end table -->
-                </div>
-                {% else %}
-                <div class="alert alert-primary" role="alert">
-                    Nenhuma avaliação recebida até o momento.
-                </div>
-                {% endif %}
-            </div><!-- end card -->
-        </div><!-- end card -->
-    </div>
-    <!-- end col -->
+    </div> <!-- end col -->
 </div>
-
-
-{% block 'script' %}
-
-        <!-- Sweet Alerts js -->
-        <script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
-        <!-- Sweet alert init js-->
-        <script src="{% static 'sweetalert/js/script.js' %}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-        <script>
-            $(document).ready(function() {
-                $('.js-example-basic-single').select2({
-                    width: 'resolve'
-                });
-            });
-        </script>
-
-{% endblock 'script' %}
-
-
 
 {% endblock 'body' %}

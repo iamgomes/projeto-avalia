@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from . models import Avaliacao
+from .models import Avaliacao
 from questionarios.models import Questionario, Tramitacao
 from validacoes.models import Validacao
 from django.shortcuts import redirect, get_object_or_404
@@ -11,6 +11,12 @@ import json
 from entidades.uf_choices import UfChoices
 from entidades.models import Municipio, Entidade
 from django.db.models import Max
+
+@login_required
+def avaliacoes_disponiveis(request):
+    avaliacoes = Avaliacao.objects.all()
+
+    return render(request, 'avaliacoes.html', {'avaliacoes':avaliacoes})
 
 
 @login_required
@@ -109,15 +115,3 @@ def avaliacoes_setor(request):
                                                     'municipios':municipios,
                                                     'entidades':entidades,
                                                     'status':status})
-
-def handler404(request, exception):
-    return render(request, "404.html")
-
-def handler500(request, exception=None):
-    return render(request, "500.html")
-
-def custom_permission_denied_view(request, exception=None):
-    return render(request, "403.html", {})
-
-def custom_bad_request_view(request, exception=None):
-    return render(request, "400.html", {})

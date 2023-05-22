@@ -69,7 +69,6 @@
                             </button>
                         </div>
                         
-                        {% if user.is_authenticated %}
                         <div class="dropdown d-inline-block">
                             <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                                   data-bs-toggle="dropdown" aria-expanded="false">
@@ -97,7 +96,7 @@
                                 <div data-simplebar style="max-height: 230px;">
                                     {% if notificacoes_unread %}
                                         {% for n in notificacoes_unread %}
-                                        <a href="" class="text-reset notification-item">
+                                        <a href="{% url 'view_questionario' n.target_object_id %}" class="text-reset notification-item">
                                             <div class="d-flex">
                                                 <div class="avatar-xs me-3">
                                                     <span class="avatar-title bg-primary rounded-circle font-size-16">
@@ -128,7 +127,6 @@
                                 {% endif %}
                             </div>
                         </div>
-                        {% endif %}
 
                         <div class="dropdown d-inline-block user-dropdown">
                             <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
@@ -179,7 +177,7 @@
                                             <i class="ri-file-copy-2-line me-2"></i>Avaliações <div class="arrow-down"></div>
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="topnav-apps">
-                                            <a href="#" class="dropdown-item">Avaliações disponíveis</a>
+                                            <a href="{% url 'avaliacoes_disponiveis' %}" class="dropdown-item">Avaliações disponíveis</a>
                                             {% if user.funcao == 'A' or user.funcao == 'T' %}
                                             <a href="{% url 'avaliacoes_setor' %}" class="dropdown-item">Avaliações no meu setor</a>
                                             {% endif %}

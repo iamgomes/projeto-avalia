@@ -21,8 +21,5 @@ urlpatterns = [
     path('chaining/', include('smart_selects.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler404 = 'avaliacoes.views.handler404'
-handler500 = 'avaliacoes.views.handler500'
-
 admin.site.site_header = 'PNTP'
 admin.site.index_title = 'Administração'
