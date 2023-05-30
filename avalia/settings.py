@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'questionarios',
     'validacoes',
     'notificacoes',
+    'dashboard',
     
     ##APP terceiros
     'django_extensions',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'smart_selects',
     'notifications',
     'storages',
+    'mathfilters'
 ]
 
 MIDDLEWARE = [

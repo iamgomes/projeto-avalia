@@ -3,17 +3,12 @@
 
 {% block 'title' %}Avaliações no Setor{% endblock 'title' %}
 
-
 {% block 'head' %}
 
-        <!-- Sweet Alert-->
-        <link href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
 
-
 {% endblock 'head' %}
-
 
 {% block 'body' %}
 
@@ -98,9 +93,7 @@
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-
-                {% if questionarios or validacoes %}
-
+                {% if questionarios %}
                     <div class="table-responsive">
                         <table class="table table-centered mb-0 align-middle table-hover table-nowrap table-responsive">
                             <thead class="table-light">
@@ -160,27 +153,17 @@
                                             <i class="mdi mdi-account-check font-size-16"></i>
                                         </a>
                                         {% endif %}
-                                        <a onclick='delete_questionario({{q.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
-                                            <i class="mdi mdi-trash-can font-size-16"></i>
-                                        </a>
                                     </td>
                                 </tr>
-                                    <!-- end -->
-    
-                                    <!--Modal-->
-                                    <form method="post">
-                                    {% csrf_token %}
-                                    {% include 'modal_tramitacao.html' %}
-                                </form>
-    
-                                    {% endfor %}
+                                 <!-- end -->
+                                {% endfor %}
                             </tbody><!-- end tbody -->
                         </table> <!-- end table -->
                     </div>
                 </div>
                 {% else %}
                 <div class="alert alert-primary" role="alert">
-                    Você não possui avalições no momento.
+                    Não há avalições no setor no momento.
                 </div>
                 {% endif %}
             </div><!-- end card -->
@@ -189,13 +172,8 @@
     <!-- end col -->
 </div>
 
-
 {% block 'script' %}
 
-        <!-- Sweet Alerts js -->
-        <script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
-        <!-- Sweet alert init js-->
-        <script src="{% static 'sweetalert/js/script.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <script>
@@ -207,7 +185,5 @@
         </script>
 
 {% endblock 'script' %}
-
-
 
 {% endblock 'body' %}

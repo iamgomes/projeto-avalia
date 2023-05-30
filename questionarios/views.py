@@ -38,18 +38,27 @@ def add_questionario(request, id):
                 questionario = Questionario(avaliacao_id=avaliacao.id, usuario=usuario, entidade_id=entidade)
                 
                 if site == 'N':
-                    questionario.status = 'NS'
-                    questionario.save()
-                    tramitacao = Tramitacao(questionario_id=questionario.id, usuario=usuario)
-                    tramitacao.save()
-
-                    messages.success(request, "Sua avaliação foi finalizada.")
-                    return redirect(reverse('avaliacao'))
-                
-                else:
-                    questionario.save()
-
                     if request.user.funcao == 'C':
+                        questionario.status = 'F'
+                        questionario.save()
+                        tramitacao = Tramitacao(questionario_id=questionario.id, setor='C', motivo='AI', usuario=usuario)
+                        tramitacao.save()
+
+                        messages.success(request, "Sua avaliação foi finalizada.")
+                        return redirect(reverse('minhas_avaliacoes'))
+                    
+                    if request.user.funcao == 'T':
+                        questionario.status = 'V'
+                        questionario.save()
+                        tramitacao = Tramitacao(questionario_id=questionario.id, setor='T', motivo='IT', usuario=usuario)
+                        tramitacao.save()
+
+                        messages.success(request, "Sua avaliação foi finalizada.")
+                        return redirect(reverse('minhas_avaliacoes'))
+                    
+                if site == 'S':
+                    if request.user.funcao == 'C':
+                        questionario.save()
                         tramitacao = Tramitacao(questionario_id=questionario.id, setor='C', motivo='AI', usuario=usuario)
                         tramitacao.save()
 
@@ -58,7 +67,8 @@ def add_questionario(request, id):
                         # redireciona para página de resposta passando como parâmetro o id criado
                         return redirect(reverse('add_resposta', args=(questionario.id,)))
                     
-                    if request.user.funcao == 'A':
+                    if request.user.funcao == 'T':
+                        questionario.save()
                         tramitacao = Tramitacao(questionario_id=questionario.id, setor='T', motivo='IT', usuario=usuario)
                         tramitacao.save()
 
@@ -68,10 +78,10 @@ def add_questionario(request, id):
                         return redirect(reverse('add_resposta', args=(questionario.id,)))
 
             elif hoje.timestamp() > final.timestamp():
-                messages.error(request, "Desculpe, o prazo desta avaliação já esgotou.")
+                messages.error(request, "Desculpe, o prazo desta avaliação já acabou.")
                 return redirect(reverse('home'))
         else:
-            messages.error(request, "Desculpe, esta entidade já possui avaliação respondida.")
+            messages.error(request, "Desculpe, esta Unidade Gestora já possui avaliação respondida.")
             return redirect(reverse('home'))
 
 
@@ -159,8 +169,12 @@ def add_resposta(request, id):
                         if d.id == 1:
                             justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
                             justifica.save()
-                
-        questionario.status = 'F'
+
+        if request.user.funcao == 'C':
+            questionario.status = 'F'
+        if request.user.funcao == 'T':
+            questionario.status = 'V'
+
         questionario.save()
             
         messages.success(request, "Resposta cadastrada com sucesso!")

@@ -1,0 +1,89 @@
+<!-- sample modal content -->
+<div id="enviar_atricon" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myLargeModalLabel">Enviar para Atricon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if questionarios_setor %}
+                    <div class="table-responsive">
+                        <table class="table table-centered mb-0 align-middle table-hover table-nowrap table-responsive">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkAll">
+                                        </div>
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Unidade Gestora</th>
+                                    <th>Status</th>
+                                    <th>Data Envio</th>
+                                    <th>Nota</th>
+        
+                                </tr>
+                            </thead><!-- end thead -->
+                            <tbody>
+                                {% for q in questionarios_setor %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="formCheck1" value="{{ e.questionario_set.all.first.id }}">
+                                            <input type="hidden" value={{ e.questionario_set.all.first.id }} name="id_questionario" >
+                                        </div>
+                                    </td>
+                                    <td>{{ q.id }}/{{ q.avaliacao.ano_exercicio}}</td>
+                                    <td>
+                                        <a href="{% url 'view_questionario' q.id %}">
+                                            <h6 class="mb-0">{{ q.entidade }}</h6>
+                                            <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                        {% if q.status == 'I' %} 
+                                            bg-primary
+                                        {% elif q.status == 'F' %}
+                                            bg-success
+                                        {% elif q.status == 'E' %}
+                                            bg-warning
+                                        {% elif q.status == 'EV' %}
+                                            bg-warning
+                                        {% elif q.status == 'A' %}
+                                            bg-secondary
+                                        {% elif q.status == 'NS' %}
+                                            bg-danger
+                                        {% elif q.status == 'V' %}
+                                            bg-info
+                                        {% endif %}
+                                        font-size-12">{{ q.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
+                                    {% if q.validacao.nota %}
+                                        <td>{{ q.validacao.nota }}</td>
+                                    {% else %}
+                                    <td>{{ q.nota }}</td>
+                                    {% endif %}
+
+                                </tr>
+                                 <!-- end -->
+                                {% endfor %}
+                            </tbody><!-- end tbody -->
+                        </table> <!-- end table -->
+                    </div>
+                    {% else %}
+                    <div class="alert alert-primary" role="alert">
+                        Não há avalições no setor no momento.
+                    </div>
+                    {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
+                <button type="submit" name='acao' class="btn btn-primary waves-effect waves-light" value="Enviar">Enviar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

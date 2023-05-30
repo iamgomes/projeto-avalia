@@ -10,14 +10,14 @@
     <div class="col-lg-6">
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title">Entidade e Site</h2>
-                <p class="card-title-desc">Por favor, selecione a entidade que deseja avaliar e informe se esta possui site.</p>
+                <h2 class="card-title">Unidade Gestora e Site</h2>
+                <p class="card-title-desc">Por favor, selecione a Unidade Gestora que deseja avaliar e informe se esta possui site.</p>
                 <div>
                     <div>
                         <form action="" method="post">
                             {% csrf_token %}
                             <div class="mb-3">
-                                <label>Selecione a entidade avaliada</label>
+                                <label>Selecione a Unidade Gestora avaliada</label>
                                 <div>
                                     <select name="entidade" class="form-control form-control-lg" Required>
                                         <option selected disabled value="">Selecione</option>
@@ -28,7 +28,7 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label>Esta entidade possui site oficial?</label>
+                                <label>Esta Unidade Gestora possui site oficial?</label>
                                 <div>
                                     <select name="site" class="form-control form-control-lg" Required>
                                         <option selected disabled value="">Selecione</option>

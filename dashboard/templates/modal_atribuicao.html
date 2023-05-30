@@ -1,0 +1,54 @@
+<!-- sample modal content -->
+<div id="atribuicao" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myLargeModalLabel">Atribuir Validador/Tramitar para Atricon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="">Ação</label>
+                    <div class="radio-inline">
+                        <input class="form-check-input" type="radio" name="formRadios"
+                            id="validadorSim" name="formRadios" checked>
+                        <label class="form-check-label" for="validador">
+                            Atribuir Validador
+                        </label>
+                        <input class="form-check-input ms-3" type="radio" name="formRadios"
+                            id="validadorNao">
+                        <label class="form-check-label" for="formRadios2">
+                            Enviar para Atricon
+                        </label>
+                    </div>
+                </div>
+                <div id="servidor">
+                    <div class="mb-3">
+                        <label for="">Servidor</label>
+                        <select name="auditor_id" id="auditor" required class="form-select">
+                            <option selected disabled value="">Selecione</option>
+                            {% for auditor in auditores %}
+                                <option value="{{auditor.id}}">{{auditor.nome_completo}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div id="tabela_atribuir">
+                    {% include 'tabela_atribuir.html' %}
+                </div>
+                <div id="tabela_tramitar">
+                    {% include 'tabela_tramitar.html' %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
+                <div id="btn_atribuir">
+                    <button type="submit" name='acao' class="btn btn-primary waves-effect waves-light" value="Atribuir">Atribuir</button>
+                </div>
+                <div id="btn_enviar">
+                    <button type="submit" name='acao' class="btn btn-success waves-effect waves-light" value="Tramitar">Tramitar para Atricon</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

@@ -23,7 +23,11 @@ class CriterioItemAdmin(admin.ModelAdmin):
 
 admin.site.register(CriterioItem, CriterioItemAdmin)
 
-admin.site.register(Dimensao)
+class DimensaoAdmin(admin.ModelAdmin):
+    list_display = ['dimensao_texto', 'peso']
+
+admin.site.register(Dimensao, DimensaoAdmin)
+
 admin.site.register(ImagemEvidencia)
 admin.site.register(JustificativaEvidencia)
 admin.site.register(ItemAvaliacao)

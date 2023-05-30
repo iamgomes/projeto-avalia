@@ -13,10 +13,10 @@ from entidades.models import Municipio, Entidade
 from django.db.models import Max
 
 @login_required
-def avaliacoes_disponiveis(request):
+def projetos_disponiveis(request):
     avaliacoes = Avaliacao.objects.all()
 
-    return render(request, 'avaliacoes.html', {'avaliacoes':avaliacoes})
+    return render(request, 'projetos.html', {'avaliacoes':avaliacoes})
 
 
 @login_required
@@ -71,10 +71,17 @@ def load_motivos(request):
 def minhas_avaliacoes(request):
     if request.method == 'GET':
         questionarios = Questionario.objects.filter(usuario=request.user)
+    
+        return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios})
+    
+
+@login_required
+def minhas_validacoes(request):
+    if request.method == 'GET':
         validacoes = Validacao.objects.filter(usuario=request.user)
     
-        return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios, 
-                                                          'validacoes':validacoes,})
+        return render(request, 'minhas_validacoes.html', {'validacoes':validacoes})
+
 
 @login_required
 def avaliacoes_setor(request):

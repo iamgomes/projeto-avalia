@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% load widget_tweaks %}
+
+
+{% block 'title' %}Editar Usuários{% endblock 'title' %}
+
+{% block 'head' %}
+
+        <link href="{% static 'assets/libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css">
+
+{% endblock 'head' %}
+
+
+{% block 'body' %}
+
+{{ form.as_p }}
+
+
+{% endblock 'body' %}

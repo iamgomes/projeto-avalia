@@ -53,7 +53,7 @@
                 </ol>
                 {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
                 {% if questionario.status == 'F' or  questionario.status == 'V' or  questionario.status == 'EV' %}
-                <a type="buton" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{questionario.id}}" 
+                <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{questionario.id}}" 
                     data-toggle="tooltip" title="Tramitar">
                     Tramitar <i class="mdi mdi-arrow-right-circle"></i>
                 </a>
@@ -98,8 +98,8 @@
 
                 <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ questionario.id }}/{{ questionario.avaliacao.ano_exercicio }}</i></h4>
                 <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
-                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ questionario.usuario.nome_completo }} ({{questionario.usuario.get_funcao_display}}) - {{ questionario.nota }} (Intermediário)</i></h5>
-                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} ({{questionario.validacao.usuario.get_funcao_display}}) - {{ questionario.validacao.nota }} (Intermediário)</i></h5>
+                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ questionario.usuario.nome_completo }} ({{questionario.usuario.get_funcao_display}}) - {{ questionario.nota }} ({{ questionario.classificacao }})</i></h5>
+                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} ({{questionario.validacao.usuario.get_funcao_display}}) - {{ questionario.validacao.nota }} ({{ questionario.validacao.classificacao }})</i></h5>
 
                 {% if respostas %}
 
@@ -264,7 +264,7 @@
                 {% else %}
 
                 <div class="alert alert-primary" role="alert">
-                    Esta Unidade Gestora não possui avaliação do Controlador Interno.
+                    Esta Unidade Gestora não possui site ou avaliação do Controle Interno.
                 </div>
 
                 {% endif %}

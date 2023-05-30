@@ -1,7 +1,6 @@
 from django.db import models
 from .uf_choices import UfChoices
 
-
 class Municipio(models.Model):
     ibge = models.CharField(max_length=7, unique=True, primary_key=True) # chave primária da tabela
     nome = models.CharField(max_length=200)
@@ -28,6 +27,7 @@ class Entidade(models.Model):
         ('L','Legislativo'),
         ('M','Ministério Público'),
         ('T','Tribunal de Contas'),
+        ('I','Administração Indireta')
     )
 
     ESFERA_CHOICES = (
@@ -50,3 +50,6 @@ class Entidade(models.Model):
     
     def entidade_uf(self):
         return '{} ({})'.format(self.nome, self.municipio.uf)
+    
+    class Meta:
+        ordering = ['municipio']

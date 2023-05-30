@@ -15,7 +15,7 @@ class User(AbstractUser):
     entidade = ChainedManyToManyField(Entidade,
                                       chained_field="municipio",
                                       chained_model_field="municipio",
-                                      auto_choose=False,
+                                      auto_choose=False
                                       )
     foto = models.ImageField(upload_to='perfil/', null=True, blank=True)
     celular = models.CharField(max_length=15, null=True, blank=True)

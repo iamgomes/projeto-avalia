@@ -3,7 +3,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from .models import User
 from django.contrib.auth.decorators import login_required
-from .forms import UserCreationForm
+from .forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import login
 from django.contrib import messages
 import os
@@ -19,7 +19,7 @@ def add_usuario(request):
         if form.is_valid():
             user = form.save(commit=False)
             entidade = form.cleaned_data['entidade']
-            user_entidade = User.objects.filter(entidade__in=entidade)
+            user_entidade = User.objects.exclude(entidade__poder='T').filter(entidade__in=entidade)
 
             if user_entidade:
                 messages.error(request, "Esta UG já está vinculada a outro usuário! Tente outra, por favor.")
@@ -79,4 +79,18 @@ def change_foto(request):
         return redirect(reverse('perfil'))
     
 
+@login_required
+def usuarios(request):
+    users = User.objects.filter(municipio__uf=request.user.municipio.uf)
+
+    return render(request, 'usuarios.html', {'users':users})
+
+
+@login_required
+def change_usuario(request, id):
+    user = User.objects.get(pk=id)
+
+    if request.method == 'GET':
+        form = UserChangeForm(instance=user)
+        return render(request, 'change_usuarios.html', {'form':form})
     

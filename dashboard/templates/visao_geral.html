@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% load mathfilters %}
+
+{% block 'title' %}Visão Geral{% endblock 'title' %}
+
+{% block 'head' %}
+
+        <!-- Sweet Alert-->
+        <link href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+
+        <!-- DataTables -->
+        <link href="{% static 'assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/libs/datatables.net-select-bs4/css//select.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+        <!-- Responsive datatable examples -->
+        <link href="{% static 'assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />  
+
+{% endblock 'head' %}
+
+{% block 'body' %}
+
+{% if messages %}
+    {% for message in messages  %}
+        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-check-all me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="col-xl-12">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Municípi{{municipios.count|pluralize:"o,os"}}</p>
+                            <h4 class="mb-2">{{municipios.count}}</h4>
+                            <p class="text-muted mb-0">{{ user.municipio.get_uf_display }}</p>
+
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-primary rounded-3">
+                                <i class="ri-pin-distance-line font-size-24"></i>  
+                            </span>
+                        </div>
+                    </div>                                              
+                </div><!-- end cardbody -->
+            </div><!-- end card -->
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Unidad{{entidades.count|pluralize:"e,es"}} Gestor{{entidades.count|pluralize:"a,as"}}</p>
+                            <h4 class="mb-2">{{ entidades.count }}</h4>
+                            <p class="text-muted mb-0">{{ user.municipio.get_uf_display }}</p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-primary rounded-3">
+                                <i class=" ri-government-line font-size-24"></i>  
+                            </span>
+                        </div>
+                    </div>                                              
+                </div><!-- end cardbody -->
+            </div><!-- end card -->
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Questionári{{questionarios.count|pluralize:"o,os"}} Recebid{{questionarios.count|pluralize:"o,os"}}</p>
+                            <h4 class="mb-2">{{ questionarios.count }}</h4>
+                            <p class="text-muted mb-0">Restam<span class="text-danger fw-bold font-size-12 me-2"> {{ entidades.count|sub:questionarios.count  }}</span></p>
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-success rounded-3">
+                                <i class="ri-file-copy-2-line font-size-24"></i>  
+                            </span>
+                        </div>
+                    </div>                                              
+                </div><!-- end cardbody -->
+            </div><!-- end card -->
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-truncate font-size-14 mb-2">Questionári{{questionarios_validados.count|pluralize:"o,os"}} Validad{{questionarios_validados.count|pluralize:"o,os"}}</p>
+                            <h4 class="mb-2">{{ questionarios_validados.count }}</h4>
+                            <p class="text-muted mb-0">Restam<span class="text-danger fw-bold font-size-12 me-2"> {{ questionarios.count|sub:questionarios_validados.count  }}</span></p>
+
+                        </div>
+                        <div class="avatar-sm">
+                            <span class="avatar-title bg-light text-info rounded-3">
+                                <i class=" ri-task-line font-size-24"></i>  
+                            </span>
+                        </div>
+                    </div>                                              
+                </div><!-- end cardbody -->
+            </div><!-- end card -->
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">Filtro</h4>
+
+                <form>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="mb-3">
+                                <select class="js-example-basic-single form-select" name="municipio_filtro">
+                                    <option selected disabled value="">Município</option>
+                                    {% for municipio in municipios %}
+                                        <option value="{{municipio.ibge}}">{{municipio}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="mb-3">
+                                <select class="js-example-basic-single form-select" name="ug_filtro">
+                                    <option selected disabled value="">Unidade Gestora</option>
+                                    {% for entidade in entidades %}
+                                        <option value="{{entidade.id}}">{{entidade}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="mb-3">
+                                <select class="js-example-basic-single form-select" name="setor_filtro">
+                                    <option selected disabled value="">Setor</option>
+                                    {% for setor in setores %}
+                                        <option value="{{setor.0}}">{{setor.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="mb-3">
+                                <select class="js-example-basic-single form-control" name="status_filtro">
+                                    <option selected disabled value="">Status</option>
+                                        <option value="NI">Não Iniciado</option>	
+                                    {% for statu in status %}
+                                        <option value="{{statu.0}}">{{statu.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2">
+                            <div class="mb-3">
+                                <input type="submit" class="btn btn-secondary waves-effect waves-light" value="Filtrar">
+                                <button type="button" class="btn btn-outline-secondary waves-effect" onclick="window.location.href='../dashboard/'">Limpar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- end select2 -->
+    </div>
+</div>
+<!-- end row -->
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+
+                        <form method='post'>
+                            {% csrf_token %}
+
+                            {% if user.funcao == 'T' %}
+                            <div class="btn-toolbar" role="toolbar">
+                                <div class="btn-group mb-3 me-2">
+                                    <a href="" class="btn btn-primary d-inline" type="button" data-bs-toggle="modal" data-bs-target="#atribuicao" >
+                                        Atribuir / Tramitar
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if entidades %}
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-centered mb-0 align-middle table-hover table-responsive" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Unidade Gestora</th>
+                                            <th>Município</th>
+                                            <th>Status</th>
+                                            <th>Índice</th>
+                                            <th>Setor Atual</th>
+                                            <th>Validação</th>
+                                        </tr>
+                                    </thead><!-- end thead -->
+                                    <tbody>
+                                        {% for e in entidades %}
+                                        <tr>
+                                            <td>
+                                                {% if e.questionario_set.all %}
+                                                <a href="{% url 'view_questionario' e.questionario_set.all.first.id %}">
+                                                    <h6 class="mb-0">{{ e.nome }}</h6>
+                                                </a>
+                                                {% else %}
+                                                    {{ e.nome }}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ e.municipio }}</td>
+                                            <td>
+                                                {% if e.questionario_set.all %}
+                                                <i class="ri-checkbox-blank-circle-fill font-size-10
+                                                    {% if e.questionario_set.all.first.status == 'I' %} 
+                                                        text-primary
+                                                    {% elif e.questionario_set.all.first.status == 'F' %}
+                                                        text-success
+                                                    {% elif e.questionario_set.all.first.status == 'E' %}
+                                                        text-warning
+                                                    {% elif e.questionario_set.all.first.status == 'EV' %}
+                                                        text-warning
+                                                    {% elif e.questionario_set.all.first.status == 'A' %}
+                                                        text-secondary
+                                                    {% elif e.questionario_set.all.first.status == 'NS' %}
+                                                        text-danger
+                                                    {% elif e.questionario_set.all.first.status == 'V' %}
+                                                        text-info
+                                                    {% endif %}
+                                                    align-middle me-1">
+                                                </i>{{ e.questionario_set.all.first.get_status_display }}
+                                                {% else %}
+                                                    <i class="ri-checkbox-blank-circle-fill font-size-10 text-danger align-middle me-1"></i>Não Iniciado
+                                                {% endif %}
+                                            </td>
+                                            {% if e.questionario_set.all.first.validacao.nota %}
+                                                <td>{{ e.questionario_set.all.first.validacao.nota }}</td>
+                                            {% else %}
+                                                <td>{{ e.questionario_set.all.first.nota }} 
+                                                    <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
+                                            {% endif %}
+                                            <td>{{ e.questionario_set.all.first.tramitacao_set.all.first.get_setor_display }}</td>
+                                            <td>{{ e.questionario_set.all.first.validacao.usuario.nome_completo }}</td>
+                                        </tr>
+
+                                        <!-- end -->
+                                        {% endfor %}
+                                    </tbody><!-- end tbody -->
+                                </table> <!-- end table -->
+                            </div>
+                            {% else %}
+                            <div class="alert alert-primary" role="alert">
+                                Nenhum registro encontrado.
+                            </div>
+                            {% endif %}
+                        <!--Modal-->
+                        {% include 'modal_atribuicao.html' %}
+                        <!--Modal-->
+                        {% include 'enviar_atricon.html' %}
+                        </form>
+
+            </div><!-- end card -->
+        </div><!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+
+{% block 'script' %}
+
+        <!-- Sweet Alerts js -->
+        <script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+        <!-- Sweet alert init js-->
+        <script src="{% static 'sweetalert/js/script.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <!-- Required datatable js -->
+        <script src="{% static 'assets/libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('.js-example-basic-single').select2({
+                    width: 'resolve'
+                });
+            });
+        </script>
+
+        <script>
+            function selecionarCheckboxesPorGrupo(seletor) {
+                // Obtém todos os elementos de input do tipo checkbox que correspondem ao seletor fornecido
+                var checkboxes = document.querySelectorAll(seletor);
+              
+                // Itera sobre cada checkbox e marca como selecionado
+                checkboxes.forEach(function(checkbox) {
+                  checkbox.checked = !checkbox.checked;
+                });
+              }
+        </script>
+
+        <script>
+            $(document).ready(function() {
+                var $validadorSim = document.getElementById('validadorSim');
+                var $validadorNao = document.getElementById('validadorNao');
+                var $servidor = document.getElementById('auditor');
+                $("#btn_enviar").hide();
+                $("#tabela_tramitar").hide();
+                $('#validadorSim').on('click',function() {
+                    if($(this).is(":checked")) {
+                        $("#servidor").show();
+                        $("#tabela_atribuir").show();
+                        $("#tabela_tramitar").hide();
+                        $("#btn_enviar").hide();
+                        $("#btn_atribuir").show();
+                    }
+                    if ($validadorSim.checked) {
+                        $servidor.required = true;
+                    }
+                })
+                $('#validadorNao').on('click',function() {
+                    if($(this).is(":checked")) {
+                        $("#servidor").hide();
+                        $("#tabela_atribuir").hide();
+                        $("#tabela_tramitar").show();
+                        $("#btn_atribuir").hide();
+                        $("#btn_enviar").show();
+                    }
+                    if ($validadorNao.checked) {
+                        $servidor.required = false;
+                    }
+                })
+              });
+        </script>
+
+        <!-- Datatable init js -->
+        <script src="{% static 'assets/js/pages/datatables.init.js' %}"></script>
+        
+
+{% endblock 'script' %}
+
+{% endblock 'body' %}

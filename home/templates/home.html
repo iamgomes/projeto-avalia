@@ -58,8 +58,11 @@
                                 <a href="#" class="text-muted m-1">{{user.municipio.municipio_uf}}</a>
                             </div>
     
-                            <div class="mt-4">
-                                <a href="{% url 'minhas_avaliacoes' %}" class="btn btn-outline-primary waves-effect waves-light btn-sm">Minhas avaliações</a>
+                            <div class="mt-3">
+                                <a href="{% url 'minhas_avaliacoes' %}" class="btn btn-outline-primary waves-effect waves-light btn-sm">Minhas Avaliações ({{avaliacoes_respondidas}})</a>
+                                {% if user.funcao == 'T' %}
+                                <a href="{% url 'minhas_validacoes' %}" class="btn btn-outline-info waves-effect waves-light btn-sm">Minhas Validações ({{validacoes_respondidas}})</a>
+                                {% endif %}
                             </div>
                         </div>
     
@@ -74,16 +77,7 @@
                                 <p class="text-muted mb-0">Products</p>
                             </div>
                         </div>-->
-                        <div class="col">
-                            <div class="p-1">
-                                {% if avaliacoes_respondidas %}
-                                <h5 class="mb-1">{{avaliacoes_respondidas}}</h5>
-                                <p class="text-muted mb-0">Avaliaç{{avaliacoes_respondidas|pluralize:"ão,ões"}} respondid{{avaliacoes_respondidas|pluralize:"a,as"}}</p>
-                                {% else %}
-                                <p class="text-muted mb-0">Nenhuma avaliação respondida</p>
-                                {% endif %}
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div> <!-- end card body -->
@@ -133,10 +127,10 @@
             <div class="col-md-12">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h4 class="my-3"> Avaliações Disponíveis </h4>
+                        <h4 class="my-3"> Projetos Disponíveis </h4>
                     </div>
                     <div class="col-auto">
-                        <a href="{% url 'avaliacoes_disponiveis' %}"> Ver todas</a>
+                        <a href="{% url 'projetos_disponiveis' %}"> Ver todos</a>
                     </div>
                 </div>
         
@@ -189,8 +183,6 @@
                                 <th>ID</th>
                                 <th>Exercício</th>
                                 <th>Unidade Gestora</th>
-                                <th>Nota</th>
-                                <th>Classificação</th>
                                 <th>Data Envio</th>
                             </tr>
                         </thead><!-- end thead -->
@@ -203,8 +195,6 @@
                                     <h6 class="mb-0">{{ q.entidade }}</h6>
                                     <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
                                 </td>
-                                <td>{{ q.nota }}</td>
-                                <td>Intermediário</td>
                                 <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
                             </tr>
                              <!-- end -->

@@ -5,7 +5,6 @@ from entidades.models import Entidade
 from avaliacoes.models import Avaliacao
 
 
-
 #Antiga tabela Dimensao
 class ItemAvaliacao(models.Model):
     item_avaliacao = models.CharField(max_length=100)
@@ -21,11 +20,72 @@ class ItemAvaliacao(models.Model):
 class Dimensao(models.Model):
     dimensao_texto = models.CharField(max_length=50)
     descricao = models.TextField(null=True,blank=True)
+    peso = models.IntegerField(default=1)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
         return self.dimensao_texto
+    
+    # VA = Valor Absoluto, VB = Valor Base, VN = Valor Normalizado
+    
+    @property
+    def qtde_essenciais(self):
+        return self.criterio_set.all().filter(exigibilidade='E').count()
+    
+    @property
+    def va_essenciais(self):
+        total = self.qtde_essenciais * 2
+        return total
+    
+    @property
+    def qtde_obrigatorias(self):
+        return self.criterio_set.all().filter(exigibilidade='O').count()
+    
+    @property
+    def va_obrigatorias(self):
+        total = self.qtde_obrigatorias * 1.5
+        return total
+    
+    @property
+    def qtde_recomendadas(self):
+        return self.criterio_set.all().filter(exigibilidade='R').count()
+    
+    @property
+    def va_recomendadas(self):
+        return self.qtde_recomendadas * 1
+    
+    @property
+    def va_criterio(self):
+        return self.va_essenciais + self.va_obrigatorias + self.va_recomendadas
+    
+    @property
+    def soma_pesos(self):
+        return Dimensao.objects.aggregate(Sum("peso"))['peso__sum'] #37
+    
+    @property
+    def peso_normalizado(self):
+        total = self.peso / self.soma_pesos * 100
+        return total
+    
+    @property
+    def vb_criterio(self):
+        total = self.peso_normalizado / self.va_criterio
+        return total
+    
+    @property
+    def vn_essenciais(self):
+        total = self.vb_criterio * 2
+        return total
+    
+    @property
+    def vn_obrigatorias(self):
+        total = self.vb_criterio * 1.5
+        return total
+    
+    @property
+    def vn_recomendadas(self):
+        return self.vb_criterio * 1
     
 
 class Criterio(models.Model):
@@ -58,6 +118,11 @@ class Criterio(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.cod, self.criterio_texto)
+    
+    #Soma dos pesos do itens aplicáveis ao critério
+    @property
+    def soma_pesos_aplicaveis(self):
+        return self.itens_avaliacao.aggregate(Sum("peso"))['peso__sum']
 
 
 class CriterioItem(models.Model):
@@ -74,10 +139,10 @@ class CriterioItem(models.Model):
 #Antiga tabela UsuarioAvaliacao
 class Questionario(models.Model):
     STATUS_CHOICES = (
-        ('NS','Não possui site'),
         ('I','Iniciado'),
-        ('F','Finalizado'),
         ('E','Editando'),
+        ('F','Finalizado UG'),
+        ('AV','Aguardando Validação'),
         ('EV','Em Validação'),
         ('V','Validado'),
     )
@@ -98,31 +163,78 @@ class Questionario(models.Model):
     
     @property
     def nota(self):
-        return self.resposta_set.all().aggregate(Sum('nota'))['nota__sum'] or 0
+        total = self.resposta_set.all().aggregate(Sum('nota'))['nota__sum'] or 0
+        return round(total, 2)
     
     @property
     def total_criterios(self):
         return self.avaliacao.criterio_set.all().count()
     
     @property
-    def total_criterios_respondidos(self):
-        return self.resposta_set.exclude(resposta__exact='').values('criterio_dimensao__criterio').distinct().count()
+    def total_criterios_essenciais(self):
+        return self.avaliacao.criterio_set.filter(exigibilidade='E').count()
+    
+    @property
+    def total_criterios_essenciais_atendidos(self):
+        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').count()
+    
+    @property
+    def percentual_atendido_essenciais(self):
+        total = self.total_criterios_essenciais_atendidos / self.total_criterios_essenciais * 100
+        return total
+    
+    @property
+    def classificacao(self):
+        if self.percentual_atendido_essenciais == 100:
+            if self.nota >= 95:
+                nivel = 'Diamante'
+            if self.nota >= 85 and self.nota < 95:
+                nivel = 'Ouro'
+            if self.nota >= 75 and self.nota < 85:
+                nivel = 'Prata'
+        else:
+            if self.nota >= 75:
+                nivel = 'Elevado'
+            if self.nota >= 50 and self.nota < 75:
+                nivel = 'Intermediário'
+            if self.nota >= 30 and self.nota < 50:
+                nivel = 'Básico'
+            if self.nota >= 1 and self.nota < 30:
+                nivel = 'Inicial'
+            else:
+                nivel = 'Inexistente'
+
+        return nivel
 
 
 class Resposta(models.Model):
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
     criterio_item = models.ForeignKey(CriterioItem, on_delete=models.CASCADE)
     resposta = models.BooleanField(default=False)
-    nota = models.IntegerField(null=True,blank=True)
+    nota = models.FloatField(null=True,blank=True)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
         return str(self.resposta)
     
+    @property
+    def total_item(self):
+        if self.criterio_item.criterio.exigibilidade == 'E':
+            valor_item = self.criterio_item.criterio.dimensao.vn_essenciais
+        if self.criterio_item.criterio.exigibilidade == 'O':
+            valor_item = self.criterio_item.criterio.dimensao.vn_obrigatorias
+        if self.criterio_item.criterio.exigibilidade == 'R':
+            valor_item = self.criterio_item.criterio.dimensao.vn_recomendadas
+
+        total = valor_item / self.criterio_item.criterio.soma_pesos_aplicaveis * self.criterio_item.item_avaliacao.peso
+
+        return total
+
+    
     def save(self, *args, **kwargs):
         if self.resposta == True:
-            self.nota = 10
+            self.nota = self.total_item
         else:
             self.nota = 0
         return super().save(*args, **kwargs)

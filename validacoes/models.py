@@ -19,7 +19,40 @@ class Validacao(models.Model):
     
     @property
     def nota(self):
-        return self.respostavalidacao_set.all().aggregate(Sum('nota'))['nota__sum'] or 0
+        total = self.respostavalidacao_set.all().aggregate(Sum('nota'))['nota__sum'] or 0
+        return round(total, 2)
+    
+    @property
+    def total_criterios_essenciais_atendidos(self):
+        return self.respostavalidacao_set.filter(resposta_validacao=True).filter(resposta__criterio_item__criterio__exigibilidade='E').count()
+    
+    @property
+    def percentual_atendido_essenciais(self):
+        total = self.total_criterios_essenciais_atendidos / self.questionario.total_criterios_essenciais * 100
+        return total
+    
+    @property
+    def classificacao(self):
+        if self.percentual_atendido_essenciais == 100:
+            if self.nota >= 95:
+                nivel = 'Diamante'
+            if self.nota >= 85 and self.nota < 95:
+                nivel = 'Ouro'
+            if self.nota >= 75 and self.nota < 85:
+                nivel = 'Prata'
+        else:
+            if self.nota >= 75:
+                nivel = 'Elevado'
+            if self.nota >= 50 and self.nota < 75:
+                nivel = 'Intermediário'
+            if self.nota >= 30 and self.nota < 50:
+                nivel = 'Básico'
+            if self.nota >= 1 and self.nota < 30:
+                nivel = 'Inicial'
+            else:
+                nivel = 'Inexistente'
+
+        return nivel
 
 
 class RespostaValidacao(models.Model):
@@ -27,16 +60,29 @@ class RespostaValidacao(models.Model):
     criterio_item = models.ForeignKey(CriterioItem, on_delete=models.CASCADE)
     resposta = models.OneToOneField(Resposta, on_delete=models.CASCADE)
     resposta_validacao = models.BooleanField(default=False)
-    nota = models.IntegerField(null=True,blank=True)
+    nota = models.FloatField(null=True,blank=True)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
         return str(self.resposta_validacao)
+    
+    @property
+    def total_item_validacao(self):
+        if self.resposta.criterio_item.criterio.exigibilidade == 'E':
+            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_essenciais
+        if self.resposta.criterio_item.criterio.exigibilidade == 'O':
+            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_obrigatorias
+        if self.resposta.criterio_item.criterio.exigibilidade == 'R':
+            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_recomendadas
+
+        total = valor_item / self.resposta.criterio_item.criterio.soma_pesos_aplicaveis * self.resposta.criterio_item.item_avaliacao.peso
+
+        return total
 
     def save(self, *args, **kwargs):
         if self.resposta_validacao == True:
-            self.nota = 10
+            self.nota = self.total_item_validacao
         else:
             self.nota = 0
         return super().save(*args, **kwargs)
