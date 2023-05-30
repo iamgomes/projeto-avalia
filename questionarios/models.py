@@ -151,6 +151,8 @@ class Questionario(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     entidade = models.ForeignKey(Entidade, on_delete=models.CASCADE)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='I')
+    indice = models.FloatField(null=True,blank=True)
+    nivel = models.CharField(max_length=50, null=True,blank=True)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
