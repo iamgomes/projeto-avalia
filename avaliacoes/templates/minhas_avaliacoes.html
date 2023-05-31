@@ -109,13 +109,13 @@
                                         {% endif %}
                                     </td>
                                     <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
-                                    <td>{{ q.percentual_atendido_essenciais }} %</td>
+                                    <td>{{ q.essenciais }} %</td>
                                     {% if q.validacao.nota %}
                                         <td>{{ q.validacao.nota }}</td>
                                     {% else %}
-                                    <td>{{ q.nota }} % <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
+                                        <td>{{ q.indice }} % <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
                                     {% endif %}
-                                    <td>{{ q.classificacao }}</td>
+                                    <td>{{ q.nivel }}</td>
                                     <td>
                                     {% if not q.resposta_set.all %}
                                         {% if not q.status == 'NS' %}

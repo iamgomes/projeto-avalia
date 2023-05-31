@@ -9,6 +9,7 @@ from django.db.models import Max
 from django.contrib import messages
 from notifications.signals import notify
 from django.db.models import Q
+from rolepermissions.decorators import has_permission_decorator
 
 
 def tramitar_atricon(request, id):
@@ -41,11 +42,12 @@ def atribuir_validador(request, id, auditor_id):
     return messages.success(request, "Questionários atribuídos para validação com sucesso!")
 
 
-@login_required
+@has_permission_decorator('visao_geral')
 def visao_geral(request):
     if request.method == 'GET':
         entidades = Entidade.objects.filter(municipio__uf=request.user.municipio.uf)
         municipios = Municipio.objects.filter(uf=request.user.municipio.uf)
+        poderes = Entidade.PODER_CHOICES
         setores = Tramitacao.SETOR_CHOICES
         status = Questionario.STATUS_CHOICES
         auditores = User.objects.filter(municipio__uf=request.user.municipio.uf).filter(funcao='T')
@@ -60,6 +62,7 @@ def visao_geral(request):
 
         municipio_filtro = request.GET.get('municipio_filtro', None)
         ug_filtro = request.GET.get('ug_filtro', None)
+        poder_filtro = request.GET.get('poder_filtro', None)
         setor_filtro = request.GET.get('setor_filtro', None)
         status_filtro = request.GET.get('status_filtro', None)
 
@@ -69,6 +72,10 @@ def visao_geral(request):
             questionarios = questionarios.filter(entidade__in=entidades)
         if ug_filtro != '' and ug_filtro is not None:
             entidades = entidades.filter(pk=ug_filtro)
+            municipios = municipios.filter(pk=entidades.first().municipio.pk)
+            questionarios = questionarios.filter(entidade__in=entidades)
+        if poder_filtro != '' and poder_filtro is not None:
+            entidades = entidades.filter(poder=poder_filtro)
             municipios = municipios.filter(pk=entidades.first().municipio.pk)
             questionarios = questionarios.filter(entidade__in=entidades)
         if setor_filtro != '' and setor_filtro is not None:
@@ -92,6 +99,7 @@ def visao_geral(request):
                                                     'questionarios_validados':questionarios_validados,
                                                     'questionarios_setor':questionarios_setor,
                                                     'questionarios_tramitar':questionarios_tramitar,
+                                                    'poderes':poderes,
                                                     'setores':setores,
                                                     'status':status,
                                                     'auditores':auditores,})

@@ -48,12 +48,14 @@
                                     <th>Status</th>
                                     <th>Setor Atual</th>
                                     <th>Data Envio</th>
-                                    <th>Nota</th>
+                                    <th>Essencias</th>
+                                    <th>Índice</th>
+                                    <th>Nível</th>
                                     <th>Ação</th>
                                 </tr>
                             </thead><!-- end thead -->
                             <tbody>
-                                {% for f in validacoes  %}
+                                {% for f in validacoes %}
                                 <tr>
                                     <td>{{ f.questionario.id }}/{{ f.questionario.avaliacao.ano_exercicio}}</td>
                                     <td>
@@ -103,7 +105,13 @@
                                         {% endif %}
                                     </td>
                                     <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
-                                    <td>{{ f.nota }}</td>
+                                    <td>{{ f.essenciais }} %</td>
+                                    {% if f.indice %}
+                                        <td>{{ f.indice }}</td>
+                                    {% else %}
+                                        <td>{{ f.questionario.indice }} % <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
+                                    {% endif %}
+                                    <td>{{ f.nivel }}</td>
                                     <td>
                                         <a href="{% url 'view_questionario' f.questionario.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
                                             <i class="mdi mdi-eye font-size-16"></i>
@@ -111,11 +119,9 @@
                                         {% if not f.questionario.respostavalidacao_set.all %}
                                         {% if f.questionario.validacao %}
                                             {% if not f.questionario.status == 'V'%}
-                                            {% if not f.questionario.status == 'EV'%}
                                             <a href="{% url 'add_resposta_validacao' f.questionario.id f.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
                                             </a>
-                                            {% endif %}
                                             {% endif %}
                                         {% endif %}
                                         {% endif %}

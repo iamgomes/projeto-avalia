@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from .models import User
+from entidades.models import Municipio
 from django.contrib.auth.decorators import login_required
 from .forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import login
@@ -88,9 +89,17 @@ def usuarios(request):
 
 @login_required
 def change_usuario(request, id):
-    user = User.objects.get(pk=id)
-
-    if request.method == 'GET':
-        form = UserChangeForm(instance=user)
-        return render(request, 'change_usuarios.html', {'form':form})
+    usuario = get_object_or_404(User, id=id)
+    
+    if request.method == 'POST':
+        form = UserChangeForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Usuário alterado com sucesso!")
+            return redirect(reverse('usuarios'))
+    else:
+        form = UserChangeForm(instance=usuario)
+        form.fields["municipio"].queryset = Municipio.objects.filter(uf=request.user.municipio.uf)
+    
+    return render(request, 'change_usuario.html', {'form': form})
     

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'smart_selects',
     'notifications',
     'storages',
-    'mathfilters'
+    'mathfilters',
+    'rolepermissions',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,8 @@ LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = '/login/'
 
+ROLEPERMISSIONS_MODULE = 'avalia.roles'
+
 GRAPH_MODELS = {
   'all_applications': True,
   'group_models': True,
@@ -143,8 +146,6 @@ MESSAGE_TAGS = {
     constants.INFO: 'alert-info',
     constants.WARNING: 'alert-warning'
 }
-
-JQUERY_URL = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
 
 if DEBUG:
     STATIC_URL = '/static/'

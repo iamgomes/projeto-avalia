@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 {% load mathfilters %}
+{% load permission_tags %}
 
 {% block 'title' %}Visão Geral{% endblock 'title' %}
 
@@ -146,6 +147,16 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="mb-3">
+                                <select class="js-example-basic-single form-select" name="poder_filtro">
+                                    <option selected disabled value="">Poder</option>
+                                    {% for poder in poderes %}
+                                        <option value="{{poder.0}}">{{poder.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="mb-3">
                                 <select class="js-example-basic-single form-select" name="setor_filtro">
                                     <option selected disabled value="">Setor</option>
                                     {% for setor in setores %}
@@ -189,7 +200,7 @@
                         <form method='post'>
                             {% csrf_token %}
 
-                            {% if user.funcao == 'T' %}
+                            {% if user|can:'atribuir_validador' %}
                             <div class="btn-toolbar" role="toolbar">
                                 <div class="btn-group mb-3 me-2">
                                     <a href="" class="btn btn-primary d-inline" type="button" data-bs-toggle="modal" data-bs-target="#atribuicao" >
@@ -201,7 +212,7 @@
 
                             {% if entidades %}
                             <div class="table-responsive">
-                                <table id="datatable" class="table table-centered mb-0 align-middle table-hover table-responsive" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <table class="table table-centered mb-0 align-middle table-hover table-responsive datatable" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                     <thead class="table-light">
                                         <tr>
                                             <th>Unidade Gestora</th>
@@ -249,10 +260,10 @@
                                                     <i class="ri-checkbox-blank-circle-fill font-size-10 text-danger align-middle me-1"></i>Não Iniciado
                                                 {% endif %}
                                             </td>
-                                            {% if e.questionario_set.all.first.validacao.nota %}
-                                                <td>{{ e.questionario_set.all.first.validacao.nota }}</td>
+                                            {% if e.questionario_set.all.first.validacao.indice %}
+                                                <td>{{ e.questionario_set.all.first.validacao.indice }}</td>
                                             {% else %}
-                                                <td>{{ e.questionario_set.all.first.nota }} 
+                                                <td>{{ e.questionario_set.all.first.indice }} 
                                                     <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
                                             {% endif %}
                                             <td>{{ e.questionario_set.all.first.tramitacao_set.all.first.get_setor_display }}</td>

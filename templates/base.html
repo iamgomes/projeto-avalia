@@ -1,4 +1,5 @@
 {% load static %}
+{% load permission_tags %}
 
 <!doctype html>
 <html lang="pt-BR">
@@ -139,17 +140,23 @@
                                 {% if user.is_staff %}
                                     <i class="mdi mdi-check-decagram text-primary"></i>
                                 {% endif %}
+                                {% if user|has_role:'coordenadores' %}
+                                    <i class="mdi mdi-check-decagram text-warning"></i>
+                                {% endif %}
                                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
                                 <a class="dropdown-item" href="{% url 'perfil' %}"><i class="ri-user-line align-middle me-1"></i>Perfil</a>
-                                <a class="dropdown-item" href="{% url 'password_change' %}"><i class="ri-lock-password-fill align-middle me-1"></i>Alterar senha</a>
-                                <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class="ri-bill-fill me-1"></i>Minhas avaliações</a>
-                                {% if user.is_superuser %}
-                                    <a class="dropdown-item" href="{% url 'municipio_bulk' %}"><i class="ri-database-2-fill me-1"></i>Bulk de dados</a>
+                                <a class="dropdown-item" href="{% url 'password_change' %}"><i class="ri-lock-password-fill align-middle me-1"></i>Alterar Senha</a>
+                                <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class=" ri-file-copy-2-fill me-1"></i>Minhas Avaliações</a>
+                                {% if user.funcao == 'T' %}
+                                    <a class="dropdown-item" href="{% url 'minhas_validacoes' %}"><i class=" ri-task-fill me-1"></i>Minhas Validações</a>
                                 {% endif %}
                                 <div class="dropdown-divider"></div>
+                                {% if user.is_superuser %}
+                                    <a class="dropdown-item" href="{% url 'municipio_bulk' %}"><i class="ri-database-2-fill me-1"></i>Bulk de Dados</a>
+                                {% endif %}
                                 <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="ri-shut-down-line align-middle me-1 text-danger"></i>Sair</a>
                             </div>
                         </div>
@@ -177,21 +184,18 @@
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="topnav-apps">
                                             <a href="{% url 'projetos_disponiveis' %}" class="dropdown-item">Projetos Disponíveis</a>
-                                            {% if user.funcao == 'A' or user.funcao == 'T' %}
-                                            <a href="{% url 'avaliacoes_setor' %}" class="dropdown-item">Avaliações para Validar</a>
-                                            {% endif %}
-                                            {% if user.funcao == 'A' %}
-                                                <a href="{% url 'avaliacao' %}" class="dropdown-item">Todos Questionários Recebidos</a>
-                                            {% endif %}
                                         </div>
                                     </li>
 
+                                    {% if user|can:'atribuir_validador' %}
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'visao_geral' %}">
                                             <i class="ri-dashboard-line me-2"></i>Visão Geral
                                         </a>
                                     </li>
+                                    {% endif %}
 
+                                    {% if user.is_staff or user|has_role:'coordenadores' %}
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-apps" role="button">
                                             <i class=" ri-settings-2-line me-2"></i>Configurações <div class="arrow-down"></div>
@@ -200,7 +204,7 @@
                                             <a href="{% url 'usuarios' %}" class="dropdown-item">Usuários</a>
                                         </div>
                                     </li>
-                                
+                                    {% endif %}
                                 </ul>
                             </div>
                         </nav>

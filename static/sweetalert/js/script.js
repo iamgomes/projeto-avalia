@@ -42,7 +42,7 @@ function delete_validacao(id) {
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#0f9cf3',
         cancelButtonColor: '#f32f53',
-        confirmButtonText: 'Sim, enviar!'
+        confirmButtonText: 'Sim, excluir!'
     }).then((result) => {
     if (result.value) {
         Swal.fire({

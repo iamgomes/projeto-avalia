@@ -12,7 +12,7 @@
                 <th>Unidade Gestora</th>
                 <th>Status</th>
                 <th>Data Envio</th>
-                <th>Nota</th>
+                <th>Índice</th>
             </tr>
         </thead><!-- end thead -->
         <tbody>
@@ -52,10 +52,10 @@
                     </span>
                 </td>
                 <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
-                {% if q.validacao.nota %}
-                    <td>{{ q.validacao.nota }}</td>
+                {% if q.validacao.indice %}
+                    <td>{{ q.validacao.indice }}</td>
                 {% else %}
-                <td>{{ q.nota }}</td>
+                <td>{{ q.indice }}</td>
                 {% endif %}
 
             </tr>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load permission_tags %}
 
 {% block 'title' %}Home{% endblock 'title' %}
 
@@ -46,6 +47,9 @@
                                 {{ user.first_name }}
                                 {% if user.is_staff %}
                                     <i class="mdi mdi-check-decagram text-primary"></i>
+                                {% endif %}
+                                {% if user|has_role:'coordenadores' %}
+                                    <i class="mdi mdi-check-decagram text-warning"></i>
                                 {% endif %}
                             </h5>
                             <div>
@@ -163,15 +167,6 @@
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <div class="dropdown float-end">
-                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-dots-vertical"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <!-- item-->
-                        <a href="#" class="dropdown-item">Ver todas</a>
-                    </div>
-                </div>
 
                 <h4 class="card-title mb-4">Últimos Questionários Recebidos</h4>
                 

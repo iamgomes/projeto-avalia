@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import Sum
 from entidades.models import Entidade
 from avaliacoes.models import Avaliacao
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 #Antiga tabela Dimensao
@@ -151,8 +153,9 @@ class Questionario(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     entidade = models.ForeignKey(Entidade, on_delete=models.CASCADE)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='I')
-    indice = models.FloatField(null=True,blank=True)
-    nivel = models.CharField(max_length=50, null=True,blank=True)
+    indice = models.FloatField(default=0)
+    nivel = models.CharField(max_length=50, default='Inexistente')
+    essenciais = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, auto_now_add=False)
 
@@ -178,7 +181,7 @@ class Questionario(models.Model):
     
     @property
     def total_criterios_essenciais_atendidos(self):
-        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').count()
+        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').count() or 0
     
     @property
     def percentual_atendido_essenciais(self):
@@ -189,25 +192,25 @@ class Questionario(models.Model):
     def classificacao(self):
         if self.percentual_atendido_essenciais == 100:
             if self.nota >= 95:
-                nivel = 'Diamante'
+                nivel_t = 'Diamante'
             if self.nota >= 85 and self.nota < 95:
-                nivel = 'Ouro'
+                nivel_t = 'Ouro'
             if self.nota >= 75 and self.nota < 85:
-                nivel = 'Prata'
+                nivel_t = 'Prata'
         else:
             if self.nota >= 75:
-                nivel = 'Elevado'
+                nivel_t = 'Elevado'
             if self.nota >= 50 and self.nota < 75:
-                nivel = 'Intermediário'
+                nivel_t = 'Intermediário'
             if self.nota >= 30 and self.nota < 50:
-                nivel = 'Básico'
+                nivel_t = 'Básico'
             if self.nota >= 1 and self.nota < 30:
-                nivel = 'Inicial'
-            else:
-                nivel = 'Inexistente'
+                nivel_t = 'Inicial'
+            if self.nota < 1:
+                nivel_t = 'Inexistente'
 
-        return nivel
-
+        return nivel_t
+    
 
 class Resposta(models.Model):
     questionario = models.ForeignKey(Questionario, on_delete=models.CASCADE)
@@ -304,3 +307,11 @@ class Tramitacao(models.Model):
 
     class Meta:
         ordering = ('-created_at', )
+
+
+@receiver(post_save, sender=Questionario)
+def update_indice(sender, instance, created, **kwargs):
+    indice = instance.nota
+    nivel = instance.classificacao
+    essenciais = instance.percentual_atendido_essenciais
+    Questionario.objects.filter(pk=instance.id).update(indice=indice, nivel=nivel, essenciais=essenciais)

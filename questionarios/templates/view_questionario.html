@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load permission_tags %}
 
 {% block 'title' %}Questionário{% endblock 'title' %}
 
@@ -78,8 +79,8 @@
         {% endif %}
         {% if questionario.validacao.respostavalidacao_set.all  %}
         {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
-        {% if questionario.validacao.usuario == user %}
-        <a href="{% url 'change_resposta_validacao' questionario.validacao.id %}" class="btn btn-primary d-inline" type="button" >
+        {% if questionario.validacao.usuario == user or user|has_role:'coordenadores'%}
+        <a href="{% url 'change_resposta_validacao' questionario.validacao.id %}" class="btn btn-info d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Validação
         </a>
         {% endif %}
@@ -98,8 +99,8 @@
 
                 <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ questionario.id }}/{{ questionario.avaliacao.ano_exercicio }}</i></h4>
                 <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
-                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ questionario.usuario.nome_completo }} ({{questionario.usuario.get_funcao_display}}) - {{ questionario.nota }} ({{ questionario.classificacao }})</i></h5>
-                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} ({{questionario.validacao.usuario.get_funcao_display}}) - {{ questionario.validacao.nota }} ({{ questionario.validacao.classificacao }})</i></h5>
+                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ questionario.usuario.nome_completo }} ({{questionario.usuario.get_funcao_display}}) - {{ questionario.indice }} ({{ questionario.nivel }})</i></h5>
+                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} ({{questionario.validacao.usuario.get_funcao_display}}) - {{ questionario.validacao.indice }} ({{ questionario.validacao.nivel }})</i></h5>
 
                 {% if respostas %}
 

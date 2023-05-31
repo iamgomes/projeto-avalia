@@ -7,3 +7,11 @@ lsof -t -i tcp:8000 | xargs kill -9
 Tags Anotadas Github
 git tag -a v0.1 -m "version 0.1"
 git push origin v0.1
+
+Criar branch
+git branch MinhaNovaBrach
+aternar branch
+git checkout MinhaNovaBrach
+
+Sincronizar permissoes
+python manage.py sync_roles
