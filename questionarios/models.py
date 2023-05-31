@@ -109,7 +109,7 @@ class Criterio(models.Model):
 
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE)
     dimensao = models.ForeignKey(Dimensao, on_delete=models.CASCADE)
-    cod = models.CharField(max_length=10)
+    cod = models.FloatField(default=0)
     criterio_texto = models.CharField(max_length=500)
     itens_avaliacao = models.ManyToManyField(ItemAvaliacao, through='CriterioItem')
     exigibilidade = models.CharField(max_length=1, choices=EXIGIBILIDADE_CHOICES)
