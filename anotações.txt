@@ -12,6 +12,10 @@ Criar branch
 git branch MinhaNovaBrach
 aternar branch
 git checkout MinhaNovaBrach
+Push branch especifica
+git push -u origin MinhaNovaBrach
+Mesclar
+git merge MinhaNovaBrach
 
 Sincronizar permissoes
 python manage.py sync_roles

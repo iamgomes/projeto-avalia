@@ -132,6 +132,7 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = '/login/'
 
 ROLEPERMISSIONS_MODULE = 'avalia.roles'
+#ROLEPERMISSIONS_REGISTER_ADMIN = True
 
 GRAPH_MODELS = {
   'all_applications': True,
