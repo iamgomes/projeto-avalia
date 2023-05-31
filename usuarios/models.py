@@ -23,6 +23,7 @@ class User(AbstractUser):
                                       )
     foto = models.ImageField(upload_to='perfil/', null=True, blank=True)
     celular = models.CharField(max_length=15, null=True, blank=True)
+    email = models.EmailField(unique=True)
 
     def nome_completo(self):
         return '{} {}'.format(self.first_name, self.last_name)

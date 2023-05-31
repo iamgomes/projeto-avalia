@@ -118,6 +118,9 @@ class Criterio(models.Model):
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
+    class Meta:
+        ordering = ('cod', )
+
     def __str__(self):
         return '{} {}'.format(self.cod, self.criterio_texto)
     

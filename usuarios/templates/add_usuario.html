@@ -22,7 +22,16 @@
         <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
         <!-- App Css-->
         <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
-
+        <style>
+            .errorlist
+                {
+                list-style: none;
+                color: red;
+                margin: 0px;
+                padding: 0px;
+                font-weight: bolder;
+                }
+        </style>  
     </head>
 
     <body class="auth-body-bg">
@@ -52,9 +61,9 @@
                     {% if form.errors and not form.non_field_errors %}
                     <div class="alert alert-danger">
                         {% if form.errors.items|length == 1 %}
-                        Please correct the error below.
+                            Por favor, corrija o erro abaixo.
                         {% else %}
-                        Please correct the errors below.
+                            Por favor, corrija os erros abaixo.
                         {% endif %}
                     </div>
                     {% endif %}

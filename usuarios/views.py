@@ -11,31 +11,27 @@ import os
 
 
 def add_usuario(request):
-    if request.method == 'GET':
-        form = UserCreationForm()
-        return render(request, 'add_usuario.html', {'form':form})
-    
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
             entidade = form.cleaned_data['entidade']
-            user_entidade = User.objects.exclude(entidade__poder='T').filter(entidade__in=entidade)
-
-            if user_entidade:
-                messages.error(request, "Esta UG já está vinculada a outro usuário! Tente outra, por favor.")
-                return redirect(reverse('add_usuario'))
-            else:
-                user.save()
-                # this will save by itself
-                user.entidade.set(entidade)
-                login(request, user)
-                messages.success(request, "Usuário cadastrado com sucesso!")
-                return redirect(reverse('home'))
+            usuario_entidade = User.objects.exclude(entidade__poder='T').filter(entidade__in=entidade)
             
-        messages.error(request, "Este usuário já existe! Tente outro, por favor.")
-        return redirect(reverse('add_usuario'))
+            if usuario_entidade.exists():
+                messages.warning(request, "Esta UG já está vinculada a outro usuário! Tente outra, por favor.")
+                return render(request, 'add_usuario.html', {'form': form})
+            
+            user = form.save()
+            user.entidade.set(entidade)
+            login(request, user)
+            messages.success(request, "Usuário cadastrado com sucesso!")
+            return redirect(reverse('home'))
 
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'add_usuario.html', {'form': form})
+        
 
 @login_required
 def perfil(request):
