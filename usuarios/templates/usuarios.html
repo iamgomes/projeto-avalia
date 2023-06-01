@@ -60,7 +60,16 @@
                                 {% for q in users %}
                                 <tr>
                                     <td>{{ q.id }}</td>
-                                    <td>{{ q.nome_completo }}</td>
+                                    <td>
+                                        <div>
+                                            {% if q.foto %}
+                                                <img class="img-thumbnail rounded-circle avatar-sm me-2" alt="200x200" src="{{ q.foto.url }}" data-holder-rendered="true">
+                                            {% else %}
+                                                <img class="img-thumbnail rounded-circle avatar-sm me-2" alt="200x200" src="{% static 'img/perfil.png'%}" data-holder-rendered="true">
+                                            {% endif %}
+                                            {{ q.nome_completo }}
+                                        </div>
+                                    </td>
                                     <td>{{ q.username }}</td>
                                     <td>{{ q.municipio }}</td>
                                     <td>{{ q.get_funcao_display }}</td>

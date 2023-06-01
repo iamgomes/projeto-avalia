@@ -137,12 +137,17 @@
                                     <img class="rounded-circle header-profile-user" src="{% static 'img/perfil.png' %}">
                                 {% endif %}
                                     <span class="d-none d-xl-inline-block ms-1">{{ user.first_name }}</span>
+
                                 {% if user.is_staff %}
                                     <i class="mdi mdi-check-decagram text-primary"></i>
                                 {% endif %}
-                                {% if user|has_role:'coordenadores' %}
+                                {% if user|has_role:"coordenadores" %}
                                     <i class="mdi mdi-check-decagram text-warning"></i>
                                 {% endif %}
+                                {% if user|has_role:"auditores" %}
+                                    <i class="mdi mdi-check-decagram text-secondary"></i>
+                                {% endif %}
+      
                                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -187,7 +192,7 @@
                                         </div>
                                     </li>
 
-                                    {% if user|can:'atribuir_validador' %}
+                                    {% if user|can:'visao_geral' %}
                                     <li class="nav-item">
                                         <a class="nav-link" href="{% url 'visao_geral' %}">
                                             <i class="ri-dashboard-line me-2"></i>Visão Geral

@@ -24,6 +24,7 @@ AUTH_USER_MODEL = 'usuarios.User'
 
 # Application definition
 INSTALLED_APPS = [
+    'rolepermissions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +47,6 @@ INSTALLED_APPS = [
     'notifications',
     'storages',
     'mathfilters',
-    'rolepermissions',
 ]
 
 MIDDLEWARE = [

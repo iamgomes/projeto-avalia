@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import os
+from django.db.models import Q
 
 
 @login_required
@@ -27,15 +28,16 @@ def add_validacao(request, id):
 
 @login_required
 def add_resposta_validacao(request, id, id_validacao):
-    questionario = Questionario.objects.get(pk=id)
+    q = Questionario.objects.get(pk=id)
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     validacao = get_object_or_404(Validacao, pk=id_validacao)
     respostas = Resposta.objects.filter(questionario_id=id)
 
     if request.method == 'GET':
-        questionario.status = 'EV'
-        questionario.save()
+        q.status = 'EV'
+        q.save()
 
-        return render(request, 'add_resposta_validacao.html', {'questionario':questionario, 'respostas':respostas})
+        return render(request, 'add_resposta_validacao.html', {'questionario':questionario, 'q':q, 'respostas':respostas})
     
     if request.method == 'POST':
         for i in respostas:
@@ -66,8 +68,8 @@ def add_resposta_validacao(request, id, id_validacao):
                 justifica = JustificativaEvidenciaValidacao(resposta_validacao_id=resposta_validacao.id, justificativa_validacao=justificativa)
                 justifica.save()
 
-        questionario.status = 'V'
-        questionario.save()
+        q.status = 'V'
+        q.save()
 
         messages.success(request, "Validação feita com sucesso!")
 
@@ -76,17 +78,18 @@ def add_resposta_validacao(request, id, id_validacao):
 
 @login_required
 def change_resposta_validacao(request, id):
-    validacao = get_object_or_404(Validacao, pk=id)
-    questionario = Questionario.objects.get(pk=validacao.questionario.id)
+    v = get_object_or_404(Validacao, pk=id)
+    validacao = v.questionario.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=v.questionario.entidade.poder))
+    questionario = Questionario.objects.get(pk=v.questionario.id)
 
     if request.method == 'GET':
         questionario.status = 'EV'
         questionario.save()
 
-        return render(request, 'resposta_validacao_form.html', {'validacao':validacao})
+        return render(request, 'resposta_validacao_form.html', {'validacao':validacao, 'v':v})
     
     if request.method == 'POST':
-        for i in validacao.respostavalidacao_set.all():
+        for i in v.respostavalidacao_set.all():
             id_resposta = request.POST.get('id_resposta-{}'.format(i.id))
             form = request.POST.get('resposta-{}'.format(i.id))
             id_link = request.POST.getlist('id_link-{}'.format(i.id))            

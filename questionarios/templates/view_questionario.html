@@ -52,9 +52,9 @@
                     </li>
                     {% endfor %}
                 </ol>
-                {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
-                {% if questionario.status == 'F' or  questionario.status == 'V' or  questionario.status == 'EV' %}
-                <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{questionario.id}}" 
+                {% if q.tramitacao_set.all.first.setor == user.funcao %}
+                {% if q.status == 'F' or  q.status == 'V' or  q.status == 'EV' %}
+                <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{q.id}}" 
                     data-toggle="tooltip" title="Tramitar">
                     Tramitar <i class="mdi mdi-arrow-right-circle"></i>
                 </a>
@@ -68,19 +68,19 @@
     </div>
         
     <div class="col-xl-8">
-        {% if questionario.resposta_set.all %}
-        {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
-        {% if questionario.usuario == user %}
-        <a href="{% url 'change_resposta' questionario.id %}" class="btn btn-primary d-inline" type="button" >
+        {% if q.resposta_set.all %}
+        {% if q.tramitacao_set.all.first.setor == user.funcao %}
+        {% if q.usuario == user %}
+        <a href="{% url 'change_resposta' q.id %}" class="btn btn-primary d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Questionário
         </a>
         {% endif %}
         {% endif %}
         {% endif %}
-        {% if questionario.validacao.respostavalidacao_set.all  %}
-        {% if questionario.tramitacao_set.all.first.setor == user.funcao %}
-        {% if questionario.validacao.usuario == user or user|has_role:'coordenadores'%}
-        <a href="{% url 'change_resposta_validacao' questionario.validacao.id %}" class="btn btn-info d-inline" type="button" >
+        {% if q.validacao.respostavalidacao_set.all  %}
+        {% if q.tramitacao_set.all.first.setor == user.funcao %}
+        {% if q.validacao.usuario == user or user|has_role:'coordenadores'%}
+        <a href="{% url 'change_resposta_validacao' q.validacao.id %}" class="btn btn-info d-inline" type="button" >
             <i class="mdi mdi-pencil"></i> Editar Validação
         </a>
         {% endif %}
@@ -91,21 +91,21 @@
                 Exportar <i class="mdi mdi-chevron-down"></i>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="{% url 'exporta_csv' questionario.id %}">CSV</a>
+                <a class="dropdown-item" href="{% url 'exporta_csv' q.id %}">CSV</a>
             </div>
         </div>
         <div class="card mt-3">
             <div class="card-body">
 
-                <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ questionario.id }}/{{ questionario.avaliacao.ano_exercicio }}</i></h4>
-                <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
-                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ questionario.usuario.nome_completo }} ({{questionario.usuario.get_funcao_display}}) - {{ questionario.indice }} ({{ questionario.nivel }})</i></h5>
-                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ questionario.validacao.usuario.nome_completo }} ({{questionario.validacao.usuario.get_funcao_display}}) - {{ questionario.validacao.indice }} ({{ questionario.validacao.nivel }})</i></h5>
+                <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ q.id }}/{{ q.avaliacao.ano_exercicio }}</i></h4>
+                <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ q.entidade }}</i></h4>
+                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ q.usuario.nome_completo }} ({{q.usuario.get_funcao_display}}) - {{ q.indice }} ({{ q.nivel }})</i></h5>
+                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ q.validacao.usuario.nome_completo }} ({{q.validacao.usuario.get_funcao_display}}) - {{ q.validacao.indice }} ({{ q.validacao.nivel }})</i></h5>
 
                 {% if respostas %}
 
                 <div id="accordion" class="custom-accordion">
-                    {% for u in questionario.avaliacao.criterio_set.all  %}
+                    {% for u in questionario  %}
                     {% ifchanged  %}
                     <div class="card mb-1 shadow-none">
                         <a href="#collapse{{ u.dimensao.id }}" class="text-dark" data-bs-toggle="collapse"
@@ -122,9 +122,8 @@
                         <div id="collapse{{ u.dimensao.id }}" class="collapse show"
                                 aria-labelledby="headingOne" data-bs-parent="#accordion">
                             <div class="card-body">
-                                {% for a in questionario.avaliacao.criterio_set.all %}
+                                {% for a in questionario %}
                                 {% if a.dimensao == u.dimensao %}
-                                {% if a.matriz == 'C' or a.matriz == questionario.entidade.poder %}
                                     <div class="col-md-12">
                                         <div class="card">
                                             <div class="row no-gutters align-items-center">
@@ -136,7 +135,7 @@
                                                         Itens atendidos pela avaliação do controle interno: <br>
                                                         {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
-                                                                {% if r.questionario.id == questionario.id %}
+                                                                {% if r.questionario.id == q.id %}
                                                                     {% if r.resposta == True %}
                                                                         <mark>{{c.item_avaliacao}}</mark>
                                                                     {% else %}
@@ -150,7 +149,7 @@
                                                                 <small >
                                                                 {% for c in a.criterioitem_set.all %}
                                                                     {% for r in c.resposta_set.all %}
-                                                                    {% if r.questionario.id == questionario.id %}
+                                                                    {% if r.questionario.id == q.id %}
                                                                         {% for link in r.linkevidencia_set.all %}
                                                                         <ol>
                                                                             {% for i  in link.link.split %}
@@ -167,7 +166,7 @@
                                                                 <small >
                                                                 {% for c in a.criterioitem_set.all %}
                                                                     {% for r in c.resposta_set.all %}
-                                                                    {% if r.questionario.id == questionario.id %}
+                                                                    {% if r.questionario.id == q.id %}
                                                                         {% for j in r.justificativaevidencia_set.all %}
                                                                            Justificativa: {{ j.justificativa }}
                                                                         {% endfor %}
@@ -180,7 +179,7 @@
                                                             <div class='input-group'>
                                                                 {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
-                                                                {% if r.questionario.id == questionario.id %}
+                                                                {% if r.questionario.id == q.id %}
                                                                     {% for img in r.imagemevidencia_set.all %}
                                                                     {% if img.imagem %}
                                                                 <div class="popup-gallery">
@@ -202,7 +201,7 @@
                                                             Itens atendidos pela validação do Tribunal: <br>
                                                             {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.respostavalidacao_set.all %}
-                                                                {% if r.validacao.questionario.id == questionario.id %}
+                                                                {% if r.validacao.questionario.id == q.id %}
                                                                 {% if r.resposta_validacao == True %}
                                                                         <mark>{{c.item_avaliacao}}</mark>
                                                                     {% else %}
@@ -216,7 +215,7 @@
                                                                 <small >
                                                                 {% for c in a.criterioitem_set.all %}
                                                                     {% for r in c.respostavalidacao_set.all %}
-                                                                    {% if r.validacao.questionario.id == questionario.id %}
+                                                                    {% if r.validacao.questionario.id == q.id %}
                                                                         {% for link in r.linkevidenciavalidacao_set.all %}
                                                                             <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
                                                                         {% endfor %}
@@ -228,7 +227,7 @@
                                                             <div class='input-group'>
                                                                 {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
-                                                                {% if r.questionario.id == questionario.id %}
+                                                                {% if r.questionario.id == q.id %}
                                                                 {% for img in r.imagemevidenciavalidacao_set.all %}
                                                                 {% if img.imagem %}
                                                                 <div class="popup-gallery">
@@ -253,7 +252,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                {% endif %}
                                 {% endif %}
                                 {% endfor %}
                             </div>

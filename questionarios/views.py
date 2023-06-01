@@ -101,16 +101,18 @@ def delete_questionario(request, id):
 
 @login_required
 def view_questionario(request, id):
-    questionario = get_object_or_404(Questionario, pk=id)
+    q = Questionario.objects.get(pk=id)
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
 
     if request.method == 'GET':
-        tramitacao = Tramitacao.objects.filter(questionario_id=questionario.id)
+        tramitacao = Tramitacao.objects.filter(questionario_id=q.id)
         respostas = Resposta.objects.filter(questionario_id=id)
         form = TramitacaoForm()
         setores = Tramitacao.SETOR_CHOICES
         motivos = []
         
-        return render(request, 'view_questionario.html', {'questionario':questionario, 
+        return render(request, 'view_questionario.html', {'questionario':questionario,
+                                                          'q':q,
                                                         'tramitacao':tramitacao, 
                                                         'respostas':respostas,
                                                         'form':form,
@@ -128,7 +130,7 @@ def view_questionario(request, id):
             notify.send(request.user, recipient=tramitacao.questionario.usuario, verb=f'{tramitacao.questionario.entidade}', target=tramitacao.questionario, description=f'{tramitacao.get_motivo_display()} por {request.user.first_name}.')
             
         messages.success(request, "Questionário tramitado com sucesso!")
-        return redirect(reverse('view_questionario', args=(questionario.id,)))
+        return redirect(reverse('view_questionario', args=(q.id,)))
 
 
 @login_required

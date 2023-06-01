@@ -30,12 +30,12 @@
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title mb-4">Formulário de <strong>VALIDAÇÃO: </strong><i>{{ validacao.questionario.entidade }}</i></h4>
+                <h4 class="card-title mb-4">Formulário de <strong>VALIDAÇÃO: </strong><i>{{ v.questionario.entidade }}</i></h4>
                 
                 <form id="my-form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div>
-                        {% for u in validacao.questionario.avaliacao.criterio_set.all  %}
+                        {% for u in validacao %}
                         {% ifchanged  %}
                         <h3>{{ u.dimensao }}</h3>
                         <section>
@@ -50,9 +50,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for a in validacao.questionario.avaliacao.criterio_set.all %}
+                                        {% for a in validacao %}
                                         {% if a.dimensao == u.dimensao %}
-                                        {% if a.matriz == 'C' or a.matriz == validacao.questionario.entidade.poder %}
                                         <tr>
                                             <td>{{ a.cod }}</td>
                                             <td>
@@ -68,7 +67,7 @@
                                             <td>
                                                 {% for d in a.criterioitem_set.all|slice:":1" %}
                                                     {% for r in d.respostavalidacao_set.all %}
-                                                    {% if r.validacao.id == validacao.id %}
+                                                    {% if r.validacao.id == v.id %}
                                                     <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                     <div class="form-check form-switch" dir="ltr">
                                                         <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
@@ -111,7 +110,7 @@
                                                 <div id="sub-{{a.id}}">
                                                     {% for d in a.criterioitem_set.all|slice:"1:" %}
                                                         {% for r in d.respostavalidacao_set.all %}
-                                                        {% if r.validacao.id == validacao.id %}
+                                                        {% if r.validacao.id == v.id %}
                                                         <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                         <div class="form-check form-switch" dir="ltr">
                                                             <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
@@ -133,7 +132,7 @@
                                                     {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                     {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.resposta_set.all %}
-                                                        {% if r.questionario.id == validacao.questionario.id %}
+                                                        {% if r.questionario.id == v.questionario.id %}
                                                         {% if r.linkevidencia_set.all %}
                                                         {% for link in r.linkevidencia_set.all %}
                                                         <div class="card">
@@ -176,7 +175,7 @@
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
                                                             {% for r in c.resposta_set.all %}
-                                                            {% if r.questionario.id == validacao.questionario.id %}
+                                                            {% if r.questionario.id == v.questionario.id %}
                                                             {% if r.imagemevidencia_set.all %}
                                                             <div class="card">
                                                                 <div class="card-header">
@@ -206,7 +205,7 @@
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
                                                             {% for r in c.respostavalidacao_set.all %}
-                                                            {% if r.validacao.id == validacao.id %}
+                                                            {% if r.validacao.id == v.id %}
                                                             {% if r.linkevidenciavalidacao_set.all %}
                                                             {% for link in r.linkevidenciavalidacao_set.all %}
                                                                 <label for="links" class="form-label">Links</label>
@@ -227,7 +226,7 @@
                                                     {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                     {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.respostavalidacao_set.all %}
-                                                        {% if r.validacao.id == validacao.id %}
+                                                        {% if r.validacao.id == v.id %}
                                                         {% if r.justificativaevidenciavalidacao_set.all %}
                                                         {% for j in r.justificativaevidenciavalidacao_set.all %}
                                                             <label class="form-label">Justificativa</label>
@@ -248,7 +247,7 @@
                                                     {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                     {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.respostavalidacao_set.all %}
-                                                        {% if r.validacao.id == validacao.id %}
+                                                        {% if r.validacao.id == v.id %}
                                                         {% if r.imagemevidenciavalidacao_set.all %}
                                                         {% for img in r.imagemevidenciavalidacao_set.all %}
                                                             <a  href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
@@ -272,7 +271,6 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </tbody>

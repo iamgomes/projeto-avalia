@@ -2,7 +2,7 @@
 
 <form  method="post" id="tramitacaoForm" data-motivos-url="{% url 'ajax_load_motivos' %}">
     {% csrf_token %}
-    <div id="tramitacao-{{questionario.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="tramitacao-{{q.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                     <div class="modal-header">
@@ -10,20 +10,20 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                            <input type="hidden" value={{questionario.id}} name="id_questionario" >
+                            <input type="hidden" value={{q.id}} name="id_questionario" >
                             <div class="mb-3">
                                 <label for="{{ form.setor.id_for_label }}">Destino</label>
                                 <select name="setor" id='setor_id' required class="form-select">
                                     <option selected disabled value="">Selecione</option>
                                     {% for setor in setores %}
-                                        {% if setor.0 != questionario.tramitacao_set.all.first.setor %}
-                                            {% if questionario.tramitacao_set.all.first.setor == 'C' %}
+                                        {% if setor.0 != q.tramitacao_set.all.first.setor %}
+                                            {% if q.tramitacao_set.all.first.setor == 'C' %}
                                                 {% if setor.0 != 'A' %}
                                                     <option value="{{setor.0}}">{{setor.1}}</option>
                                                 {% endif %}
                                             {% endif %}
-                                            {% if questionario.tramitacao_set.all.first.setor == 'T' %}
-                                                {% if questionario.status == 'V' %}
+                                            {% if q.tramitacao_set.all.first.setor == 'T' %}
+                                                {% if q.status == 'V' %}
                                                     {% if setor.0 != 'C' %}
                                                         <option value="{{setor.0}}">{{setor.1}}</option>
                                                     {% endif %}
@@ -61,7 +61,6 @@
     $("#setor_id").change(function () {
       var url = $("#tramitacaoForm").attr("data-motivos-url");  
       var setorId = $(this).val();  
-
       $.ajax({                      
         url: url,               
         data: {
