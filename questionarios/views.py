@@ -12,6 +12,7 @@ from django.contrib import messages
 import datetime
 import os
 import csv
+from django.db.models import Q
 from notifications.signals import notify
 
 
@@ -21,19 +22,24 @@ def add_questionario(request, id):
     usuario = User.objects.get(pk=request.user.id)
 
     if request.method == 'GET':
-        entidades = usuario.entidade.all()
+        if usuario.funcao == 'C':
+            entidades = usuario.entidade.all()
+        if usuario.funcao == 'T' or usuario.funcao == 'A':
+            entidades = Entidade.objects.filter(municipio__uf=usuario.municipio.uf)
+
         return render(request, 'add_questionario.html', {'id':id, 'entidades':entidades})
         
     elif request.method == 'POST':
-        usuario = request.user
+        usuario = usuario
         entidade = request.POST.get('entidade')
         site = request.POST.get('site')
         hoje = datetime.datetime.now()
-        final = avaliacao.data_final
+        inicio = avaliacao.data_inicial
+        fim = avaliacao.data_final
 
         if not Questionario.objects.filter(avaliacao_id=avaliacao.id, entidade_id=entidade):
 
-            if hoje.timestamp() < final.timestamp():
+            if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
 
                 questionario = Questionario(avaliacao_id=avaliacao.id, usuario=usuario, entidade_id=entidade)
                 
@@ -77,8 +83,8 @@ def add_questionario(request, id):
                          # redireciona para página de resposta passando como parâmetro o id criado
                         return redirect(reverse('add_resposta', args=(questionario.id,)))
 
-            elif hoje.timestamp() > final.timestamp():
-                messages.error(request, "Desculpe, o prazo desta avaliação já acabou.")
+            else:
+                messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
                 return redirect(reverse('home'))
         else:
             messages.error(request, "Desculpe, esta Unidade Gestora já possui avaliação respondida.")
@@ -127,55 +133,55 @@ def view_questionario(request, id):
 
 @login_required
 def add_resposta(request, id):
-    questionario = Questionario.objects.get(pk=id)
+    q = Questionario.objects.get(pk=id)
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
 
     if request.method == 'GET':
-        return render(request, 'add_resposta.html', {'questionario':questionario})
+        return render(request, 'add_resposta.html', {'questionario':questionario, 'q':q})
     
     elif request.method == 'POST':
-        for c in questionario.avaliacao.criterio_set.all():
-            if c.matriz == 'C' or c.matriz == questionario.entidade.poder:
+        for c in questionario:
 
-                links = request.POST.get('link-{}'.format(c.id))
+            links = request.POST.get('link-{}'.format(c.id))
 
-                for d in c.itens_avaliacao.all():
-                    form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
-                    imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
-                    justificativa = request.POST.get('justificativa-{}-{}'.format(c.id, d.id))
+            for d in c.itens_avaliacao.all():
+                form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
+                imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
+                justificativa = request.POST.get('justificativa-{}-{}'.format(c.id, d.id))
 
-                    criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
-                    
-                    if form == 'on':
-                        resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id, resposta=True)
-                        resposta.save()
+                criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
+                
+                if form == 'on':
+                    resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id, resposta=True)
+                    resposta.save()
 
-                        if links:
-                            #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
-                            if d.id == 1:
-                                link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
-                                link_evidencia.save()
-
-                    else: 
-                        resposta = Resposta(questionario_id=questionario.id, criterio_item_id=criterio_item[0].id)
-                        resposta.save()
-
-                    if imagens:
+                    if links:
+                        #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
                         if d.id == 1:
-                            for i in imagens:
-                                imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
-                                imagem_evidencia.save()
+                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
+                            link_evidencia.save()
 
-                    if justificativa:
-                        if d.id == 1:
-                            justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
-                            justifica.save()
+                else: 
+                    resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id)
+                    resposta.save()
+
+                if imagens:
+                    if d.id == 1:
+                        for i in imagens:
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                            imagem_evidencia.save()
+
+                if justificativa:
+                    if d.id == 1:
+                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
+                        justifica.save()
 
         if request.user.funcao == 'C':
-            questionario.status = 'F'
+            q.status = 'F'
         if request.user.funcao == 'T':
-            questionario.status = 'V'
+            q.status = 'V'
 
-        questionario.save()
+        q.save()
             
         messages.success(request, "Resposta cadastrada com sucesso!")
 
@@ -184,14 +190,15 @@ def add_resposta(request, id):
 
 @login_required
 def change_resposta(request, id):
-    questionario = Questionario.objects.get(pk=id)
+    q = Questionario.objects.get(pk=id)
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     respostas = Resposta.objects.filter(questionario_id=id)
 
     if request.method == 'GET':
-        questionario.status = 'E'
-        questionario.save()
+        q.status = 'E'
+        q.save()
 
-        return render(request, 'resposta_form.html', {'questionario':questionario})
+        return render(request, 'resposta_form.html', {'questionario':questionario, 'q':q})
     
     if request.method == 'POST':
         for i in respostas:
@@ -260,8 +267,8 @@ def change_resposta(request, id):
                 justifica.justificativa = justificativa
                 justifica.save()
 
-        questionario.status = 'F'
-        questionario.save()
+        q.status = 'F'
+        q.save()
 
         messages.success(request, "Resposta de avaliação alterada com sucesso!")
 

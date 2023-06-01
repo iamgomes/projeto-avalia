@@ -30,12 +30,12 @@
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title mb-4">Formulário de <strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
+                <h4 class="card-title mb-4">Formulário de <strong>AVALIAÇÃO: </strong><i>{{ q.entidade }}</i></h4>
                 
                 <form id="my-form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div>
-                        {% for u in questionario.avaliacao.criterio_set.all  %}
+                        {% for u in questionario  %}
                         {% ifchanged  %}
                         <h3>{{ u.dimensao }}</h3>
                         <section>
@@ -50,9 +50,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for a in questionario.avaliacao.criterio_set.all %}
+                                        {% for a in questionario %}
                                         {% if a.dimensao == u.dimensao %}
-                                        {% if a.matriz == 'C' or a.matriz == questionario.entidade.poder %}
                                         <tr>
                                             <td>{{ a.cod }}</td>
                                             <td>
@@ -69,7 +68,7 @@
                                             <td>
                                                 {% for d in a.criterioitem_set.all|slice:":1" %}
                                                 {% for r in d.resposta_set.all %}
-                                                {% if r.questionario.id == questionario.id %}
+                                                {% if r.questionario.id == q.id %}
                                                 <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                 <div class="form-check form-switch" dir="ltr">
                                                     <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
@@ -118,7 +117,7 @@
                                                 <div id="sub-{{a.id}}">
                                                 {% for d in a.criterioitem_set.all|slice:"1:" %}
                                                 {% for r in d.resposta_set.all %}
-                                                {% if r.questionario.id == questionario.id %}
+                                                {% if r.questionario.id == q.id %}
                                                 <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                 <div class="form-check form-switch" dir="ltr">
                                                     <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
@@ -141,7 +140,7 @@
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.resposta_set.all %}
-                                                        {% if r.questionario.id == questionario.id %}
+                                                        {% if r.questionario.id == q.id %}
                                                         {% if r.linkevidencia_set.all %}
                                                         {% for link in r.linkevidencia_set.all %}
                                                             <label for="link-{{a.id}}" class="form-label">Links</label>
@@ -163,7 +162,7 @@
                                                         {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                         {% for c in a.criterioitem_set.all|slice:":1" %}
                                                         {% for r in c.resposta_set.all %}
-                                                        {% if r.questionario.id == questionario.id %}
+                                                        {% if r.questionario.id == q.id %}
                                                             {% if r.justificativaevidencia_set.all %}
                                                             {% for j in r.justificativaevidencia_set.all %}
                                                                 <label class="form-label">Justificativa</label>
@@ -205,7 +204,6 @@
                                                 </div>                                   
                                             </td>
                                         </tr>
-                                        {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </tbody>

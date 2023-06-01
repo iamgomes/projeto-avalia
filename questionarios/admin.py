@@ -16,7 +16,7 @@ admin.site.register(Resposta, RespostaoAdmin)
 class CriterioAdmin(admin.ModelAdmin):
     ordering = ('cod',)
     list_filter = ('exigibilidade', 'dimensao',)
-    list_display = ['cod','criterio_texto', 'exigibilidade', 'dimensao', 'avaliacao']
+    list_display = ['cod','matriz','criterio_texto', 'exigibilidade', 'dimensao', 'avaliacao']
 
 admin.site.register(Criterio, CriterioAdmin)
 

@@ -96,6 +96,7 @@ def change_usuario(request, id):
     else:
         form = UserChangeForm(instance=usuario)
         form.fields["municipio"].queryset = Municipio.objects.filter(uf=request.user.municipio.uf)
+        form.fields["funcao"].queryset = [f for f in User.FUNCAO_CHOICES if f[0] != 'A']
     
     return render(request, 'change_usuario.html', {'form': form})
     

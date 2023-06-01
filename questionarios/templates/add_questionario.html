@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block 'title' %}Add Questionários{% endblock 'title' %}
+
+{% block 'head' %}
+
+        <link href="{% static 'assets/libs/select2/css/select2.min.css' %}" rel="stylesheet" type="text/css">
+
+        <!-- App Css-->
+        <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+
+{% endblock 'head' %}
 
 {% block 'body' %}
 
@@ -19,7 +29,7 @@
                             <div class="mb-3">
                                 <label>Selecione a Unidade Gestora avaliada</label>
                                 <div>
-                                    <select name="entidade" class="form-control form-control-lg" Required>
+                                    <select name="entidade" class="form-select select2 form-control-lg" Required>
                                         <option selected disabled value="">Selecione</option>
                                         {% for e in entidades %}
                                             <option value="{{e.id}}">{{e.entidade_uf}}</option>
@@ -30,7 +40,7 @@
                             <div class="mb-3">
                                 <label>Esta Unidade Gestora possui site oficial?</label>
                                 <div>
-                                    <select name="site" class="form-control form-control-lg" Required>
+                                    <select name="site" class="form-select form-control-lg" Required>
                                         <option selected disabled value="">Selecione</option>
                                         <option value="S">Sim</option>
                                         <option value="N">Não</option>
@@ -48,5 +58,13 @@
     </div>
     <!-- end col -->
 </div>
+
+{% block 'script' %}
+
+        <script src="{% static  'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'assets/libs/select2/js/select2.min.js' %}"></script>
+        <script src="{% static 'assets/js/pages/form-advanced.init.js' %}"></script>
+
+{% endblock 'script' %}
 
 {% endblock %}

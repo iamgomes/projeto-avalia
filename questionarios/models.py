@@ -109,7 +109,7 @@ class Criterio(models.Model):
 
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE)
     dimensao = models.ForeignKey(Dimensao, on_delete=models.CASCADE)
-    cod = models.FloatField(default=0)
+    cod = models.CharField(max_length=10)
     criterio_texto = models.CharField(max_length=500)
     itens_avaliacao = models.ManyToManyField(ItemAvaliacao, through='CriterioItem')
     exigibilidade = models.CharField(max_length=1, choices=EXIGIBILIDADE_CHOICES)
@@ -189,7 +189,7 @@ class Questionario(models.Model):
     @property
     def percentual_atendido_essenciais(self):
         total = self.total_criterios_essenciais_atendidos / self.total_criterios_essenciais * 100
-        return total
+        return round(total, 2)
     
     @property
     def classificacao(self):

@@ -29,12 +29,12 @@
     <div class="col-xl-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title mb-4">Formulário de <strong>AVALIAÇÃO: </strong><i>{{ q.entidade }}</i></h4>
+                <h4 class="card-title mb-4">Formulário de <strong>AVALIAÇÃO: </strong><i>{{ questionario.entidade }}</i></h4>
                 
                 <form id="my-form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div>
-                        {% for u in questionario %}
+                        {% for u in questionario.avaliacao.criterio_set.all  %}
                         {% ifchanged  %}
                         <h3>{{ u.dimensao }}</h3>
                         <section>
@@ -49,8 +49,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for a in questionario %}
+                                        {% for a in questionario.avaliacao.criterio_set.all %}
                                         {% if a.dimensao == u.dimensao %}
+                                        {% if a.matriz == 'C' or a.matriz == questionario.entidade.poder %}
                                         <tr>
                                             <td>{{ a.cod }}</td>
                                             <td>
@@ -117,6 +118,7 @@
                                                 {% endfor %}                                              
                                             </td>
                                         </tr>
+                                        {% endif %}
                                         {% endif %}
                                         {% endfor %}
                                     </tbody>
