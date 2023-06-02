@@ -4,13 +4,6 @@
 
 {% block 'title' %}Questionário{% endblock 'title' %}
 
-{% block 'head' %}
-
-        <!-- Lightbox css -->
-        <link href="{% static 'assets/libs/magnific-popup/magnific-popup.css' %}" rel="stylesheet" type="text/css" />
-        <link href="{% static 'css/app.css' %}" rel="stylesheet">
-
-{% endblock 'head' %}
 
 
 {% block 'body' %}
@@ -40,8 +33,8 @@
                             <footer class="blockquote-footer font-size-12 m-0">
                                 {{ t.usuario.first_name }}
                                 {% if t.observacao %}
-                                <i style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#Observacao-{{t.id}}" 
-                                class="mdi mdi-comment-text font-size-18" data-toggle="tooltip" title="Observação"></i>
+                                    <i style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#Observacao-{{t.id}}" 
+                                    class="mdi mdi-comment-text font-size-18" data-toggle="tooltip" title="Observação"></i>
                                 {% endif %}
                             </footer>
                            
@@ -54,15 +47,16 @@
                 </ol>
                 {% if q.tramitacao_set.all.first.setor == user.setor %}
                 {% if q.status == 'F' or  q.status == 'V' or  q.status == 'EV' %}
-                <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{q.id}}" 
-                    data-toggle="tooltip" title="Tramitar">
-                    Tramitar <i class="mdi mdi-arrow-right-circle"></i>
-                </a>
+                    <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{q.id}}" 
+                        data-toggle="tooltip" title="Tramitar">
+                        Tramitar <i class="mdi mdi-arrow-right-circle"></i>
+                    </a>
                 {% endif %}
                 {% endif %}
 
                 <!--Modal-->
                 {% include 'modal_tramitacao.html' %}
+
             </div>
         </div>
     </div>
@@ -70,20 +64,20 @@
     <div class="col-xl-8">
         {% if q.resposta_set.all %}
         {% if q.tramitacao_set.all.first.setor == user.setor %}
-        {% if q.usuario == user %}
-        <a href="{% url 'change_resposta' q.id %}" class="btn btn-primary d-inline" type="button" >
-            <i class="mdi mdi-pencil"></i> Editar Questionário
-        </a>
-        {% endif %}
+            {% if q.usuario == user %}
+                <a href="{% url 'change_resposta' q.id %}" class="btn btn-primary d-inline" type="button" >
+                    <i class="mdi mdi-pencil"></i> Editar Questionário
+                </a>
+            {% endif %}
         {% endif %}
         {% endif %}
         {% if q.validacao.respostavalidacao_set.all  %}
         {% if q.tramitacao_set.all.first.setor == user.setor %}
-        {% if q.validacao.usuario == user or user|has_role:'coordenadores'%}
-        <a href="{% url 'change_resposta_validacao' q.validacao.id %}" class="btn btn-info d-inline" type="button" >
-            <i class="mdi mdi-pencil"></i> Editar Validação
-        </a>
-        {% endif %}
+            {% if q.validacao.usuario == user or user|has_role:'coordenadores'%}
+            <a href="{% url 'change_resposta_validacao' q.validacao.id %}" class="btn btn-info d-inline" type="button" >
+                <i class="mdi mdi-pencil"></i> Editar Validação
+            </a>
+            {% endif %}
         {% endif %}
         {% endif %}
         <div class="dropdown d-inline">
@@ -105,7 +99,7 @@
                 {% if respostas %}
 
                 <div id="accordion" class="custom-accordion">
-                    {% for u in questionario  %}
+                    {% for u in questionario %}
                     {% ifchanged  %}
                     <div class="card mb-1 shadow-none">
                         <a href="#collapse{{ u.dimensao.id }}" class="text-dark" data-bs-toggle="collapse"
@@ -119,7 +113,7 @@
                             </div>
                         </a>
 
-                        <div id="collapse{{ u.dimensao.id }}" class="collapse show"
+                        <div id="collapse{{ u.dimensao.id }}" class="collapse"
                                 aria-labelledby="headingOne" data-bs-parent="#accordion">
                             <div class="card-body">
                                 {% for a in questionario %}
@@ -129,11 +123,11 @@
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-md-12">
                                                     <div class="card-body">
-                                                        <h5 class="card-title">{{ a.cod}} - {{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
+                                                        <h5 class="card-title">{{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
                         
                                                         <footer class="blockquote-footer font-size-15 m-0">
                                                         Itens atendidos pela avaliação do controle interno: <br>
-                                                        {% for c in a.criterioitem_set.all %}
+                                                            {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
                                                                 {% if r.questionario.id == q.id %}
                                                                     {% if r.resposta == True %}
@@ -179,19 +173,19 @@
                                                             <div class='input-group'>
                                                                 {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
-                                                                {% if r.questionario.id == q.id %}
-                                                                    {% for img in r.imagemevidencia_set.all %}
-                                                                    {% if img.imagem %}
-                                                                <div class="popup-gallery">
-                                                                    <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
-                                                                        <div class="img-fluid">
-                                                                            <img width="70" src='{{ img.imagem.url }}' alt="{{ img.imagem }}">
-                                                                        </div>
-                                                                    </a>
-                                                                </div>
+                                                                    {% if r.questionario.id == q.id %}
+                                                                        {% for img in r.imagemevidencia_set.all %}
+                                                                        {% if img.imagem %}
+                                                                            <div class="popup-gallery">
+                                                                                <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                                    <div class="img-fluid">
+                                                                                        <img width="70" src='{{ img.imagem.url }}' alt="{{ img.imagem }}">
+                                                                                    </div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endif %}
+                                                                        {% endfor %}
                                                                     {% endif %}
-                                                                    {% endfor %}
-                                                                {% endif %}
                                                                 {% endfor %}
                                                                 {% endfor %}
                                                             </div>
@@ -202,11 +196,11 @@
                                                             {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.respostavalidacao_set.all %}
                                                                 {% if r.validacao.questionario.id == q.id %}
-                                                                {% if r.resposta_validacao == True %}
+                                                                    {% if r.resposta_validacao == True %}
                                                                         <mark>{{c.item_avaliacao}}</mark>
                                                                     {% else %}
                                                                         <del>{{c.item_avaliacao}}</del>
-                                                                {% endif %}        
+                                                                    {% endif %}        
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             {% endfor %}
@@ -227,19 +221,19 @@
                                                             <div class='input-group'>
                                                                 {% for c in a.criterioitem_set.all %}
                                                                 {% for r in c.resposta_set.all %}
-                                                                {% if r.questionario.id == q.id %}
-                                                                {% for img in r.imagemevidenciavalidacao_set.all %}
-                                                                {% if img.imagem %}
-                                                                <div class="popup-gallery">
-                                                                    <a class="float-start" href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
-                                                                        <div class="img-fluid">
-                                                                            <img width="80" src='{{ img.imagem_validacao.url }}' alt="Card image">
-                                                                        </div>
-                                                                    </a>
-                                                                </div>
-                                                                {% endif %}
-                                                                {% endfor %}
-                                                                {% endif %}
+                                                                    {% if r.questionario.id == q.id %}
+                                                                        {% for img in r.imagemevidenciavalidacao_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="80" src='{{ img.imagem_validacao.url }}' alt="Card image">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endif %}
                                                                 {% endfor %}
                                                                 {% endfor %}
                                                             </div>
@@ -273,6 +267,7 @@
 </div> <!-- row end -->
 
 {% block 'script' %}
+
         <!-- Magnific Popup-->
         <script src="{% static 'assets/libs/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
         <!-- lightbox init js-->
