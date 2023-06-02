@@ -8,6 +8,7 @@ from .forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import login
 from django.contrib import messages
 import os
+from rolepermissions.decorators import has_role_decorator
 
 
 def add_usuario(request):
@@ -84,6 +85,7 @@ def usuarios(request):
 
 
 @login_required
+@has_role_decorator('coordenadores')
 def change_usuario(request, id):
     usuario = get_object_or_404(User, id=id)
     

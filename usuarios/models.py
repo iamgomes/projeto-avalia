@@ -41,8 +41,8 @@ class User(AbstractUser):
 def define_permissoes(sender, instance, created, **kwargs):
     if created:
         if instance.funcao == 'A':
-            remove_role(instance, 'avaliadores')
+            assign_role(instance, 'avaliadores')
         if instance.funcao == 'V':
-            remove_role(instance, 'validadores')
+            assign_role(instance, 'validadores')
         elif instance.funcao == 'C':
-            remove_role(instance, 'coordenadores')
+            assign_role(instance, 'coordenadores')

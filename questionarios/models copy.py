@@ -168,7 +168,7 @@ class Questionario(models.Model):
     
     @property
     def total_criterios_essenciais_atendidos(self):
-        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').count() or 0
+        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').filter(matriz__in=['C','{}'.format(self.entidade.poder)]).count() or 0
     
     @property
     def percentual_atendido_essenciais(self):
@@ -226,7 +226,7 @@ class Resposta(models.Model):
     
     def save(self, *args, **kwargs):
         if self.resposta == True:
-            self.nota = self.total_item()
+            self.nota = self.total_item
         else:
             self.nota = 0
         return super().save(*args, **kwargs)
