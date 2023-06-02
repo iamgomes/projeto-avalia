@@ -4,3 +4,6 @@ from django.apps import AppConfig
 class QuestionariosConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'questionarios'
+
+    def ready(self):
+        from . import signals

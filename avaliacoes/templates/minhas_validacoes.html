@@ -106,11 +106,7 @@
                                     </td>
                                     <td>{{ f.created_at|date:'d/m/Y H:i' }}</td>
                                     <td>{{ f.essenciais }} %</td>
-                                    {% if f.indice %}
-                                        <td>{{ f.indice }}</td>
-                                    {% else %}
-                                        <td>{{ f.questionario.indice }} % <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
-                                    {% endif %}
+                                    <td>{{ f.indice }}</td>
                                     <td>{{ f.nivel }}</td>
                                     <td>
                                         <a href="{% url 'view_questionario' f.questionario.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">

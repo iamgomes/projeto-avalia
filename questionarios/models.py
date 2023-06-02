@@ -3,8 +3,6 @@ from django.db import models
 from django.db.models import Sum
 from entidades.models import Entidade
 from avaliacoes.models import Avaliacao
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 #Antiga tabela Dimensao
@@ -105,11 +103,12 @@ class Criterio(models.Model):
         ('T','Tribunal de Contas'),
         ('M','Ministério Púbico'),
         ('D','Defensoria Pública'),
+        ('I','Administração Indireta')
     )
 
     avaliacao = models.ForeignKey(Avaliacao, on_delete=models.CASCADE)
     dimensao = models.ForeignKey(Dimensao, on_delete=models.CASCADE)
-    cod = models.CharField(max_length=10)
+    cod = models.IntegerField()
     criterio_texto = models.CharField(max_length=500)
     itens_avaliacao = models.ManyToManyField(ItemAvaliacao, through='CriterioItem')
     exigibilidade = models.CharField(max_length=1, choices=EXIGIBILIDADE_CHOICES)
@@ -310,11 +309,3 @@ class Tramitacao(models.Model):
 
     class Meta:
         ordering = ('-created_at', )
-
-
-@receiver(post_save, sender=Questionario)
-def update_indice(sender, instance, created, **kwargs):
-    indice = instance.nota
-    nivel = instance.classificacao
-    essenciais = instance.percentual_atendido_essenciais
-    Questionario.objects.filter(pk=instance.id).update(indice=indice, nivel=nivel, essenciais=essenciais)

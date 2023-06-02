@@ -79,6 +79,8 @@ def add_resposta_validacao(request, id, id_validacao):
         q.status = 'V'
         q.save()
 
+        validacao.save()
+
         # Envia notificação para o Usuário
         notify.send(request.user, recipient=q.usuario, verb=f'{q.entidade}', target=q, description=f'Questionário validado por {request.user.first_name}.')
 
@@ -175,6 +177,8 @@ def change_resposta_validacao(request, id):
 
         questionario.status = 'V'
         questionario.save()
+
+        v.save()
 
         messages.success(request, "Resposta de validação alterada com sucesso!")
 

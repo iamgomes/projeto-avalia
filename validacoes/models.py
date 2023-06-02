@@ -3,8 +3,6 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum
 from questionarios.models import Questionario, Resposta, CriterioItem
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class Validacao(models.Model):
@@ -23,7 +21,7 @@ class Validacao(models.Model):
         return str(self.questionario)
     
     @property
-    def nota(self):
+    def nota_validacao(self):
         total = self.respostavalidacao_set.all().aggregate(Sum('nota'))['nota__sum'] or 0
         return round(total, 2)
     
@@ -34,30 +32,30 @@ class Validacao(models.Model):
     @property
     def percentual_atendido_essenciais(self):
         total = self.total_criterios_essenciais_atendidos / self.questionario.total_criterios_essenciais * 100
-        return total
+        return round(total, 2)
     
     @property
     def classificacao_validacao(self):
         if self.percentual_atendido_essenciais == 100:
-            if self.nota >= 95:
-                nivel_tv = 'Diamante'
-            if self.nota >= 85 and self.nota < 95:
-                nivel_tv = 'Ouro'
-            if self.nota >= 75 and self.nota < 85:
-                nivel_tv = 'Prata'
+            if self.nota_validacao >= 95:
+                nivel = 'Diamante'
+            if self.nota_validacao >= 85 and self.nota_validacao < 95:
+                nivel = 'Ouro'
+            if self.nota_validacao >= 75 and self.nota_validacao < 85:
+                nivel = 'Prata'
         else:
-            if self.nota >= 75:
-                nivel_tv = 'Elevado'
-            if self.nota >= 50 and self.nota < 75:
-                nivel_tv = 'Intermediário'
-            if self.nota >= 30 and self.nota < 50:
-                nivel_tv = 'Básico'
-            if self.nota >= 1 and self.nota < 30:
-                nivel_tv = 'Inicial'
-            if self.nota < 1:
-                nivel_tv = 'Inexistente'
+            if self.nota_validacao >= 75:
+                nivel = 'Elevado'
+            if self.nota_validacao >= 50 and self.nota_validacao < 75:
+                nivel = 'Intermediário'
+            if self.nota_validacao >= 30 and self.nota_validacao < 50:
+                nivel = 'Básico'
+            if self.nota_validacao >= 1 and self.nota_validacao < 30:
+                nivel = 'Inicial'
+            if self.nota_validacao < 1:
+                nivel = 'Inexistente'
 
-        return nivel_tv
+        return nivel
 
 
 class RespostaValidacao(models.Model):
@@ -115,11 +113,3 @@ class JustificativaEvidenciaValidacao(models.Model):
 
     def __str__(self):
         return str(self.justificativa_validacao)
-
-
-@receiver(post_save, sender=Validacao)
-def update_indice_validacao(sender, instance, created, **kwargs):
-    if created:
-        print('Foi criado alguma coisa')
-    else:
-        print('Nada a declarar')
