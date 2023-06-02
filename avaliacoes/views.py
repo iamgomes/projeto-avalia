@@ -91,7 +91,7 @@ def avaliacoes_setor(request):
     # utilizo o id retornado para filtrar o setor do usuario logado. e por fim, na variável "questionário", listo os questionários que contem os ids
     # da variável "tramitação".
     ultima_tramitacao = Tramitacao.objects.values('questionario').annotate(id_ultimo=Max('id'))
-    tramitacao = Tramitacao.objects.filter(pk__in=[i['id_ultimo'] for i in ultima_tramitacao]).filter(setor=request.user.funcao)
+    tramitacao = Tramitacao.objects.filter(pk__in=[i['id_ultimo'] for i in ultima_tramitacao]).filter(setor=request.user.setor)
     questionarios = q.filter(pk__in=[t.questionario.id for t in tramitacao])
     avaliacoes_recebidas = questionarios.count()
     validacoes = Validacao.objects.filter(usuario=request.user)

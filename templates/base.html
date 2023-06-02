@@ -98,11 +98,11 @@
                                         {% for n in notificacoes_unread %}
                                         <a href="{% url 'view_questionario' n.target_object_id %}" class="text-reset notification-item">
                                             <div class="d-flex">
-                                                <div class="avatar-xs me-3">
-                                                    <span class="avatar-title bg-success rounded-circle font-size-16">
-                                                        <i class="mdi mdi-arrow-right-circle "></i>
-                                                    </span>
-                                                </div>
+                                                {% if n.actor.foto %}
+                                                    <img src="{{ n.actor.foto.url }}" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                                {% else %}
+                                                    <img src="{% static 'img/perfil.png' %}" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                                {% endif %}
                                                 <div class="flex-1">
                                                     <h6 class="mb-1">{{ n.verb }}</h6>
                                                     <div class="font-size-12 text-muted">
@@ -138,14 +138,14 @@
                                 {% endif %}
                                     <span class="d-none d-xl-inline-block ms-1">{{ user.first_name }}</span>
 
-                                {% if user.is_staff %}
-                                    <i class="mdi mdi-check-decagram text-primary"></i>
+                                {% if user.is_superuser %}
+                                    <i class="mdi mdi-check-decagram text-primary" title="Atricon"></i>
                                 {% endif %}
-                                {% if user|has_role:"coordenadores" %}
-                                    <i class="mdi mdi-check-decagram text-warning"></i>
+                                {% if user.funcao == 'C' %}
+                                    <i class="mdi mdi-check-decagram text-warning" title="Coordenador"></i>
                                 {% endif %}
-                                {% if user|has_role:"auditores" %}
-                                    <i class="mdi mdi-check-decagram text-secondary"></i>
+                                {% if user.funcao == 'V' %}
+                                    <i class="mdi mdi-check-decagram text-secondary" title="Validador"></i>
                                 {% endif %}
       
                                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
@@ -155,7 +155,7 @@
                                 <a class="dropdown-item" href="{% url 'perfil' %}"><i class="ri-user-line align-middle me-1"></i>Perfil</a>
                                 <a class="dropdown-item" href="{% url 'password_change' %}"><i class="ri-lock-password-fill align-middle me-1"></i>Alterar Senha</a>
                                 <a class="dropdown-item" href="{% url 'minhas_avaliacoes' %}"><i class=" ri-file-copy-2-fill me-1"></i>Minhas Avaliações</a>
-                                {% if user.funcao == 'T' %}
+                                {% if user.funcao == 'V' or user.funcao == 'C' %}
                                     <a class="dropdown-item" href="{% url 'minhas_validacoes' %}"><i class=" ri-task-fill me-1"></i>Minhas Validações</a>
                                 {% endif %}
                                 <div class="dropdown-divider"></div>

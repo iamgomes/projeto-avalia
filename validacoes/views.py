@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import os
 from django.db.models import Q
+import datetime
+from notifications.signals import notify
 
 
 @login_required
@@ -32,12 +34,18 @@ def add_resposta_validacao(request, id, id_validacao):
     questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     validacao = get_object_or_404(Validacao, pk=id_validacao)
     respostas = Resposta.objects.filter(questionario_id=id)
+    hoje = datetime.datetime.now()
+    inicio = q.avaliacao.data_inicial_validacao
+    fim = q.avaliacao.data_final_validacao
 
     if request.method == 'GET':
-        q.status = 'EV'
-        q.save()
-
-        return render(request, 'add_resposta_validacao.html', {'questionario':questionario, 'q':q, 'respostas':respostas})
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            q.status = 'EV'
+            q.save()
+            return render(request, 'add_resposta_validacao.html', {'questionario':questionario, 'q':q, 'respostas':respostas})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo de validação.")
+            return redirect(reverse('minhas_validacoes'))
     
     if request.method == 'POST':
         for i in respostas:
@@ -71,6 +79,9 @@ def add_resposta_validacao(request, id, id_validacao):
         q.status = 'V'
         q.save()
 
+        # Envia notificação para o Usuário
+        notify.send(request.user, recipient=q.usuario, verb=f'{q.entidade}', target=q, description=f'Questionário validado por {request.user.first_name}.')
+
         messages.success(request, "Validação feita com sucesso!")
 
         return redirect(reverse('minhas_validacoes'))
@@ -81,13 +92,19 @@ def change_resposta_validacao(request, id):
     v = get_object_or_404(Validacao, pk=id)
     validacao = v.questionario.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=v.questionario.entidade.poder))
     questionario = Questionario.objects.get(pk=v.questionario.id)
+    hoje = datetime.datetime.now()
+    inicio = questionario.avaliacao.data_inicial_validacao
+    fim = questionario.avaliacao.data_final_validacao
 
     if request.method == 'GET':
-        questionario.status = 'EV'
-        questionario.save()
-
-        return render(request, 'resposta_validacao_form.html', {'validacao':validacao, 'v':v})
-    
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            questionario.status = 'EV'
+            questionario.save()
+            return render(request, 'resposta_validacao_form.html', {'validacao':validacao, 'v':v})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo de validação.")
+            return redirect(reverse('view_questionario', args=(questionario.id,))) 
+           
     if request.method == 'POST':
         for i in v.respostavalidacao_set.all():
             id_resposta = request.POST.get('id_resposta-{}'.format(i.id))

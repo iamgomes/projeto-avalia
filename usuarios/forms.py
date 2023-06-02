@@ -8,7 +8,7 @@ class UserChangeForm(forms.UserChangeForm):
 
     class Meta(forms.UserChangeForm.Meta):
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'celular', 'funcao', 'municipio', 'entidade')
+        fields = ('username', 'first_name', 'last_name', 'email', 'celular', 'setor', 'funcao','municipio', 'entidade')
 
 
 class UserCreationForm(forms.UserCreationForm):

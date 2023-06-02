@@ -20,72 +20,74 @@ from notifications.signals import notify
 def add_questionario(request, id):
     avaliacao = Avaliacao.objects.get(pk=id)
     usuario = User.objects.get(pk=request.user.id)
+    hoje = datetime.datetime.now()
+    inicio = avaliacao.data_inicial
+    fim = avaliacao.data_final
 
     if request.method == 'GET':
-        if usuario.funcao == 'C':
-            entidades = usuario.entidade.all()
-        if usuario.funcao == 'T' or usuario.funcao == 'A':
-            entidades = Entidade.objects.filter(municipio__uf=usuario.municipio.uf)
 
-        return render(request, 'add_questionario.html', {'id':id, 'entidades':entidades})
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+
+            if usuario.funcao == 'A':
+                entidades = usuario.entidade.all()
+            if usuario.funcao == 'V' or usuario.funcao == 'C':
+                entidades = Entidade.objects.filter(municipio__uf=usuario.municipio.uf)
+
+            return render(request, 'add_questionario.html', {'id':id, 'entidades':entidades})
         
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
+            return redirect(reverse('home'))
+
     elif request.method == 'POST':
         usuario = usuario
         entidade = request.POST.get('entidade')
         site = request.POST.get('site')
-        hoje = datetime.datetime.now()
-        inicio = avaliacao.data_inicial
-        fim = avaliacao.data_final
 
         if not Questionario.objects.filter(avaliacao_id=avaliacao.id, entidade_id=entidade):
 
-            if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            questionario = Questionario(avaliacao_id=avaliacao.id, usuario=usuario, entidade_id=entidade)
+            
+            if site == 'N':
+                if request.user.funcao == 'A':
+                    questionario.status = 'F'
+                    questionario.save()
+                    tramitacao = Tramitacao(questionario_id=questionario.id, setor='C', motivo='AI', usuario=usuario)
+                    tramitacao.save()
 
-                questionario = Questionario(avaliacao_id=avaliacao.id, usuario=usuario, entidade_id=entidade)
+                    messages.success(request, "Sua avaliação foi finalizada.")
+                    return redirect(reverse('minhas_avaliacoes'))
                 
-                if site == 'N':
-                    if request.user.funcao == 'C':
-                        questionario.status = 'F'
-                        questionario.save()
-                        tramitacao = Tramitacao(questionario_id=questionario.id, setor='C', motivo='AI', usuario=usuario)
-                        tramitacao.save()
+                if request.user.funcao == 'V' or request.user.funcao == 'C':
+                    questionario.status = 'V'
+                    questionario.save()
+                    tramitacao = Tramitacao(questionario_id=questionario.id, setor='T', motivo='IT', usuario=usuario)
+                    tramitacao.save()
 
-                        messages.success(request, "Sua avaliação foi finalizada.")
-                        return redirect(reverse('minhas_avaliacoes'))
-                    
-                    if request.user.funcao == 'T':
-                        questionario.status = 'V'
-                        questionario.save()
-                        tramitacao = Tramitacao(questionario_id=questionario.id, setor='T', motivo='IT', usuario=usuario)
-                        tramitacao.save()
+                    messages.success(request, "Sua avaliação foi finalizada.")
+                    return redirect(reverse('minhas_avaliacoes'))
+                
+            if site == 'S':
+                if request.user.funcao == 'A':
+                    questionario.save()
+                    tramitacao = Tramitacao(questionario_id=questionario.id, setor='C', motivo='AI', usuario=usuario)
+                    tramitacao.save()
 
-                        messages.success(request, "Sua avaliação foi finalizada.")
-                        return redirect(reverse('minhas_avaliacoes'))
-                    
-                if site == 'S':
-                    if request.user.funcao == 'C':
-                        questionario.save()
-                        tramitacao = Tramitacao(questionario_id=questionario.id, setor='C', motivo='AI', usuario=usuario)
-                        tramitacao.save()
+                    messages.success(request, "Muito bom! Você iniciou uma avaliação.")
 
-                        messages.success(request, "Muito bom! Você iniciou uma avaliação.")
+                    # redireciona para página de resposta passando como parâmetro o id criado
+                    return redirect(reverse('add_resposta', args=(questionario.id,)))
+                
+                if request.user.funcao == 'V' or request.user.funcao == 'C':
+                    questionario.save()
+                    tramitacao = Tramitacao(questionario_id=questionario.id, setor='T', motivo='IT', usuario=usuario)
+                    tramitacao.save()
+
+                    messages.success(request, "Muito bom! Você iniciou uma avaliação pelo Tribunal.")
 
                         # redireciona para página de resposta passando como parâmetro o id criado
-                        return redirect(reverse('add_resposta', args=(questionario.id,)))
-                    
-                    if request.user.funcao == 'T':
-                        questionario.save()
-                        tramitacao = Tramitacao(questionario_id=questionario.id, setor='T', motivo='IT', usuario=usuario)
-                        tramitacao.save()
+                    return redirect(reverse('add_resposta', args=(questionario.id,)))
 
-                        messages.success(request, "Muito bom! Você iniciou uma avaliação pelo Tribunal.")
-
-                         # redireciona para página de resposta passando como parâmetro o id criado
-                        return redirect(reverse('add_resposta', args=(questionario.id,)))
-
-            else:
-                messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
-                return redirect(reverse('home'))
         else:
             messages.error(request, "Desculpe, esta Unidade Gestora já possui avaliação respondida.")
             return redirect(reverse('home'))
@@ -127,7 +129,7 @@ def view_questionario(request, id):
             tramitacao.save()
 
             # Envia notificação para o Usuário
-            notify.send(request.user, recipient=tramitacao.questionario.usuario, verb=f'{tramitacao.questionario.entidade}', target=tramitacao.questionario, description=f'{tramitacao.get_motivo_display()} por {request.user.first_name}.')
+            notify.send(request.user, recipient=tramitacao.questionario.usuario, verb=f'{tramitacao.questionario.entidade}', target=tramitacao.questionario, url='T', description=f'{tramitacao.get_motivo_display()} por {request.user.first_name}.')
             
         messages.success(request, "Questionário tramitado com sucesso!")
         return redirect(reverse('view_questionario', args=(q.id,)))
@@ -137,9 +139,16 @@ def view_questionario(request, id):
 def add_resposta(request, id):
     q = Questionario.objects.get(pk=id)
     questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
+    hoje = datetime.datetime.now()
+    inicio = q.avaliacao.data_inicial
+    fim = q.avaliacao.data_final
 
     if request.method == 'GET':
-        return render(request, 'add_resposta.html', {'questionario':questionario, 'q':q})
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            return render(request, 'add_resposta.html', {'questionario':questionario, 'q':q})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
+            return redirect(reverse('minhas_avaliacoes'))
     
     elif request.method == 'POST':
         for c in questionario:
@@ -178,9 +187,9 @@ def add_resposta(request, id):
                         justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
                         justifica.save()
 
-        if request.user.funcao == 'C':
+        if request.user.funcao == 'A':
             q.status = 'F'
-        if request.user.funcao == 'T':
+        if request.user.funcao == 'V' or request.user.funcao == 'C':
             q.status = 'V'
 
         q.save()
@@ -195,12 +204,18 @@ def change_resposta(request, id):
     q = Questionario.objects.get(pk=id)
     questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     respostas = Resposta.objects.filter(questionario_id=id)
+    hoje = datetime.datetime.now()
+    inicio = q.avaliacao.data_inicial
+    fim = q.avaliacao.data_final
 
     if request.method == 'GET':
-        q.status = 'E'
-        q.save()
-
-        return render(request, 'resposta_form.html', {'questionario':questionario, 'q':q})
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            q.status = 'E'
+            q.save()
+            return render(request, 'resposta_form.html', {'questionario':questionario, 'q':q})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
+            return redirect(reverse('view_questionario', args=(q.id,)))
     
     if request.method == 'POST':
         for i in respostas:

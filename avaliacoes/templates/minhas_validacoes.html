@@ -83,7 +83,7 @@
                                         </i>{{ f.questionario.get_status_display }}
                                     </td>
                                     <td>
-                                        {% if f.questionario.tramitacao_set.all.first.setor == user.funcao %}
+                                        {% if f.questionario.tramitacao_set.all.first.setor == user.setor %}
                                             <span class="badge 
                                             {% if f.questionario.status == 'I' %} 
                                                 bg-primary

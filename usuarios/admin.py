@@ -8,8 +8,7 @@ class UserAdmin(admin_auth_django.UserAdmin):
     form = UserChangeForm
     model = User
     fieldsets = admin_auth_django.UserAdmin.fieldsets + (
-        ('Função', {'fields':('funcao',)}),
-        ('Município', {'fields':('municipio', 'entidade',)}),
-        ('Foto', {'fields':('foto',)}),
-        ('Celular', {'fields':('celular',)}),
+        ('Função e Setor', {'fields':('funcao','setor')}),
+        ('Município', {'fields':('municipio','entidade',)}),
+        ('Foto e Celular', {'fields':('foto','celular')}),
     )

@@ -10,6 +10,7 @@ from django.contrib import messages
 from notifications.signals import notify
 from django.db.models import Q
 from rolepermissions.decorators import has_permission_decorator
+import datetime
 
 
 def tramitar_atricon(request, id):
@@ -28,16 +29,26 @@ def tramitar_atricon(request, id):
 def atribuir_validador(request, id, auditor_id):
     usuario = User.objects.get(pk=auditor_id)
     questionario = Questionario.objects.filter(pk__in=id)
+    hoje = datetime.datetime.now()
 
     for q in questionario:
-        validacao = Validacao(usuario=usuario, questionario_id=q.id)
-        validacao.save()
+        inicio = q.avaliacao.data_inicial_validacao
+        fim = q.avaliacao.data_final_validacao
+        
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
 
-        q.status = 'AV'
-        q.save()
+            validacao = Validacao(usuario=usuario, questionario_id=q.id)
+            validacao.save()
 
-        # Envia notificação para o Usuário
-        notify.send(request.user, recipient=usuario, verb=f'{validacao.questionario.entidade}', target=validacao.questionario, description=f'Validação atribuída por {request.user.first_name}.')
+            q.status = 'AV'
+            q.save()
+
+            # Envia notificação para o Usuário
+            notify.send(request.user, recipient=validacao.questionario.usuario, verb=f'{validacao.questionario.entidade}', target=validacao.questionario, description=f'Questionário selecionado para validação por {request.user.first_name}.')
+        
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo de validação.")
+            return redirect(reverse('visao_geral'))
 
     return messages.success(request, "Questionários atribuídos para validação com sucesso!")
 
@@ -50,15 +61,15 @@ def visao_geral(request):
         poderes = Entidade.PODER_CHOICES
         setores = Tramitacao.SETOR_CHOICES
         status = Questionario.STATUS_CHOICES
-        auditores = User.objects.filter(municipio__uf=request.user.municipio.uf).filter(funcao='T')
+        auditores = User.objects.filter(municipio__uf=request.user.municipio.uf).filter(setor='T')
 
         questionarios = Questionario.objects.filter(entidade__in=entidades)
         questionarios_validados = questionarios.filter(status='V')
 
         ultima_tramitacao = Tramitacao.objects.values('questionario').annotate(id_ultimo=Max('id'))
         tramitacao = Tramitacao.objects.filter(pk__in=[i['id_ultimo'] for i in ultima_tramitacao])
-        questionarios_setor = questionarios.filter(validacao=None).filter(pk__in=tramitacao.filter(setor=request.user.funcao).values_list('questionario', flat=True))
-        questionarios_tramitar = questionarios.filter(Q(status='V') | Q(status='F')).filter(pk__in=tramitacao.filter(setor=request.user.funcao).values_list('questionario', flat=True))
+        questionarios_setor = questionarios.filter(status='F').filter(pk__in=tramitacao.filter(setor=request.user.setor).values_list('questionario', flat=True))
+        questionarios_tramitar = questionarios.filter(Q(status='V') | Q(status='F')).filter(pk__in=tramitacao.filter(setor=request.user.setor).values_list('questionario', flat=True))
 
         municipio_filtro = request.GET.get('municipio_filtro', None)
         ug_filtro = request.GET.get('ug_filtro', None)

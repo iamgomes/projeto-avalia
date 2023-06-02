@@ -4,17 +4,25 @@ from entidades.models import Municipio, Entidade
 from smart_selects.db_fields import ChainedManyToManyField
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from rolepermissions.roles import assign_role
+from rolepermissions.roles import assign_role, remove_role
+from rolepermissions.permissions import grant_permission, revoke_permission
 
 
 class User(AbstractUser):
-    FUNCAO_CHOICES = (
+    SETOR_CHOICES = (
         ('C', 'Controle Interno'),
         ('T', 'Tribunal de Contas'),
         ('A', 'Atricon')
     )
+
+    FUNCAO_CHOICES = (
+        ('A', 'Avaliador'),
+        ('V', 'Validador'),
+        ('C', 'Coordenador')
+    )
     
-    funcao = models.CharField(max_length=1, choices=FUNCAO_CHOICES, default='C')
+    setor = models.CharField(max_length=1, choices=SETOR_CHOICES, default='C')
+    funcao = models.CharField(max_length=1, choices=FUNCAO_CHOICES, default='A')
     municipio = models.ForeignKey(Municipio, on_delete=models.SET_NULL, null=True, blank=True)
     entidade = ChainedManyToManyField(Entidade,
                                       chained_field="municipio",
@@ -32,7 +40,9 @@ class User(AbstractUser):
 @receiver(post_save, sender=User)
 def define_permissoes(sender, instance, created, **kwargs):
     if created:
-        if instance.funcao == 'C':
-            assign_role(instance, 'controladores')
-        elif instance.cargo == 'T':
-            assign_role(instance, 'auditores')
+        if instance.funcao == 'A':
+            remove_role(instance, 'avaliadores')
+        if instance.funcao == 'V':
+            remove_role(instance, 'validadores')
+        elif instance.funcao == 'C':
+            remove_role(instance, 'coordenadores')

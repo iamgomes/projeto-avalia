@@ -52,6 +52,7 @@
                                     <th>Usuário</th>
                                     <th>Cidade</th>
                                     <th>Função</th>
+                                    <th>Setor</th>
                                     <th>Status</th>
                                     <th>Ação</th>
                                 </tr>
@@ -68,12 +69,23 @@
                                                 <img class="img-thumbnail rounded-circle avatar-sm me-2" alt="200x200" src="{% static 'img/perfil.png'%}" data-holder-rendered="true">
                                             {% endif %}
                                             {{ q.nome_completo }}
+                                            {% if q.is_superuser %}
+                                                <i class="mdi mdi-check-decagram text-primary" title="Atricon"></i>
+                                            {% endif %}
+                                            {% if q.funcao == 'C' %}
+                                                <i class="mdi mdi-check-decagram text-warning" title="Coordenador"></i>
+                                            {% endif %}
+                                            {% if q.funcao == 'V' %}
+                                                <i class="mdi mdi-check-decagram text-secondary" title="Validador"></i>
+                                            {% endif %}
                                         </div>
                                     </td>
                                     <td>{{ q.username }}</td>
                                     <td>{{ q.municipio }}</td>
                                     <td>{{ q.get_funcao_display }}</td>
-                                    <td>{% if q.is_active %}
+                                    <td>{{ q.get_setor_display }}</td>
+                                    <td>
+                                        {% if q.is_active %}
                                             <i class="mdi mdi-check-circle text-success" data-toggle="tooltip" title="Ativo"></i>
                                         {% else %}
                                             <i class="mdi mdi-close-circle text-danger" data-toggle="tooltip" title="Inativo"></i>

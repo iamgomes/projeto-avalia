@@ -14,7 +14,6 @@
 
 
 {% block 'body' %}
-
 <div class="row">
         <div class="col-xl-12">
             <div class="card">
@@ -78,27 +77,35 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                        <div class="mb-3">
-                                                <label for="validationCustom03" class="form-label">Função</label>
-                                                {% render_field form.funcao class="form-select" %}
-                                                <div class="invalid-feedback">
-                                                Selecione uma cidade válida.
-                                                </div>
+                                    <div class="mb-3">
+                                        <label for="validationCustom03" class="form-label">Cidade</label>
+                                        {% render_field form.municipio class="form-select select2" %}
+                                        <div class="invalid-feedback">
+                                            Selecione uma cidade válida.
                                         </div>
+                                    </div>
                                 </div>
                             </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="validationCustom03" class="form-label">Cidade</label>
-                                    {% render_field form.municipio class="form-select select2" %}
+                                    <label for="validationCustom03" class="form-label">Função</label>
+                                    {% render_field form.funcao class="form-select" %}
                                     <div class="invalid-feedback">
-                                        Selecione uma cidade válida.
+                                    Selecione uma cidade válida.
                                     </div>
-
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="validationCustom03" class="form-label">Setor</label>
+                                    {% render_field form.setor class="form-select" %}
+                                    <div class="invalid-feedback">
+                                    Selecione um setor válido.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="validationCustom04" class="form-label">Unidade Gestora</label>
                                     {% render_field form.entidade class="form-select" multiple="multiple" %}
