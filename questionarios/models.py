@@ -48,17 +48,12 @@ class Dimensao(models.Model):
     def va_criterio(self, matriz):
         return self.qtde_essenciais(matriz) + self.qtde_obrigatorias(matriz) + self.qtde_recomendadas(matriz)
     
-    @property
-    def soma_pesos(self):
-        return Dimensao.objects.aggregate(Sum("peso"))['peso__sum'] #37
-    
-    @property
-    def peso_normalizado(self):
-        total = self.peso / self.soma_pesos * 100
-        return total
-    
     def vb_criterio(self, matriz):
-        total = self.peso_normalizado / self.va_criterio(matriz)
+        criterios_filtrados = Criterio.objects.filter(matriz__in=['C','{}'.format(matriz)])
+        dimensoes_filtradas = Dimensao.objects.filter(pk__in=[c.dimensao.id for c in criterios_filtrados])
+        soma_pesos = dimensoes_filtradas.aggregate(Sum("peso"))['peso__sum']
+        peso_normalizado = self.peso / soma_pesos * 100
+        total = peso_normalizado / self.va_criterio(matriz)
         return total
     
     def vn_essenciais(self, matriz):
