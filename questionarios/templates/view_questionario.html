@@ -65,6 +65,46 @@
             </div>
         </div>
     </div>
+
+    <div class="col-xl-8">
+        {% if q.resposta_set.all %}
+            {% if q.tramitacao_set.all.first.setor == user.setor %}
+                {% if q.usuario == user %}
+                    <a href="{% url 'change_resposta' q.id %}" class="btn btn-primary d-inline" type="button" >
+                        <i class="mdi mdi-pencil"></i> Editar Questionário
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if q.validacao.respostavalidacao_set.all  %}
+            {% if q.tramitacao_set.all.first.setor == user.setor %}
+                {% if q.validacao.usuario == user or user|has_role:'coordenadores'%}
+                    <a href="{% url 'change_resposta_validacao' q.validacao.id %}" class="btn btn-info d-inline" type="button" >
+                        <i class="mdi mdi-pencil"></i> Editar Validação
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        <div class="dropdown d-inline">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Exportar <i class="mdi mdi-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{% url 'exporta_csv' q.id %}">CSV</a>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ q.id }}/{{ q.avaliacao.ano_exercicio }}</i></h4>
+                <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ q.entidade }}</i></h4>
+                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ q.usuario.nome_completo }} ({{q.usuario.get_funcao_display}}) - {{ q.indice }} ({{ q.nivel }})</i></h5>
+                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ q.validacao.usuario.nome_completo }} ({{q.validacao.usuario.get_funcao_display}}) - {{ q.validacao.indice }} ({{ q.validacao.nivel }})</i></h5>
+            </div>
+        </div>
+    </div>
 </div>
 
 
