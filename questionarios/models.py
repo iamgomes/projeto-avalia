@@ -31,17 +31,17 @@ class Dimensao(models.Model):
     # VA = Valor Absoluto, VB = Valor Base, VN = Valor Normalizado
     
     def qtde_essenciais(self, matriz):
-        qtde = self.criterio_set.all().filter(exigibilidade='E').filter(matriz__in=['C','{}'.format(matriz)]).count()
+        qtde = self.criterio_set.all().filter(exigibilidade='E').filter(Q(matriz='C') | Q(matriz=matriz)).count()
         va = qtde * 2
         return va
     
     def qtde_obrigatorias(self, matriz):
-        qtde = self.criterio_set.all().filter(exigibilidade='O').filter(matriz__in=['C','{}'.format(matriz)]).count()
+        qtde = self.criterio_set.all().filter(exigibilidade='O').filter(Q(matriz='C') | Q(matriz=matriz)).count()
         va = qtde * 1.5
         return va
     
     def qtde_recomendadas(self, matriz):
-        qtde = self.criterio_set.all().filter(exigibilidade='R').filter(matriz__in=['C','{}'.format(matriz)]).count()
+        qtde = self.criterio_set.all().filter(exigibilidade='R').filter(Q(matriz='C') | Q(matriz=matriz)).count()
         va = qtde * 1
         return va
     
@@ -49,7 +49,7 @@ class Dimensao(models.Model):
         return self.qtde_essenciais(matriz) + self.qtde_obrigatorias(matriz) + self.qtde_recomendadas(matriz)
     
     def vb_criterio(self, matriz):
-        criterios_filtrados = Criterio.objects.filter(matriz__in=['C','{}'.format(matriz)])
+        criterios_filtrados = Criterio.objects.filter(Q(matriz='C') | Q(matriz=matriz))
         dimensoes_filtradas = Dimensao.objects.filter(pk__in=[c.dimensao.id for c in criterios_filtrados])
         soma_pesos = dimensoes_filtradas.aggregate(Sum("peso"))['peso__sum']
         peso_normalizado = self.peso / soma_pesos * 100
@@ -155,11 +155,11 @@ class Questionario(models.Model):
     
     @property
     def total_criterios(self):
-        return self.avaliacao.criterio_set.all().filter(matriz__in=['C','{}'.format(self.entidade.poder)]).count()
+        return self.avaliacao.criterio_set.all().filter(Q(matriz='C') | Q(matriz=self.entidade.poder)).count()
     
     @property
     def total_criterios_essenciais(self):
-        return self.avaliacao.criterio_set.filter(exigibilidade='E').filter(matriz__in=['C','{}'.format(self.entidade.poder)]).count()
+        return self.avaliacao.criterio_set.filter(exigibilidade='E').filter(Q(matriz='C') | Q(matriz=self.entidade.poder)).count()
     
     @property
     def total_criterios_essenciais_atendidos(self):

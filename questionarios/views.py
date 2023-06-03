@@ -104,7 +104,7 @@ def delete_questionario(request, id):
 @login_required
 def view_questionario(request, id):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(matriz__in=['C','{}'.format(q.entidade.poder)])
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
 
     if request.method == 'GET':
         tramitacao = Tramitacao.objects.filter(questionario_id=q.id)
@@ -136,7 +136,7 @@ def view_questionario(request, id):
 @login_required
 def add_resposta(request, id):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(matriz__in=['C','{}'.format(q.entidade.poder)])
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     hoje = datetime.datetime.now()
     inicio = q.avaliacao.data_inicial
     fim = q.avaliacao.data_final
@@ -200,7 +200,7 @@ def add_resposta(request, id):
 @login_required
 def change_resposta(request, id):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(matriz__in=['C','{}'.format(q.entidade.poder)])
+    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     respostas = Resposta.objects.filter(questionario_id=id)
     hoje = datetime.datetime.now()
     inicio = q.avaliacao.data_inicial
@@ -282,7 +282,11 @@ def change_resposta(request, id):
                 justifica.justificativa = justificativa
                 justifica.save()
 
-        q.status = 'F'
+        if request.user.funcao == 'A':
+            q.status = 'F'
+        if request.user.funcao == 'V' or request.user.funcao == 'C':
+            q.status = 'V'
+
         q.save()
 
         messages.success(request, "Resposta de avaliação alterada com sucesso!")
