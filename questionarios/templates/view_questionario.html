@@ -8,7 +8,6 @@
 
         <!-- Lightbox css -->
         <link href="{% static 'assets/libs/magnific-popup/magnific-popup.css' %}" rel="stylesheet" type="text/css" />
-        <link href="{% static 'css/app.css' %}" rel="stylesheet">
 
 {% endblock 'head' %}
 
@@ -101,7 +100,9 @@
                 <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ q.id }}/{{ q.avaliacao.ano_exercicio }}</i></h4>
                 <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ q.entidade }}</i></h4>
                 <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ q.usuario.nome_completo }} ({{q.usuario.get_funcao_display}}) - {{ q.indice }} ({{ q.nivel }})</i></h5>
-                <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ q.validacao.usuario.nome_completo }} ({{q.validacao.usuario.get_funcao_display}}) - {{ q.validacao.indice }} ({{ q.validacao.nivel }})</i></h5>
+                {% if q.validacao %}
+                    <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ q.validacao.usuario.nome_completo }} ({{q.validacao.usuario.get_funcao_display}}) - {{ q.validacao.indice }} ({{ q.validacao.nivel }})</i></h5>
+                {% endif %}
             
                 {% if q.resposta_set.all %}
 
@@ -129,10 +130,9 @@
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-md-12">
                                                     <div class="card-body">
-                                                        <h5 class="card-title">{{ a.cod}} - {{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
-                        
+                                                        <h5 class="card-title">{{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
                                                         <footer class="blockquote-footer font-size-15 m-0">
-                                                        Itens atendidos pela avaliação do controle interno: <br>
+                                                        Itens atendidos pelo Avaliador: <br>
                                                         {% for c in a.criterioitem_set.all %}
                                                             {% for r in c.resposta_set.all %}
                                                                 {% if r.questionario.id == q.id %}
@@ -141,9 +141,46 @@
                                                                     {% else %}
                                                                         <del>{{c.item_avaliacao}}</del>
                                                                     {% endif %}
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for link in r.linkevidencia_set.all %}
+                                                                            <ol>
+                                                                                {% for i  in link.link.split %}
+                                                                                    <li><a href="{{ i }}" target="_blank">{{ i }}</a></li>
+                                                                                {% endfor %}
+                                                                            </ol>                                                        
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for j in r.justificativaevidencia_set.all %}
+                                                                            Justificativa: {{ j.justificativa }}
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <div class='input-group'>
+                                                                        {% for img in r.imagemevidencia_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="70" src='{{ img.imagem.url }}' alt="{{ img.imagem }}">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </footer>
+
                                                                 {% endif %}
                                                             {% endfor %}
                                                         {% endfor %}
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
