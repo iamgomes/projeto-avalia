@@ -163,7 +163,7 @@ class Questionario(models.Model):
     
     @property
     def total_criterios_essenciais_atendidos(self):
-        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').count() or 0
+        return self.resposta_set.filter(resposta=True).filter(criterio_item__criterio__exigibilidade='E').filter(criterio_item__item_avaliacao=1).count() or 0
     
     @property
     def percentual_atendido_essenciais(self):
