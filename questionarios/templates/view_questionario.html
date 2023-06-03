@@ -14,6 +14,59 @@
 
 {% block 'body' %}
 
+{% if messages %}
+    {% for message in messages  %}
+        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-check-all me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Tramitação</h4>
+                <ol class="activity-feed">
+                    {% for t in tramitacao %}
+                    <li class="feed-item">
+                        <div class="feed-item-list">
+                            <span class="date">{{ t.created_at }}</span>
+                            <h6>{{ t.get_setor_display }}</h6>
+                            <span class="activity-text">{{ t.get_motivo_display }}</span>
+                            <footer class="blockquote-footer font-size-12 m-0">
+                                {{ t.usuario.first_name }}
+                                {% if t.observacao %}
+                                <i style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#Observacao-{{t.id}}" 
+                                class="mdi mdi-comment-text font-size-18" data-toggle="tooltip" title="Observação"></i>
+                                {% endif %}
+                            </footer>
+                           
+                            <!--Modal-->
+                            {% include 'modal_observacao.html' %}
+
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% if q.tramitacao_set.all.first.setor == user.setor %}
+                {% if q.status == 'F' or  q.status == 'V' or  q.status == 'EV' %}
+                <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{q.id}}" 
+                    data-toggle="tooltip" title="Tramitar">
+                    Tramitar <i class="mdi mdi-arrow-right-circle"></i>
+                </a>
+                {% endif %}
+                {% endif %}
+
+                <!--Modal-->
+                {% include 'modal_tramitacao.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% block 'script' %}
 
