@@ -108,7 +108,6 @@ def view_questionario(request, id):
 
     if request.method == 'GET':
         tramitacao = Tramitacao.objects.filter(questionario_id=q.id)
-        respostas = Resposta.objects.filter(questionario_id=id)
         form = TramitacaoForm()
         setores = Tramitacao.SETOR_CHOICES
         motivos = []
@@ -116,7 +115,6 @@ def view_questionario(request, id):
         return render(request, 'view_questionario.html', {'questionario':questionario,
                                                           'q':q,
                                                         'tramitacao':tramitacao, 
-                                                        'respostas':respostas,
                                                         'form':form,
                                                         'setores':setores,
                                                         'motivos':motivos,})
