@@ -172,26 +172,29 @@ class Questionario(models.Model):
     
     @property
     def classificacao(self):
-        if self.percentual_atendido_essenciais == 100:
-            if self.nota >= 95:
-                nivel_t = 'Diamante'
-            if self.nota >= 85 and self.nota < 95:
-                nivel_t = 'Ouro'
-            if self.nota >= 75 and self.nota < 85:
-                nivel_t = 'Prata'
-        else:
-            if self.nota >= 75:
-                nivel_t = 'Elevado'
-            if self.nota >= 50 and self.nota < 75:
-                nivel_t = 'Intermediário'
-            if self.nota >= 30 and self.nota < 50:
-                nivel_t = 'Básico'
-            if self.nota >= 1 and self.nota < 30:
-                nivel_t = 'Inicial'
-            if self.nota < 1:
-                nivel_t = 'Inexistente'
+        try:
+            if self.percentual_atendido_essenciais == 100:
+                if self.nota >= 95:
+                    nivel = 'Diamante'
+                if self.nota >= 85 and self.nota < 95:
+                    nivel = 'Ouro'
+                if self.nota >= 75 and self.nota < 85:
+                    nivel = 'Prata'
+            else:
+                if self.nota >= 75:
+                    nivel = 'Elevado'
+                if self.nota >= 50 and self.nota < 75:
+                    nivel = 'Intermediário'
+                if self.nota >= 30 and self.nota < 50:
+                    nivel = 'Básico'
+                if self.nota >= 1 and self.nota < 30:
+                    nivel = 'Inicial'
+                if self.nota < 1:
+                    nivel = 'Inexistente'
+        except:
+            nivel = 'Inexistente'
 
-        return nivel_t
+        return nivel
     
 
 class Resposta(models.Model):

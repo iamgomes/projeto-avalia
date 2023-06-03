@@ -36,24 +36,27 @@ class Validacao(models.Model):
     
     @property
     def classificacao_validacao(self):
-        if self.percentual_atendido_essenciais == 100:
-            if self.nota_validacao >= 95:
-                nivel = 'Diamante'
-            if self.nota_validacao >= 85 and self.nota_validacao < 95:
-                nivel = 'Ouro'
-            if self.nota_validacao >= 75 and self.nota_validacao < 85:
-                nivel = 'Prata'
-        else:
-            if self.nota_validacao >= 75:
-                nivel = 'Elevado'
-            if self.nota_validacao >= 50 and self.nota_validacao < 75:
-                nivel = 'Intermediário'
-            if self.nota_validacao >= 30 and self.nota_validacao < 50:
-                nivel = 'Básico'
-            if self.nota_validacao >= 1 and self.nota_validacao < 30:
-                nivel = 'Inicial'
-            if self.nota_validacao < 1:
-                nivel = 'Inexistente'
+        try:
+            if self.percentual_atendido_essenciais == 100:
+                if self.nota_validacao >= 95:
+                    nivel = 'Diamante'
+                if self.nota_validacao >= 85 and self.nota_validacao < 95:
+                    nivel = 'Ouro'
+                if self.nota_validacao >= 75 and self.nota_validacao < 85:
+                    nivel = 'Prata'
+            else:
+                if self.nota_validacao >= 75:
+                    nivel = 'Elevado'
+                if self.nota_validacao >= 50 and self.nota_validacao < 75:
+                    nivel = 'Intermediário'
+                if self.nota_validacao >= 30 and self.nota_validacao < 50:
+                    nivel = 'Básico'
+                if self.nota_validacao >= 1 and self.nota_validacao < 30:
+                    nivel = 'Inicial'
+                if self.nota_validacao < 1:
+                    nivel = 'Inexistente'
+        except:
+            nivel = 'Inexistente'
 
         return nivel
 
