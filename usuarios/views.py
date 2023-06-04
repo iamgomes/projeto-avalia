@@ -9,6 +9,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 import os
 from rolepermissions.decorators import has_role_decorator
+from rolepermissions.roles import assign_role, remove_role
 
 
 def add_usuario(request):
@@ -92,6 +93,18 @@ def change_usuario(request, id):
     if request.method == 'POST':
         form = UserChangeForm(request.POST, instance=usuario)
         if form.is_valid():
+            if form.cleaned_data['funcao'] == 'C':
+                assign_role(usuario, 'coordenadores')
+                remove_role(usuario, 'validadores')
+                remove_role(usuario, 'avaliadores')
+            if form.cleaned_data['funcao'] == 'V':
+                assign_role(usuario, 'validadores')
+                remove_role(usuario, 'coordenadores')
+                remove_role(usuario, 'avaliadores')
+            if form.cleaned_data['funcao'] == 'A':
+                assign_role(usuario, 'avaliadores')
+                remove_role(usuario, 'coordenadores')
+                remove_role(usuario, 'validadores')
             form.save()
             messages.success(request, "Usuário alterado com sucesso!")
             return redirect(reverse('usuarios'))

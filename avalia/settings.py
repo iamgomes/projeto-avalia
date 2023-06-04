@@ -125,11 +125,11 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 
 LOGIN_REDIRECT_URL = 'home'
 
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = 'login'
 
 ROLEPERMISSIONS_MODULE = 'avalia.roles'
 #ROLEPERMISSIONS_REGISTER_ADMIN = True
@@ -169,3 +169,12 @@ else:
     STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+#gmail_send/settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'wgomes100@gmail.com'
+EMAIL_HOST_PASSWORD = 'jmcfjwsevguhytxu'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
