@@ -27,7 +27,7 @@ form.children("div").steps({
         form.submit();
     },
     labels: {
-        finish: "Salvar",
+        finish: "Finalizar",
         next: "Próximo",
         previous: "Anterior"
     }

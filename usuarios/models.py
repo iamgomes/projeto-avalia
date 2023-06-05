@@ -35,6 +35,9 @@ class User(AbstractUser):
 
     def nome_completo(self):
         return '{} {}'.format(self.first_name, self.last_name)
+    
+    class Meta:
+        ordering = ('first_name', )
 
 
 @receiver(post_save, sender=User)

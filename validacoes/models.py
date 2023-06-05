@@ -27,7 +27,7 @@ class Validacao(models.Model):
     
     @property
     def total_criterios_essenciais_atendidos(self):
-        return self.respostavalidacao_set.filter(resposta_validacao=True).filter(resposta__criterio_item__criterio__exigibilidade='E').count()
+        return self.respostavalidacao_set.filter(resposta_validacao=True).filter(resposta__criterio_item__criterio__exigibilidade='E').filter(resposta__criterio_item__item_avaliacao=1).count()
     
     @property
     def percentual_atendido_essenciais(self):
@@ -76,11 +76,11 @@ class RespostaValidacao(models.Model):
     @property
     def total_item_validacao(self):
         if self.resposta.criterio_item.criterio.exigibilidade == 'E':
-            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_essenciais
+            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_essenciais(self.resposta.questionario.entidade.poder)
         if self.resposta.criterio_item.criterio.exigibilidade == 'O':
-            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_obrigatorias
+            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_obrigatorias(self.resposta.questionario.entidade.poder)
         if self.resposta.criterio_item.criterio.exigibilidade == 'R':
-            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_recomendadas
+            valor_item = self.resposta.criterio_item.criterio.dimensao.vn_recomendadas(self.resposta.questionario.entidade.poder)
 
         total = valor_item / self.resposta.criterio_item.criterio.soma_pesos_aplicaveis * self.resposta.criterio_item.item_avaliacao.peso
 

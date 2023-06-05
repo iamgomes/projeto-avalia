@@ -185,12 +185,21 @@ def add_resposta(request, id):
                         justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
                         justifica.save()
 
+        acao = request.POST.get('acao', None)
+            
         if request.user.funcao == 'A':
-            q.status = 'F'
+            if acao == 'SalvarContinuar':
+                q.status = 'E'
+            else:
+                q.status = 'F'
         if request.user.funcao == 'V' or request.user.funcao == 'C':
-            q.status = 'V'
+            if acao == 'SalvarContinuar':
+                q.status = 'E'
+            else:
+                q.status = 'V'
 
         q.save()
+        print(acao)
             
         messages.success(request, "Resposta cadastrada com sucesso!")
 
