@@ -219,6 +219,7 @@
                                             <th>Município</th>
                                             <th>Status</th>
                                             <th>Índice</th>
+                                            <th>Nível</th>
                                             <th>Setor Atual</th>
                                             <th>Validação</th>
                                         </tr>
@@ -265,6 +266,11 @@
                                             {% else %}
                                                 <td>{{ e.questionario_set.all.first.indice }} 
                                                     <i class="ri-error-warning-fill align-middle text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Nota não validada"></i></td>
+                                            {% endif %}
+                                            {% if e.questionario_set.all.first.validacao.nivel %}
+                                                <td>{{ e.questionario_set.all.first.validacao.nivel }}</td>
+                                            {% else %}
+                                                <td>{{ e.questionario_set.all.first.nivel  }}</td>
                                             {% endif %}
                                             <td>{{ e.questionario_set.all.first.tramitacao_set.all.first.get_setor_display }}</td>
                                             <td>{{ e.questionario_set.all.first.validacao.usuario.nome_completo }}</td>
