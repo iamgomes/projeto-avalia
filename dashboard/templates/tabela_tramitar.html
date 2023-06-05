@@ -11,8 +11,8 @@
                 <th>ID</th>
                 <th>Unidade Gestora</th>
                 <th>Status</th>
-                <th>Data Envio</th>
                 <th>Índice</th>
+                <th>Nível</th>
             </tr>
         </thead><!-- end thead -->
         <tbody>
@@ -51,11 +51,15 @@
                     font-size-12">{{ q.get_status_display }}
                     </span>
                 </td>
-                <td>{{ q.created_at|date:'d/m/Y H:i' }}</td>
                 {% if q.validacao.indice %}
                     <td>{{ q.validacao.indice }}</td>
                 {% else %}
-                <td>{{ q.indice }}</td>
+                    <td>{{ q.indice }}</td>
+                {% endif %}
+                {% if q.validacao.nivel %}
+                    <td>{{ q.validacao.nivel }}</td>
+                {% else %}
+                    <td>{{ q.nivel }}</td>
                 {% endif %}
             </tr>
                 <!-- end -->
