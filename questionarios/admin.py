@@ -36,7 +36,11 @@ class ItemAvaliacaoAdmin(admin.ModelAdmin):
 
 admin.site.register(ItemAvaliacao, ItemAvaliacaoAdmin)
 
+class TramitacaoAdmin(admin.ModelAdmin):
+    list_display = ['questionario', 'setor', 'motivo']
+
+admin.site.register(Tramitacao, TramitacaoAdmin)
+
 admin.site.register(ImagemEvidencia)
 admin.site.register(JustificativaEvidencia)
 admin.site.register(LinkEvidencia)
-admin.site.register(Tramitacao)

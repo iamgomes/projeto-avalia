@@ -115,8 +115,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                            <button class="btn btn-primary" type="submit">Salvar</button>
+                        <div>
+                            <button class="btn btn-loader btn-primary" type="submit">Salvar</button>
                         </div>
                     </form>
                 </div>
@@ -126,6 +126,8 @@
 </div>
 
 {% block 'script' %}
+
+        <script src="{% static 'js/botao_loader.js' %}"></script>
 
         <script src="{% static 'assets/js/pages/form-advanced.init.js' %}"></script>
         <script src="{% static 'assets/libs/parsleyjs/parsley.min.js' %}"></script>

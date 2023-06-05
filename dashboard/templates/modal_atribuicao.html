@@ -43,11 +43,51 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-light waves-effect" data-bs-dismiss="modal">Fechar</button>
                 <div id="btn_atribuir">
-                    <button type="submit" id='botao_atribuir' name='acao' class="btn btn-primary waves-effect waves-light" value="Atribuir" onclick="botao_atribuir('Atribuir')">Atribuir</button>
+                    <button type="submit" name='acao' class="btn loader-atribuir btn-primary waves-effect waves-light" value="Atribuir">Atribuir</button>
                 </div>
+                <script>
+                btn = document.querySelector(".loader-atribuir"),
+                btn.onclick = function(){
+                    this.innerHTML = "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>";
+                    this.disabled=true;
+                    // Cria um novo campo de input para armazenar o valor do botão clicado
+                    input = document.createElement('input');
+                    input.setAttribute('type', 'hidden');
+                    input.setAttribute('name', 'acao');
+                    input.setAttribute('value', 'Atribuir');
+                    // Adiciona o campo de input ao formulário
+                    this.form.appendChild(input);
+                    // Submete o formulário
+                    this.form.submit();
+                    setTimeout(() => {
+                        this.innerHTML = 'Salvo'
+                    }, timeout);
+                };
+                </script>
                 <div id="btn_enviar">
-                    <button type="submit" id='botao_tramitar' name='acao' class="btn btn-success waves-effect waves-light" value="Tramitar" onclick="botao_tramitar('Tramitar')">Tramitar para Atricon</button>
+                    <button type="submit" name='acao' class="btn loader-tramitar btn-success waves-effect waves-light" value="Tramitar">Tramitar para Atricon</button>
                 </div>
+                <script>
+                    btn = document.querySelector(".loader-tramitar"),
+                    btn.onclick = function(){
+                        this.innerHTML = "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>";
+                        this.disabled=true;
+                        // Cria um novo campo de input para armazenar o valor do botão clicado
+                        input = document.createElement('input');
+                        input.setAttribute('type', 'hidden');
+                        input.setAttribute('name', 'acao');
+                        input.setAttribute('value', 'Tramitar');
+    
+                        // Adiciona o campo de input ao formulário
+                        this.form.appendChild(input);
+    
+                        // Submete o formulário
+                        this.form.submit();
+                        setTimeout(() => {
+                            this.innerHTML = 'Salvo'
+                        }, timeout);
+                    };
+                    </script>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
