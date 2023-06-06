@@ -182,6 +182,43 @@
                                                                 {% endif %}
                                                             {% endfor %}
 
+                                                            {% if q.validacao %}
+                                                            <footer class="blockquote-footer font-size-15 m-0">
+                                                            Itens atendidos pela Validador: <br>
+                                                                {% for r in c.respostavalidacao_set.all %}
+                                                                    {% if r.validacao.questionario.id == q.id %}
+                                                                        {% if r.resposta_validacao == True %}
+                                                                            <mark>{{c.item_avaliacao}}</mark>
+                                                                        {% else %}
+                                                                            <del>{{c.item_avaliacao}}</del>
+                                                                        {% endif %}        
+                                                                    {% endif %}
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for link in r.linkevidenciavalidacao_set.all %}
+                                                                                <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <div class='input-group'>
+                                                                        {% for img in r.imagemevidenciavalidacao_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="80" src='{{ img.imagem_validacao.url }}' alt="Card image">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+
+                                                                {% endfor %}
+                                                            </footer>
+                                                            {% endif %}
 
                                                         {% endfor %}
                                                         

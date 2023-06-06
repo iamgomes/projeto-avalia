@@ -114,7 +114,7 @@
                                         </a>
                                         {% if not f.questionario.respostavalidacao_set.all %}
                                         {% if f.questionario.validacao %}
-                                            {% if not f.questionario.status == 'V'%}
+                                            {% if f.questionario.status == 'AV' %}
                                             <a href="{% url 'add_resposta_validacao' f.questionario.id f.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
                                             </a>
