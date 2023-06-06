@@ -104,7 +104,7 @@ def delete_questionario(request, id):
 @login_required
 def view_questionario(request, id):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(matriz__in=['C', q.entidade.poder])
+    questionario = q.avaliacao.criterio_set.filter(matriz='C')
 
     if request.method == 'GET':
         tramitacao = Tramitacao.objects.filter(questionario_id=q.id)
