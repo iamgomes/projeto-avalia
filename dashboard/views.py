@@ -44,7 +44,7 @@ def atribuir_validador(request, id, auditor_id):
             q.save()
 
             # Envia notificação para o Usuário
-            notify.send(request.user, recipient=validacao.questionario.usuario, verb=f'{validacao.questionario.entidade}', target=validacao.questionario, description=f'Questionário selecionado para validação por {request.user.first_name}.')
+            notify.send(request.user, recipient=[validacao.questionario.usuario, validacao.usuario], verb=f'{validacao.questionario.entidade}', target=validacao.questionario, description=f'Questionário selecionado para validação por {request.user.first_name}.')
         
         else:
             messages.warning(request, "Desculpe, você está fora do prazo de validação.")
