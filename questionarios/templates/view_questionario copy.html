@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load permission_tags %}
+
+{% block 'title' %}Questionário{% endblock 'title' %}
+
+{% block 'head' %}
+
+        <!-- Lightbox css -->
+        <link href="{% static 'assets/libs/magnific-popup/magnific-popup.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/app.css' %}" rel="stylesheet">
+
+{% endblock 'head' %}
+
+{% block 'body' %}
+
+{% if messages %}
+    {% for message in messages  %}
+        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
+            <i class="mdi mdi-check-all me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Tramitação</h4>
+                <ol class="activity-feed">
+                    {% for t in tramitacao %}
+                    <li class="feed-item">
+                        <div class="feed-item-list">
+                            <span class="date">{{ t.created_at }}</span>
+                            <h6>{{ t.get_setor_display }}</h6>
+                            <span class="activity-text">{{ t.get_motivo_display }}</span>
+                            <footer class="blockquote-footer font-size-12 m-0">
+                                {{ t.usuario.first_name }}
+                                {% if t.observacao %}
+                                <i style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#Observacao-{{t.id}}" 
+                                class="mdi mdi-comment-text font-size-18" data-toggle="tooltip" title="Observação"></i>
+                                {% endif %}
+                            </footer>
+                           
+                            <!--Modal-->
+                            {% include 'modal_observacao.html' %}
+
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% if q.tramitacao_set.all.first.setor == user.setor %}
+                {% if q.status == 'F' or  q.status == 'V' or  q.status == 'EV' %}
+                <a type="button" class="btn btn-success waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#tramitacao-{{q.id}}" 
+                    data-toggle="tooltip" title="Tramitar">
+                    Tramitar <i class="mdi mdi-arrow-right-circle"></i>
+                </a>
+                {% endif %}
+                {% endif %}
+
+                <!--Modal-->
+                {% include 'modal_tramitacao.html' %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8">
+        {% if q.resposta_set.all %}
+            {% if q.tramitacao_set.all.first.setor == user.setor %}
+                {% if q.usuario == user %}
+                    <a href="{% url 'change_resposta' q.id %}" class="btn btn-primary d-inline" type="button" >
+                        <i class="mdi mdi-pencil"></i> Editar Questionário
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if q.validacao.respostavalidacao_set.all  %}
+            {% if q.tramitacao_set.all.first.setor == user.setor %}
+                {% if q.validacao.usuario == user or user|has_role:'coordenadores'%}
+                    <a href="{% url 'change_resposta_validacao' q.validacao.id %}" class="btn btn-info d-inline" type="button" >
+                        <i class="mdi mdi-pencil"></i> Editar Validação
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        <div class="dropdown d-inline">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Exportar <i class="mdi mdi-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{% url 'exporta_csv' q.id %}">CSV</a>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h4 class="card-title mb-4"><strong>ID: </strong><i>{{ q.id }}/{{ q.avaliacao.ano_exercicio }}</i></h4>
+                <h4 class="card-title mb-4"><strong>AVALIAÇÃO: </strong><i>{{ q.entidade }}</i></h4>
+                <h5 class="card-title mb-4"><strong>Avaliado por: </strong><i>{{ q.usuario.nome_completo }} ({{q.usuario.get_funcao_display}}) - {{ q.indice }} ({{ q.nivel }})</i></h5>
+                {% if q.validacao %}
+                    <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ q.validacao.usuario.nome_completo }} ({{q.validacao.usuario.get_funcao_display}}) - {{ q.validacao.indice }} ({{ q.validacao.nivel }})</i></h5>
+                {% endif %}
+            
+                {% if q.resposta_set.all %}
+
+                <div id="accordion" class="custom-accordion">
+                    {% for u in questionario %}
+                    {% ifchanged  %}
+                    <div class="card mb-1 shadow-none">
+                        <a href="#collapse{{ u.dimensao.id }}" class="text-dark" data-bs-toggle="collapse"
+                                        aria-expanded="false"
+                                        aria-controls="collapse{{ u.dimensao.id }}">
+                            <div class="card-header" id="heading{{ u.dimensao.id }}">
+                                <h6 class="m-0">
+                                    {{ u.dimensao }}
+                                    <i class="mdi mdi-minus float-end accor-plus-icon"></i>
+                                </h6>
+                            </div>
+                        </a>
+
+                        <div id="collapse{{ u.dimensao.id }}" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                            <div class="card-body">
+                                {% for a in questionario %}
+                                {% if a.dimensao == u.dimensao %}
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-md-12">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
+                                                        <footer class="blockquote-footer font-size-15 m-0">
+                                                        Itens atendidos pelo Avaliador: <br>
+                                                        {% for c in a.criterioitem_set.all %}
+                                                            {% for r in c.resposta_set.all %}
+                                                                {% if r.questionario.id == q.id %}
+                                                                    {% if r.resposta == True %}
+                                                                        <mark>{{c.item_avaliacao}}</mark>
+                                                                    {% else %}
+                                                                        <del>{{c.item_avaliacao}}</del>
+                                                                    {% endif %}
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for link in r.linkevidencia_set.all %}
+                                                                            <ol>
+                                                                                {% for i  in link.link.split %}
+                                                                                    <li><a href="{{ i }}" target="_blank">{{ i }}</a></li>
+                                                                                {% endfor %}
+                                                                            </ol>                                                        
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for j in r.justificativaevidencia_set.all %}
+                                                                            Justificativa: {{ j.justificativa }}
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <div class='input-group'>
+                                                                        {% for img in r.imagemevidencia_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="70" src='{{ img.imagem.url }}' alt="{{ img.imagem }}">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </footer>
+                                                                <br>
+
+                                                                {% endif %}
+                                                            {% endfor %}
+
+                                                            {% if q.validacao %}
+                                                            <footer class="blockquote-footer font-size-15 m-0">
+                                                            Itens atendidos pela Validador: <br>
+                                                                {% for r in c.respostavalidacao_set.all %}
+                                                                    {% if r.validacao.questionario.id == q.id %}
+                                                                        {% if r.resposta_validacao == True %}
+                                                                            <mark>{{c.item_avaliacao}}</mark>
+                                                                        {% else %}
+                                                                            <del>{{c.item_avaliacao}}</del>
+                                                                        {% endif %}        
+                                                                    {% endif %}
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for link in r.linkevidenciavalidacao_set.all %}
+                                                                                <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <div class='input-group'>
+                                                                        {% for img in r.imagemevidenciavalidacao_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="80" src='{{ img.imagem_validacao.url }}' alt="Card image">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+
+                                                                {% endfor %}
+                                                            </footer>
+                                                            {% endif %}
+
+                                                        {% endfor %}
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endifchanged %}
+                    {% endfor %}
+                </div>
+
+                {% else %}
+
+                    <div class="alert alert-primary" role="alert">
+                        Esta Unidade Gestora não possui site ou avaliação.
+                    </div>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block 'script' %}
+
+        <script src="{% static 'js/botao_loader.js' %}"></script>
+
+        <!-- Magnific Popup-->
+        <script src="{% static 'assets/libs/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+        <!-- lightbox init js-->
+        <script src="{% static 'assets/js/pages/lightbox.init.js' %}"></script>
+
+{% endblock 'script' %}
+
+{% endblock 'body' %}
