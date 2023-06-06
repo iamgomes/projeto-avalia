@@ -105,7 +105,144 @@
                     <h5 class="card-title mb-4"><strong>Validado por:</strong><i> {{ q.validacao.usuario.nome_completo }} ({{q.validacao.usuario.get_funcao_display}}) - {{ q.validacao.indice }} ({{ q.validacao.nivel }})</i></h5>
                 {% endif %}
             
-            
+                {% if q.resposta_set.all %}
+
+                <div id="accordion" class="custom-accordion">
+                    {% for u in questionario %}
+                    {% ifchanged  %}
+                    <div class="card mb-1 shadow-none">
+                        <a href="#collapse{{ u.dimensao.id }}" class="text-dark" data-bs-toggle="collapse"
+                                        aria-expanded="false"
+                                        aria-controls="collapse{{ u.dimensao.id }}">
+                            <div class="card-header" id="heading{{ u.dimensao.id }}">
+                                <h6 class="m-0">
+                                    {{ u.dimensao }}
+                                    <i class="mdi mdi-minus float-end accor-plus-icon"></i>
+                                </h6>
+                            </div>
+                        </a>
+
+                        <div id="collapse{{ u.dimensao.id }}" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                            <div class="card-body">
+                                {% for a in questionario %}
+                                {% if a.dimensao == u.dimensao %}
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-md-12">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ a.criterio_texto }} ({{ a.get_exigibilidade_display }})</h5>
+                                                        <footer class="blockquote-footer font-size-15 m-0">
+                                                        Itens atendidos pelo Avaliador: <br>
+                                                        {% for c in a.criterioitem_set.all %}
+                                                            {% for r in c.resposta_set.all %}
+                                                                {% if r.questionario.id == q.id %}
+                                                                    {% if r.resposta == True %}
+                                                                        <mark>{{c.item_avaliacao}}</mark>
+                                                                    {% else %}
+                                                                        <del>{{c.item_avaliacao}}</del>
+                                                                    {% endif %}
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for link in r.linkevidencia_set.all %}
+                                                                            <ol>
+                                                                                {% for i  in link.link.split %}
+                                                                                    <li><a href="{{ i }}" target="_blank">{{ i }}</a></li>
+                                                                                {% endfor %}
+                                                                            </ol>                                                        
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for j in r.justificativaevidencia_set.all %}
+                                                                            Justificativa: {{ j.justificativa }}
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <div class='input-group'>
+                                                                        {% for img in r.imagemevidencia_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem.url }}" title="{{ img.imagem }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="70" src='{{ img.imagem.url }}' alt="{{ img.imagem }}">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </footer>
+                                                                <br>
+
+                                                                {% endif %}
+                                                            {% endfor %}
+
+                                                            {% if q.validacao %}
+                                                            <footer class="blockquote-footer font-size-15 m-0">
+                                                            Itens atendidos pela Validador: <br>
+                                                                {% for r in c.respostavalidacao_set.all %}
+                                                                    {% if r.validacao.questionario.id == q.id %}
+                                                                        {% if r.resposta_validacao == True %}
+                                                                            <mark>{{c.item_avaliacao}}</mark>
+                                                                        {% else %}
+                                                                            <del>{{c.item_avaliacao}}</del>
+                                                                        {% endif %}        
+                                                                    {% endif %}
+
+                                                                    <p class="card-text">
+                                                                        <small >
+                                                                            {% for link in r.linkevidenciavalidacao_set.all %}
+                                                                                <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
+                                                                            {% endfor %}
+                                                                        </small>
+                                                                    </p>
+
+                                                                    <div class='input-group'>
+                                                                        {% for img in r.imagemevidenciavalidacao_set.all %}
+                                                                            {% if img.imagem %}
+                                                                                <div class="popup-gallery">
+                                                                                    <a class="float-start" href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
+                                                                                        <div class="img-fluid">
+                                                                                            <img width="80" src='{{ img.imagem_validacao.url }}' alt="Card image">
+                                                                                        </div>
+                                                                                    </a>
+                                                                                </div>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+
+                                                                {% endfor %}
+                                                            </footer>
+                                                            {% endif %}
+
+                                                        {% endfor %}
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endifchanged %}
+                    {% endfor %}
+                </div>
+
+                {% else %}
+
+                    <div class="alert alert-primary" role="alert">
+                        Esta Unidade Gestora não possui site ou avaliação.
+                    </div>
+
+                {% endif %}
             </div>
         </div>
     </div>
