@@ -9,14 +9,17 @@ class Municipio(models.Model):
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
+    class Meta:
+        ordering = ['nome']
+        indexes = [
+            models.Index(fields=['uf',]),
+            ]
+
     def __str__(self):
         return '{} ({})'.format(self.nome, self.uf)
     
     def municipio_uf(self):
         return '{}-{}'.format(self.nome, self.uf)
-    
-    class Meta:
-        ordering = ['nome']
     
 
 class Entidade(models.Model):
@@ -45,11 +48,14 @@ class Entidade(models.Model):
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
+    class Meta:
+        ordering = ['municipio']
+        indexes = [
+            models.Index(fields=['poder',]),
+            ]
+
     def __str__(self):
         return '{} ({})'.format(self.nome, self.municipio.uf)
     
     def entidade_uf(self):
         return '{} ({})'.format(self.nome, self.municipio.uf)
-    
-    class Meta:
-        ordering = ['municipio']
