@@ -37,7 +37,8 @@ class ItemAvaliacaoAdmin(admin.ModelAdmin):
 admin.site.register(ItemAvaliacao, ItemAvaliacaoAdmin)
 
 class TramitacaoAdmin(admin.ModelAdmin):
-    list_display = ['questionario', 'setor', 'motivo']
+    list_display = ['questionario', 'setor', 'motivo','usuario', 'created_at']
+    search_fields = ['questionario__entidade__nome','usuario__username']
 
 admin.site.register(Tramitacao, TramitacaoAdmin)
 

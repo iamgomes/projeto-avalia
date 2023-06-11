@@ -80,7 +80,7 @@ def change_foto(request):
 
 @login_required
 def usuarios(request):
-    users = User.objects.filter(municipio__uf=request.user.municipio.uf)
+    users = User.objects.filter(municipio__uf=request.user.municipio.uf).select_related('municipio')
 
     return render(request, 'usuarios.html', {'users':users})
 

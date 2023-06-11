@@ -66,111 +66,97 @@
                                             <td>
                                                 {% for d in a.criterioitem_set.all|slice:":1" %}
                                                 {% for r in d.resposta_set.all %}
-                                                {% if r.questionario.id == q.id %}
-                                                <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
-                                                <div class="form-check form-switch" dir="ltr">
-                                                    <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
-                                                        name="resposta-{{r.id }}" 
-                                                        {% if r.resposta == True %}
-                                                            checked
-                                                        {% endif %}
-                                                    >
-                                                    <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
-                                                </div>
-                                                {% endif %}
+                                                    <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
+                                                    <div class="form-check form-switch" dir="ltr">
+                                                        <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
+                                                            name="resposta-{{r.id }}" 
+                                                            {% if r.resposta == True %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
+                                                        <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
+                                                    </div>
+                                                    <script>
+                                                        $(document).ready(function(){
+                                                            var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
+                                                            var $link = document.getElementById('link-{{a.id}}');
+                                                            $("#sub-{{a.id}}").hide();
+                                                            $("#box-{{a.id}}").hide();
+                                                                if ($activeBtn.checked) {
+                                                                    $("#sub-{{a.id}}").show();
+                                                                    $("#box-{{a.id}}").show();
+                                                                    $link.required = true;
+                                                                } else{
+                                                                    $("#sub-{{a.id}}").hide();
+                                                                    $("#box-{{a.id}}").hide();
+                                                                }                                                        
+                                                            $('#disponibilidade-{{a.id}}').on('click',function() {
+                                                                if($(this).is(":checked")) {
+                                                                    $("#sub-{{a.id}}").show();
+                                                                    $("#box-{{a.id}}").show();
+                                                                } else {
+                                                                    $("#sub-{{a.id}}").hide();
+                                                                    $("#box-{{a.id}}").hide();
+                                                                    $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
+                                                                    $('#link-{{a.id}}').val('');
+                                                                }
+                                                                if ($activeBtn.checked) {
+                                                                    $link.required = true;
+                                                                } else{
+                                                                    $link.required = false;
+                                                                }
+                                                        });
+                                                        });
+                                                    </script>
                                                 {% endfor %}
                                                 {% endfor %}
-                                                <script>
-                                                    $(document).ready(function(){
-                                                        var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
-                                                        var $link = document.getElementById('link-{{a.id}}');
-                                                        $("#sub-{{a.id}}").hide();
-                                                        $("#box-{{a.id}}").hide();
-                                                            if ($activeBtn.checked) {
-                                                                $("#sub-{{a.id}}").show();
-                                                                $("#box-{{a.id}}").show();
-                                                                $link.required = true;
-                                                            } else{
-                                                                $("#sub-{{a.id}}").hide();
-                                                                $("#box-{{a.id}}").hide();
-                                                            }                                                        
-                                                        $('#disponibilidade-{{a.id}}').on('click',function() {
-                                                            if($(this).is(":checked")) {
-                                                                $("#sub-{{a.id}}").show();
-                                                                $("#box-{{a.id}}").show();
-                                                            } else {
-                                                                $("#sub-{{a.id}}").hide();
-                                                                $("#box-{{a.id}}").hide();
-                                                                $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
-                                                                $('#link-{{a.id}}').val('');
-                                                            }
-                                                            if ($activeBtn.checked) {
-                                                                $link.required = true;
-                                                            } else{
-                                                                $link.required = false;
-                                                            }
-                                                       });
-                                                    });
-                                                </script>
                                                 <div id="sub-{{a.id}}">
                                                 {% for d in a.criterioitem_set.all|slice:"1:" %}
-                                                {% for r in d.resposta_set.all %}
-                                                {% if r.questionario.id == q.id %}
-                                                <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
-                                                <div class="form-check form-switch" dir="ltr">
-                                                    <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
-                                                        name="resposta-{{r.id }}" 
-                                                        {% if r.resposta == True %}
-                                                            checked
-                                                        {% endif %}
-                                                    >
+                                                    {% for r in d.resposta_set.all %}
+                                                    <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
+                                                    <div class="form-check form-switch" dir="ltr">
+                                                        <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
+                                                            name="resposta-{{r.id }}" 
+                                                            {% if r.resposta == True %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
                                                     <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
-                                                </div>
-                                                {% endif %}
-                                                {% endfor %}
+                                                    </div>
+                                                    {% endfor %}
                                                 {% endfor %}
                                                 </div>
                                             </td>
                                             <td>
                                                 <!--Faz o laço apenas no primeiro item da lista. Os links ficarão vinculados apenas no primeiro registro da lista de itens-->
-                                                <div id="box-{{a.id}}">
-                                                    <div class="mb-3">
-                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
-                                                        {% for r in c.resposta_set.all %}
-                                                        {% if r.questionario.id == q.id %}
-                                                        {% if r.linkevidencia_set.all %}
-                                                        {% for link in r.linkevidencia_set.all %}
-                                                            <label for="link-{{a.id}}" class="form-label">Links</label>
-                                                            <input class="hidden" name="id_link-{{r.id}}" value="{{link.id}}">
-                                                            <textarea id="link-{{a.id}}" class="form-control" rows="3" cols="200" name="link-{{r.id}}" placeholder="Insira um link por linha.">{{link.link}}</textarea>
-                                                        {% endfor %}
-                                                        {% else %}
-                                                            <label for="links" class="form-label">Links</label>
-                                                            <textarea id="links" class="form-control" rows="3" cols="200" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
-                                                        {% endif %}
-                                                        {% endif %}
-                                                        {% endfor %}
-                                                        {% endfor %}
-                                                        {% endfor %}
+                                                {% for d in a.criterioitem_set.all|slice:":1" %}
+                                                    {% for r in d.resposta_set.all %}
+                                                    <div id="box-{{a.id}}">
+                                                        <div class="mb-3">
+                                                            {% if r.linkevidencia_set.all %}
+                                                                {% for link in r.linkevidencia_set.all %}
+                                                                    <label for="link-{{a.id}}" class="form-label">Links</label>
+                                                                    <input class="hidden" name="id_link-{{r.id}}" value="{{link.id}}">
+                                                                    <textarea id="link-{{a.id}}" class="form-control" rows="3" cols="200" name="link-{{r.id}}" placeholder="Insira um link por linha.">{{link.link}}</textarea>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                <label for="links" class="form-label">Links</label>
+                                                                <textarea id="links" class="form-control" rows="3" cols="200" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
+                                                            {% endif %}
+                                                        </div>
                                                     </div>
-                                                </div>
                                                 <div class='row'>
                                                     <div class="mb-3">
-                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
-                                                        {% for r in c.resposta_set.all %}
-                                                        {% if r.questionario.id == q.id %}
-                                                            {% if r.justificativaevidencia_set.all %}
+                                                        {% if r.justificativaevidencia_set.all %}
                                                             {% for j in r.justificativaevidencia_set.all %}
                                                                 <label class="form-label">Justificativa</label>
                                                                 <input class="hidden" name="id_justificativa-{{r.id}}" value="{{j.id}}">
-                                                                <textarea rows="3" cols="200" class="form-control" name="justificativa-{{r.id}}" placeholder="Justifique aqui.">{{j.justificativa}}</textarea>
+                                                                <textarea rows="3" cols="200" class="form-control" name="justificativa-{{r.id}}">{{j.justificativa}}</textarea>
                                                             {% endfor %}
-                                                            {% else %}
-                                                                <label class="form-label">Justificativa</label>
-                                                                <textarea rows="3" cols="200" class="form-control" name="justificativa_novo-{{r.id}}" placeholder="Justifique aqui."></textarea>
-                                                            {% endif %}
+                                                        {% else %}
+                                                            <label class="form-label">Justificativa</label>
+                                                            <textarea rows="3" cols="200" class="form-control" name="justificativa_novo-{{r.id}}"></textarea>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="imagem" class="form-label">Imagem</label>
@@ -182,24 +168,20 @@
                                                                         <img src="{{ img.imagem.url }}" alt="{{ img.imagem }}" width="70">
                                                                     </div>
                                                                 </a>
+                                                                <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
                                                             {% endfor %}
                                                         </div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <spam class="text-muted font-size-12">Substiuir imagem</spam>
-                                                        <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
-                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" multiple accept="image/png, image/jpeg">
+                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" accept="image/png, image/jpeg">
                                                         <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                         {% else %}
-                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" multiple accept="image/png, image/jpeg">
-                                                        <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                            <div class="mb-3">
+                                                                <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" accept="image/png, image/jpeg">
+                                                                <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
-                                                    {% endif %}
-                                                    {% endif %}
-                                                    {% endfor %}
-                                                    {% endfor %}
-                                                    {% endfor %}
-                                                </div>                                   
+                                                {% endfor %}
+                                                {% endfor %}
                                             </td>
                                         </tr>
                                         {% endif %}
@@ -229,7 +211,7 @@
                             </div>
                         </section>
                     </div>
-                    <button class="btn btn-loader btn-success" type="submit">Salvar e continuar depois</button>
+                    <button type="submit" name='acao' value="Salvar" class="btn loader-salvar btn-loader btn-success">Salvar e continuar depois</button>
 
                 </form>
             </div>
@@ -239,8 +221,6 @@
 
 {% block 'script' %}
 
-        <script src="{% static 'js/botao_loader.js' %}"></script>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
         <script src="{% static 'stepform/js/script.js' %}"></script>
@@ -249,6 +229,28 @@
         <script src="{% static 'assets/libs/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
         <!-- lightbox init js-->
         <script src="{% static 'assets/js/pages/lightbox.init.js' %}"></script>
+
+        <script>
+            btn = document.querySelector(".loader-salvar"),
+            btn.onclick = function(){
+                this.innerHTML = "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>";
+                this.disabled=true;
+                // Cria um novo campo de input para armazenar o valor do botão clicado
+                input = document.createElement('input');
+                input.setAttribute('type', 'hidden');
+                input.setAttribute('name', 'acao');
+                input.setAttribute('value', 'Salvar');
+
+                // Adiciona o campo de input ao formulário
+                this.form.appendChild(input);
+
+                // Submete o formulário
+                this.form.submit();
+                setTimeout(() => {
+                    this.innerHTML = 'Salvo'
+                }, timeout);
+            };
+        </script>
 
 {% endblock 'script' %}
 

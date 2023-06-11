@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from . models import RespostaValidacao, Validacao, LinkEvidenciaValidacao, ImagemEvidenciaValidacao, JustificativaEvidenciaValidacao
+from . models import RespostaValidacao, Validacao, LinkEvidenciaValidacao, ImagemEvidenciaValidacao,\
+    JustificativaEvidenciaValidacao, RespostaValidacao
 from questionarios.models import Questionario, Resposta, Criterio
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
@@ -10,6 +11,7 @@ import os
 from django.db.models import Q
 import datetime
 from notifications.signals import notify
+from django.db.models import Prefetch
 
 
 @login_required
@@ -31,7 +33,16 @@ def add_validacao(request, id):
 @login_required
 def add_resposta_validacao(request, id, id_validacao):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
+    #questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao.id).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set',
+                        'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                        'criterioitem_set__resposta_set__linkevidencia_set',
+                        'criterioitem_set__resposta_set__justificativaevidencia_set',
+                        'criterioitem_set__resposta_set__imagemevidencia_set',
+                        )
     validacao = get_object_or_404(Validacao, pk=id_validacao)
     respostas = Resposta.objects.filter(questionario_id=id)
     hoje = datetime.datetime.now()
@@ -40,8 +51,6 @@ def add_resposta_validacao(request, id, id_validacao):
 
     if request.method == 'GET':
         if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
-            q.status = 'EV'
-            q.save()
             return render(request, 'add_resposta_validacao.html', {'questionario':questionario, 'q':q, 'respostas':respostas})
         else:
             messages.warning(request, "Desculpe, você está fora do prazo de validação.")
@@ -76,43 +85,62 @@ def add_resposta_validacao(request, id, id_validacao):
                 justifica = JustificativaEvidenciaValidacao(resposta_validacao_id=resposta_validacao.id, justificativa_validacao=justificativa)
                 justifica.save()
 
-        q.status = 'V'
-        q.save()
+        acao = request.POST.get('acao') 
+            
+        if acao == 'Salvar':
+            q.status = 'EV'
+            q.save()
+            validacao.save()
+            messages.info(request, "Validação salva com sucesso! Para retornar, basta editá-la.")
+            return redirect(reverse('minhas_validacoes'))
 
-        validacao.save()
+        else:
+            q.status = 'V'
+            q.save()
+            validacao.save()
+            # Envia notificação para o Usuário
+            notify.send(request.user, recipient=q.usuario, verb=f'{q.entidade}', target=q, description=f'Questionário validado por {request.user.first_name}.')
+            messages.success(request, "Validação finalizada com sucesso!")
+            return redirect(reverse('minhas_validacoes'))
 
-        # Envia notificação para o Usuário
-        notify.send(request.user, recipient=q.usuario, verb=f'{q.entidade}', target=q, description=f'Questionário validado por {request.user.first_name}.')
-
-        messages.success(request, "Validação feita com sucesso!")
-
-        return redirect(reverse('minhas_validacoes'))
 
 
 @login_required
 def change_resposta_validacao(request, id):
-    v = get_object_or_404(Validacao, pk=id)
-    validacao = v.questionario.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=v.questionario.entidade.poder))
-    questionario = Questionario.objects.get(pk=v.questionario.id)
+    v = Validacao.objects.filter(pk=id).select_related('questionario','usuario').first()
+    #validacao = v.questionario.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=v.questionario.entidade.poder))
+    validacao = Criterio.objects.filter(avaliacao=v.questionario.avaliacao.id).filter(matriz__in=['C', v.questionario.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set',
+                        'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=v.questionario)),
+                        'criterioitem_set__resposta_set__linkevidencia_set',
+                        'criterioitem_set__resposta_set__justificativaevidencia_set',
+                        'criterioitem_set__resposta_set__imagemevidencia_set',
+                        Prefetch('criterioitem_set__respostavalidacao_set', queryset=RespostaValidacao.objects.filter(validacao=v)),
+                        'criterioitem_set__respostavalidacao_set__linkevidenciavalidacao_set',
+                        'criterioitem_set__respostavalidacao_set__justificativaevidenciavalidacao_set',
+                        'criterioitem_set__respostavalidacao_set__imagemevidenciavalidacao_set',
+                        )
     hoje = datetime.datetime.now()
-    inicio = questionario.avaliacao.data_inicial_validacao
-    fim = questionario.avaliacao.data_final_validacao
+    inicio = v.questionario.avaliacao.data_inicial_validacao
+    fim = v.questionario.avaliacao.data_final_validacao
 
     if request.method == 'GET':
         if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
-            questionario.status = 'EV'
-            questionario.save()
+            v.questionario.status = 'EV'
+            v.questionario.save()
             return render(request, 'resposta_validacao_form.html', {'validacao':validacao, 'v':v})
         else:
             messages.warning(request, "Desculpe, você está fora do prazo de validação.")
-            return redirect(reverse('view_questionario', args=(questionario.id,))) 
+            return redirect(reverse('view_questionario', args=(v.questionario.id,))) 
            
     if request.method == 'POST':
         for i in v.respostavalidacao_set.all():
             id_resposta = request.POST.get('id_resposta-{}'.format(i.id))
             form = request.POST.get('resposta-{}'.format(i.id))
-            id_link = request.POST.getlist('id_link-{}'.format(i.id))            
-            form_link = request.POST.getlist('link-{}'.format(i.id))
+            id_link = request.POST.get('id_link-{}'.format(i.id))            
+            form_link = request.POST.get('link-{}'.format(i.id))
             form_link_novo = request.POST.get('link_novo-{}'.format(i.id))
             id_imagens = request.POST.getlist('id_imagem-{}'.format(i.id))            
             imagens = request.FILES.getlist('imagem-{}'.format(i.id))
@@ -134,10 +162,9 @@ def change_resposta_validacao(request, id):
                             link_evidencia.save()
 
                 if id_link:
-                    for i, l in zip(id_link,form_link):
-                        link = get_object_or_404(LinkEvidenciaValidacao, pk=i)
-                        link.link = l
-                        link.save()
+                    link = get_object_or_404(LinkEvidenciaValidacao, pk=id_link)
+                    link.link_validacao = form_link
+                    link.save()
 
             else:
                 if resposta.criterio_item.item_avaliacao.id == 1:
@@ -162,7 +189,6 @@ def change_resposta_validacao(request, id):
                             os.remove(imagem.imagem_validacao.path)     
                         imagem.imagem_validacao = l
                     imagem.save()
-            
 
             if resposta.criterio_item.item_avaliacao.id == 1:
                 if not resposta.justificativaevidenciavalidacao_set.all():
@@ -175,14 +201,23 @@ def change_resposta_validacao(request, id):
                 justifica.justificativa_validacao = justificativa
                 justifica.save()
 
-        questionario.status = 'V'
-        questionario.save()
+        acao = request.POST.get('acao') 
+            
+        if acao == 'Salvar':
+            v.questionario.status = 'EV'
+            v.questionario.save()
+            v.save()
+            messages.info(request, "Validação salva com sucesso! Para retornar, basta editá-la.")
+            return redirect(reverse('minhas_validacoes'))
 
-        v.save()
-
-        messages.success(request, "Resposta de validação alterada com sucesso!")
-
-        return redirect(reverse('minhas_validacoes'))
+        else:
+            v.questionario.status  = 'V'
+            v.questionario.save()
+            v.save()
+            # Envia notificação para o Usuário
+            notify.send(request.user, recipient=v.questionario.usuario, verb=f'{v.questionario.entidade}', target=v.questionario, description=f'Questionário validado por {request.user.first_name}.')
+            messages.success(request, "Validação alterada com sucesso!")
+            return redirect(reverse('minhas_validacoes'))
 
 
 @login_required

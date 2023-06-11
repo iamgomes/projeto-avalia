@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
-    CriterioItem, Tramitacao, JustificativaEvidencia
+    CriterioItem, Tramitacao, JustificativaEvidencia, Criterio, Resposta
+from validacoes.models import RespostaValidacao
+from avaliacoes.models import Avaliacao
 from usuarios.models import User
 from .forms import TramitacaoForm
 from django.shortcuts import redirect, get_object_or_404
@@ -14,6 +16,7 @@ import os
 import csv
 from django.db.models import Q
 from notifications.signals import notify
+from django.db.models import Prefetch
 
 
 @login_required
@@ -103,11 +106,39 @@ def delete_questionario(request, id):
 
 @login_required
 def view_questionario(request, id):
-    q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(matriz__in=['C', q.entidade.poder])
+    q = Questionario.objects.filter(pk=id)\
+        .select_related('avaliacao','usuario','entidade','validacao').prefetch_related('tramitacao_set','resposta_set',).first()
+    #questionario = q.avaliacao.criterio_set.filter(matriz__in=['C', q.entidade.poder])
+    try:
+        if  q.validacao:
+            questionario = Criterio.objects.filter(avaliacao__questionario=q.id).filter(matriz__in=['C', q.entidade.poder])\
+                .select_related('avaliacao','dimensao')\
+                .prefetch_related('criterioitem_set',
+                                'criterioitem_set__item_avaliacao',
+                                Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                                'criterioitem_set__resposta_set__linkevidencia_set',
+                                'criterioitem_set__resposta_set__justificativaevidencia_set',
+                                'criterioitem_set__resposta_set__imagemevidencia_set',
+                                Prefetch('criterioitem_set__respostavalidacao_set', queryset=RespostaValidacao.objects.filter(validacao=q.validacao)),
+                                'criterioitem_set__respostavalidacao_set__linkevidenciavalidacao_set',
+                                'criterioitem_set__respostavalidacao_set__justificativaevidenciavalidacao_set',
+                                'criterioitem_set__respostavalidacao_set__imagemevidenciavalidacao_set',
+                                )
+    except:
+        questionario = Criterio.objects.filter(avaliacao__questionario=q.id).filter(matriz__in=['C', q.entidade.poder])\
+            .select_related('avaliacao','dimensao')\
+            .prefetch_related('criterioitem_set',
+                    'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                    'criterioitem_set__resposta_set__linkevidencia_set',
+                    'criterioitem_set__resposta_set__justificativaevidencia_set',
+                    'criterioitem_set__resposta_set__imagemevidencia_set',
+                    )
+
+
 
     if request.method == 'GET':
-        tramitacao = Tramitacao.objects.filter(questionario_id=q.id)
+        tramitacao = Tramitacao.objects.filter(questionario_id=q.id).select_related('usuario', 'questionario')
         form = TramitacaoForm()
         setores = Tramitacao.SETOR_CHOICES
         motivos = []
@@ -136,7 +167,10 @@ def view_questionario(request, id):
 @login_required
 def add_resposta(request, id):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
+    #questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set','itens_avaliacao')
     hoje = datetime.datetime.now()
     inicio = q.avaliacao.data_inicial
     fim = q.avaliacao.data_final
@@ -149,6 +183,7 @@ def add_resposta(request, id):
             return redirect(reverse('minhas_avaliacoes'))
     
     elif request.method == 'POST':
+
         for c in questionario:
 
             links = request.POST.get('link-{}'.format(c.id))
@@ -185,32 +220,45 @@ def add_resposta(request, id):
                         justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
                         justifica.save()
 
-        acao = request.POST.get('acao', None)
+        acao = request.POST.get('acao') 
             
         if request.user.funcao == 'A':
-            if acao == 'SalvarContinuar':
+            if acao == 'Salvar':
                 q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
             else:
                 q.status = 'F'
+                q.save()
+                messages.success(request, "Avaliação finalizada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
         if request.user.funcao == 'V' or request.user.funcao == 'C':
-            if acao == 'SalvarContinuar':
+            if acao == 'Salvar':
                 q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
             else:
                 q.status = 'V'
-
-        q.save()
-        print(acao)
-            
-        messages.success(request, "Resposta cadastrada com sucesso!")
-
-        return redirect(reverse('minhas_avaliacoes'))
-    
+                q.save()
+                messages.success(request, "Avaliação finalizada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
+                
 
 @login_required
 def change_resposta(request, id):
     q = Questionario.objects.get(pk=id)
-    questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
-    respostas = Resposta.objects.filter(questionario_id=id)
+    #questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set',
+                        'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                        'criterioitem_set__resposta_set__linkevidencia_set',
+                        'criterioitem_set__resposta_set__justificativaevidencia_set',
+                        'criterioitem_set__resposta_set__imagemevidencia_set',
+                        )
     hoje = datetime.datetime.now()
     inicio = q.avaliacao.data_inicial
     fim = q.avaliacao.data_final
@@ -225,11 +273,11 @@ def change_resposta(request, id):
             return redirect(reverse('view_questionario', args=(q.id,)))
     
     if request.method == 'POST':
-        for i in respostas:
+        for i in q.resposta_set.all():
             id_resposta = request.POST.get('id_resposta-{}'.format(i.id))            
             form = request.POST.get('resposta-{}'.format(i.id))
-            id_link = request.POST.getlist('id_link-{}'.format(i.id))            
-            form_link = request.POST.getlist('link-{}'.format(i.id))
+            id_link = request.POST.get('id_link-{}'.format(i.id))            
+            form_link = request.POST.get('link-{}'.format(i.id))
             form_link_novo = request.POST.get('link_novo-{}'.format(i.id))
             id_imagens = request.POST.getlist('id_imagem-{}'.format(i.id))            
             imagens = request.FILES.getlist('imagem-{}'.format(i.id))
@@ -251,10 +299,9 @@ def change_resposta(request, id):
                             link_evidencia.save()
 
                 if id_link:
-                    for i, l in zip(id_link,form_link):
-                        link = get_object_or_404(LinkEvidencia, pk=i)
-                        link.link = l
-                        link.save()
+                    link = get_object_or_404(LinkEvidencia, pk=id_link)
+                    link.link = form_link
+                    link.save()
                             
             else:
                 if resposta.criterio_item.item_avaliacao.id == 1:
@@ -291,16 +338,30 @@ def change_resposta(request, id):
                 justifica.justificativa = justificativa
                 justifica.save()
 
+        acao = request.POST.get('acao') 
+            
         if request.user.funcao == 'A':
-            q.status = 'F'
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'F'
+                q.save()
+                messages.success(request, "Avaliação alterada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
         if request.user.funcao == 'V' or request.user.funcao == 'C':
-            q.status = 'V'
-
-        q.save()
-
-        messages.success(request, "Resposta de avaliação alterada com sucesso!")
-
-        return redirect(reverse('minhas_avaliacoes'))
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'V'
+                q.save()
+                messages.success(request, "Avaliação alterada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
 
 
 def exporta_csv(request, id):

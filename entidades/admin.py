@@ -4,7 +4,7 @@ from .models import Municipio, Entidade
 class MunicipioAdmin(admin.ModelAdmin):
     list_display = ['nome', 'ibge', 'uf', 'capital']
     list_filter = ('uf', 'capital')
-    search_fields = ('nome',)
+    search_fields = ['id','nome']
 
 admin.site.register(Municipio, MunicipioAdmin)
 

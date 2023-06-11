@@ -56,14 +56,14 @@ def atribuir_validador(request, id, auditor_id):
 @has_permission_decorator('visao_geral')
 def visao_geral(request):
     if request.method == 'GET':
-        entidades = Entidade.objects.filter(municipio__uf=request.user.municipio.uf)
+        entidades = Entidade.objects.filter(municipio__uf=request.user.municipio.uf).select_related('municipio').prefetch_related('questionario_set')
         municipios = Municipio.objects.filter(uf=request.user.municipio.uf)
         poderes = Entidade.PODER_CHOICES
         setores = Tramitacao.SETOR_CHOICES
         status = Questionario.STATUS_CHOICES
         auditores = User.objects.filter(municipio__uf=request.user.municipio.uf).filter(setor='T')
 
-        questionarios = Questionario.objects.filter(entidade__in=entidades)
+        questionarios = Questionario.objects.filter(entidade__in=entidades).select_related('avaliacao')
         questionarios_validados = questionarios.filter(status='V')
 
         ultima_tramitacao = Tramitacao.objects.values('questionario').annotate(id_ultimo=Max('id'))

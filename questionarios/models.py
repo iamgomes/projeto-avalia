@@ -127,7 +127,7 @@ class CriterioItem(models.Model):
 class Questionario(models.Model):
     STATUS_CHOICES = (
         ('I','Iniciado'),
-        ('E','Editando'),
+        ('E','Em Avaliação'),
         ('F','Finalizado UG'),
         ('AV','Aguardando Validação'),
         ('EV','Em Validação'),

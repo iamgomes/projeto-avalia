@@ -112,14 +112,10 @@
                                         <a href="{% url 'view_questionario' f.questionario.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
                                             <i class="mdi mdi-eye font-size-16"></i>
                                         </a>
-                                        {% if not f.questionario.respostavalidacao_set.all %}
-                                        {% if f.questionario.validacao %}
-                                            {% if f.questionario.status == 'AV' %}
+                                        {% if f.questionario.status == 'AV' %}
                                             <a href="{% url 'add_resposta_validacao' f.questionario.id f.id  %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder Validação">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
                                             </a>
-                                            {% endif %}
-                                        {% endif %}
                                         {% endif %}
                                         <a onclick='delete_validacao({{f.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
                                             <i class="mdi mdi-trash-can font-size-16"></i>

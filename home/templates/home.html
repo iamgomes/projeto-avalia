@@ -142,24 +142,40 @@
                         <a href="{% url 'projetos_disponiveis' %}"> Ver todos</a>
                     </div>
                 </div>
+
+                {% if avaliacoes %}
         
-                {% for a in avaliacoes  %}
-        
-                <div class="card">
-                    <h5 class="card-header">{{a.grupo}}</h5>
-                    <div class="card-body">
-                        <h4 class="card-title">{{a.titulo}} </h4>
-                        <p class="card-text">{{a.descricao}}</p>
-                        <a href="{% url 'add_questionario' a.id %}" class="btn-lg btn-primary waves-effect waves-light">
-                            Avaliar agora <i class="ri-arrow-right-line align-middle ms-2"></i> </a>
+                    {% for a in avaliacoes  %}
+
+                    {% if a.ativo %}
+            
+                        <div class="card">
+                            <h5 class="card-header">{{a.grupo}}</h5>
+                            <div class="card-body">
+                                <h4 class="card-title">{{a.titulo}} </h4>
+                                <p class="card-text">{{a.descricao}}</p>
+                                <a href="{% url 'add_questionario' a.id %}" class="btn-lg btn-primary waves-effect waves-light">
+                                    Avaliar agora <i class="ri-arrow-right-line align-middle ms-2"></i> </a>
+                            </div>
+                            <div class="card-footer text-muted">
+                                <span class="badge badge-soft-primary font-size-15">{{a.ano_exercicio}}</span>
+                                | Início: {{a.data_inicial|date:'d/m/Y'}} | Fim: {{a.data_final|date:'d/m/Y'}}
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <div class="alert alert-primary" role="alert">
+                            Nenhum projeto disponível no momento.
+                        </div>
+                    {% endif %}
+            
+                    {% endfor %}
+
+                {% else %}
+                    <div class="alert alert-primary" role="alert">
+                        Nenhum projeto disponível no momento.
                     </div>
-                    <div class="card-footer text-muted">
-                        <span class="badge badge-soft-primary font-size-15">{{a.ano_exercicio}}</span>
-                        | Início: {{a.data_inicial|date:'d/m/Y'}} | Fim: {{a.data_final|date:'d/m/Y'}}
-                    </div>
-                </div>
-        
-                {% endfor %}
+                {% endif %}
         
             </div> <!-- end col -->
         </div>

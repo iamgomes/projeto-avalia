@@ -65,7 +65,6 @@
                                             <td>
                                                 {% for d in a.criterioitem_set.all|slice:":1" %}
                                                     {% for r in d.resposta_set.all %}
-                                                    {% if r.questionario.id == q.id %}
                                                     <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
                                                     <div class="form-check form-switch" dir="ltr">
                                                         <input id="disponibilidade-{{a.id}}" type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
@@ -76,7 +75,6 @@
                                                         >
                                                         <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                     </div>
-                                                    {% endif %}
                                                     {% endfor %}
                                                 {% endfor %}
                                                 <script>
@@ -106,46 +104,43 @@
                                                     });
                                                 </script>
                                                 <div id="sub-{{a.id}}">
-                                                    {% for d in a.criterioitem_set.all|slice:"1:" %}
-                                                        {% for r in d.resposta_set.all %}
-                                                        {% if r.questionario.id == q.id %}
-                                                        <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
-                                                        <div class="form-check form-switch" dir="ltr">
-                                                            <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
-                                                                name="resposta-{{r.id }}" 
-                                                                {% if r.resposta == True %}
-                                                                    checked
-                                                                {% endif %}
-                                                            >
-                                                            <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
-                                                        </div>
-                                                        {% endif %}
-                                                        {% endfor %}
+                                                {% for d in a.criterioitem_set.all|slice:"1:" %}
+                                                    {% for r in d.resposta_set.all %}
+                                                    <input class="hidden" name="id_resposta-{{ r.id }}" value="{{ r.id }}">
+                                                    <div class="form-check form-switch" dir="ltr">
+                                                        <input type="checkbox" class="form-check-input" id="customSwitch-{{a.id}}-{{d.id}}" 
+                                                            name="resposta-{{r.id }}" 
+                                                            {% if r.resposta == True %}
+                                                                checked
+                                                            {% endif %}
+                                                        >
+                                                        <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
+                                                    </div>
                                                     {% endfor %}
+                                                {% endfor %}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="mb-3">
-                                                        {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                        {% for c in a.criterioitem_set.all|slice:":1" %}
-                                                        {% for r in c.resposta_set.all %}
-                                                        {% if r.questionario.id == q.id %}
+                                                {% for c in a.criterioitem_set.all|slice:":1" %}
+                                                    {% for r in c.resposta_set.all %}
                                                         {% if r.linkevidencia_set.all %}
-                                                        {% for link in r.linkevidencia_set.all %}
                                                         <div class="card">
                                                             <div class="card-header">
                                                                 Links do Controle Interno
                                                             </div>
                                                             <div class="card-body">
+                                                                {% for link in r.linkevidencia_set.all %}
                                                                 <ol>
                                                                     {% for i  in link.link.split %}
                                                                     <li><a href="{{ i }}" target="_blank">{{ i }}</a></li>
                                                                     {% endfor %}
                                                                 </ol>
+                                                                {% endfor %}
                                                             </div>
                                                         </div>
-                                                        {% endfor %}
                                                         {% endif %}
+
                                                         {% if r.justificativaevidencia_set.all %}
                                                         <div class="card">
                                                             <div class="card-header">
@@ -160,17 +155,9 @@
                                                             </div>
                                                         </div>
                                                         {% endif %}
-                                                        {% endif %}
-                                                        {% endfor %}
-                                                        {% endfor %}
-                                                        {% endfor %}
                                                 </div>
                                                 <div class="mb-3">
                                                     <div class="popup-gallery">
-                                                    {% for d in a.itens_avaliacao.all|slice:":1" %}
-                                                    {% for c in a.criterioitem_set.all|slice:":1" %}
-                                                    {% for r in c.resposta_set.all %}
-                                                    {% if r.questionario.id == q.id %}
                                                     {% if r.imagemevidencia_set.all %}
                                                         <div class="card">
                                                             <div class="card-header">
@@ -198,18 +185,16 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Justificativa</label>
-                                                        <textarea rows="3" cols="200" class="form-control" name="justificativa-{{r.id}}" placeholder="Justifique aqui."></textarea>
+                                                        <textarea rows="3" cols="200" class="form-control" name="justificativa-{{r.id}}"></textarea>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="imagem" class="form-label">Imagem</label>
-                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" >
+                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" accept="image/png, image/jpeg" >
                                                         <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                     </div>
-                                                    {% endif %}
-                                                    {% endfor %}
-                                                    {% endfor %}
-                                                    {% endfor %}
-                                                </div>  
+                                                </div>
+                                                {% endfor %}
+                                                {% endfor %}
                                             </td>
                                         </tr>
                                         {% endif %}
@@ -239,7 +224,7 @@
                             </div>
                         </section>
                     </div>
-                    <button class="btn btn-loader btn-success" type="submit">Salvar e continuar depois</button>
+                    <button type="submit" name='acao' value="Salvar" class="btn loader-salvar btn-loader btn-success">Salvar e continuar depois</button>
 
                 </form>
             </div>
@@ -249,8 +234,6 @@
 
 {% block 'script' %}
 
-        <script src="{% static 'js/botao_loader.js' %}"></script>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
         <script src="{% static 'stepform/js/script.js' %}"></script>
@@ -259,6 +242,28 @@
         <script src="{% static 'assets/libs/magnific-popup/jquery.magnific-popup.min.js' %}"></script>
         <!-- lightbox init js-->
         <script src="{% static 'assets/js/pages/lightbox.init.js' %}"></script>
+
+        <script>
+            btn = document.querySelector(".loader-salvar"),
+            btn.onclick = function(){
+                this.innerHTML = "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>";
+                this.disabled=true;
+                // Cria um novo campo de input para armazenar o valor do botão clicado
+                input = document.createElement('input');
+                input.setAttribute('type', 'hidden');
+                input.setAttribute('name', 'acao');
+                input.setAttribute('value', 'Salvar');
+
+                // Adiciona o campo de input ao formulário
+                this.form.appendChild(input);
+
+                // Submete o formulário
+                this.form.submit();
+                setTimeout(() => {
+                    this.innerHTML = 'Salvo'
+                }, timeout);
+            };
+            </script>
 
 {% endblock 'script' %}
 

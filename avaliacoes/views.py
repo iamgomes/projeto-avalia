@@ -70,7 +70,9 @@ def load_motivos(request):
 @login_required
 def minhas_avaliacoes(request):
     if request.method == 'GET':
-        questionarios = Questionario.objects.filter(usuario=request.user)
+        questionarios = Questionario.objects.filter(usuario=request.user)\
+            .select_related('avaliacao', 'entidade', 'validacao')\
+            .prefetch_related('resposta_set', 'tramitacao_set')
     
         return render(request, 'minhas_avaliacoes.html', {'questionarios':questionarios})
     
@@ -78,7 +80,7 @@ def minhas_avaliacoes(request):
 @login_required
 def minhas_validacoes(request):
     if request.method == 'GET':
-        validacoes = Validacao.objects.filter(usuario=request.user)
+        validacoes = Validacao.objects.filter(usuario=request.user).select_related('questionario', 'questionario__entidade')\
     
         return render(request, 'minhas_validacoes.html', {'validacoes':validacoes})
 

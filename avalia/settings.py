@@ -20,6 +20,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com', 'servicodados.ibge.gov.br/api/v1/localidades/municipios']
 
+INTERNAL_IPS = ['127.0.0.1']
+
 AUTH_USER_MODEL = 'usuarios.User'
 
 # Application definition
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'notifications',
     'storages',
     'mathfilters',
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'avalia.urls'
