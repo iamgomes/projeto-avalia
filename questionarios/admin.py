@@ -4,7 +4,9 @@ from .models import Criterio, Questionario, Resposta, Dimensao, Tramitacao,\
 
 
 class QuestionarioAdmin(admin.ModelAdmin):
-    list_display = ['avaliacao', 'usuario', 'entidade', 'status']
+    list_display = ['avaliacao', 'usuario', 'entidade', 'status', 'indice', 'nivel']
+    list_filter = ('status', 'nivel',)
+    search_fields = ['entidade__nome','usuario__username']
     
 admin.site.register(Questionario, QuestionarioAdmin)
 
