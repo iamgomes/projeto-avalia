@@ -183,6 +183,14 @@ class Questionario(models.Model):
                     nivel = 'Ouro'
                 if self.nota >= 75 and self.nota < 85:
                     nivel = 'Prata'
+                if self.nota >= 50 and self.nota < 75:
+                    nivel = 'Intermediário'
+                if self.nota >= 30 and self.nota < 50:
+                    nivel = 'Básico'
+                if self.nota >= 1 and self.nota < 30:
+                    nivel = 'Inicial'
+                if self.nota < 1:
+                    nivel = 'Inexistente'
             else:
                 if self.nota >= 75:
                     nivel = 'Elevado'

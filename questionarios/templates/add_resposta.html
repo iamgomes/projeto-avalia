@@ -80,7 +80,7 @@
                                                             $link.required = true;
                                                         } else{
                                                             $link.required = false;
-                                                            $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
+                                                            $("#sub-{{a.id}} input[type=checkbox]").prop('checked', false); 
                                                             $('#link-{{a.id}}').val('');
                                                         }
                                                        });

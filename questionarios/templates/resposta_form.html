@@ -76,20 +76,19 @@
                                                         >
                                                         <label class="form-check-label" for="customSwitch-{{a.id}}-{{d.id}}">{{ d.item_avaliacao }}</label>
                                                     </div>
+                                                    {% endfor %}
+                                                {% endfor %}
                                                     <script>
                                                         $(document).ready(function(){
                                                             var $activeBtn = document.getElementById('disponibilidade-{{a.id}}');
                                                             var $link = document.getElementById('link-{{a.id}}');
                                                             $("#sub-{{a.id}}").hide();
                                                             $("#box-{{a.id}}").hide();
-                                                                if ($activeBtn.checked) {
-                                                                    $("#sub-{{a.id}}").show();
-                                                                    $("#box-{{a.id}}").show();
-                                                                    $link.required = true;
-                                                                } else{
-                                                                    $("#sub-{{a.id}}").hide();
-                                                                    $("#box-{{a.id}}").hide();
-                                                                }                                                        
+                                                            if ($activeBtn.checked) {
+                                                                $("#sub-{{a.id}}").show();
+                                                                $("#box-{{a.id}}").show();
+                                                                $link.required = true;
+                                                            }                                                 
                                                             $('#disponibilidade-{{a.id}}').on('click',function() {
                                                                 if($(this).is(":checked")) {
                                                                     $("#sub-{{a.id}}").show();
@@ -97,7 +96,7 @@
                                                                 } else {
                                                                     $("#sub-{{a.id}}").hide();
                                                                     $("#box-{{a.id}}").hide();
-                                                                    $("#sub-{{a.id}} input[type=checkbox]").removeAttr("checked");
+                                                                    $("#sub-{{a.id}} input[type=checkbox]").prop('checked', false); 
                                                                     $('#link-{{a.id}}').val('');
                                                                 }
                                                                 if ($activeBtn.checked) {
@@ -105,11 +104,10 @@
                                                                 } else{
                                                                     $link.required = false;
                                                                 }
-                                                        });
+                                                            });
                                                         });
                                                     </script>
-                                                {% endfor %}
-                                                {% endfor %}
+                                                
                                                 <div id="sub-{{a.id}}">
                                                 {% for d in a.criterioitem_set.all|slice:"1:" %}
                                                     {% for r in d.resposta_set.all %}
