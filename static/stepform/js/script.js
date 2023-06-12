@@ -12,7 +12,7 @@ form.children("div").steps({
     bodyTag: "section",
     saveState: true,
     //enableFinishButton: false,
-    showFinishButtonAlways: true,
+    //showFinishButtonAlways: true,
     //stepsOrientation: "vertical",
     onStepChanging: function (event, currentIndex, newIndex)
     {

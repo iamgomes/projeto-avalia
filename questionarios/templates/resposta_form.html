@@ -251,7 +251,8 @@
         </script>
 
         <script>
-            $('.actions').find('a[href="#finish"]').onclick = function(){
+            btn = document.querySelector('.actions a[href="#finish"]'),
+            btn.onclick = function(){
                 this.innerHTML = "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>";
                 this.disabled=true;
 

@@ -8,7 +8,6 @@
 
         <link href="{% static 'stepform/css/jquery.steps.css' %}" rel="stylesheet">
         <link href="{% static 'stepform/css/main.css' %}" rel="stylesheet">
-        <style>white-space: pre-wrap;</style>
 
 {% endblock 'head' %}
 
@@ -143,7 +142,6 @@
                         </section>
                     </div>
                     <button type="submit" name='acao' value="Salvar" class="btn loader-salvar btn-loader btn-success">Salvar e continuar depois</button>
-
                 </form>
             </div>
         </div>
@@ -179,11 +177,11 @@
             </script>
 
             <script>
-                btn = $('#my-form').find('a[href="#finish"]');
+                btn = document.querySelector('.actions a[href="#finish"]'),
                 btn.onclick = function(){
                     this.innerHTML = "<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>";
                     this.disabled=true;
-    
+
                     // Submete o formulário
                     this.form.submit();
                     setTimeout(() => {
