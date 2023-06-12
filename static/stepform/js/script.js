@@ -11,6 +11,8 @@ form.children("div").steps({
     headerTag: "h3",
     bodyTag: "section",
     saveState: true,
+    //enableFinishButton: false,
+    showFinishButtonAlways: true,
     //stepsOrientation: "vertical",
     onStepChanging: function (event, currentIndex, newIndex)
     {
