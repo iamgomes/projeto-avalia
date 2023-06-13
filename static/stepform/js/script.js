@@ -26,6 +26,7 @@ form.children("div").steps({
     },
     onFinished: function (event, currentIndex)
     {
+        form.find('.actions a[href="#finish"]').prop("disabled", true); // Desabilita o botão de submissão
         form.submit();
     },
     labels: {

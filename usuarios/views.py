@@ -114,4 +114,12 @@ def change_usuario(request, id):
         form.fields["setor"].choices = (f for f in User.SETOR_CHOICES if f[0] != 'A')
         
     return render(request, 'change_usuario.html', {'form': form})
+
+
+@login_required
+def delete_usuario(request, id):
+    usuario = get_object_or_404(User, id=id)
+    usuario.delete()
+    
+    return redirect(reverse('usuarios'))
     
