@@ -368,18 +368,27 @@ def exporta_csv(request, id):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Questionário-{}.csv"'.format(id)
 
-    questionario = Questionario.objects.get(pk=id)
+    q = Questionario.objects.get(pk=id)
+
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set',
+                        'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                        'criterioitem_set__resposta_set__linkevidencia_set',
+                        'criterioitem_set__resposta_set__justificativaevidencia_set',
+                        'criterioitem_set__resposta_set__imagemevidencia_set',
+                        )
 
     writer = csv.writer(response)
     writer.writerow(['Matriz','Dimensão', 'Cod.', 'Critério', 'Classificação', 'Item de Avaliação', 'Resposta'])
 
-    for q in questionario.avaliacao.criterio_set.all():
-        if q.matriz == 'C' or q.matriz == questionario.entidade.poder:
-            for c in q.criterioitem_set.all():
-                for r in c.resposta_set.all():
-                    if r.questionario.id == questionario.id:
-                        writer.writerow([q.get_matriz_display(), q.dimensao, q.cod, q.criterio_texto, 
-                                         q.get_exigibilidade_display(), r.criterio_item.item_avaliacao, 
-                                        'Atende' if r.resposta == True else 'Não Atende'])
+    for i in questionario:
+        for c in i.criterioitem_set.all():
+            for r in c.resposta_set.all():
+                if r.questionario.id == q.id:
+                    writer.writerow([i.get_matriz_display(), i.dimensao, i.cod, i.criterio_texto, 
+                                        i.get_exigibilidade_display(), r.criterio_item.item_avaliacao, 
+                                    'Atende' if r.resposta == True else 'Não Atende'])
 
     return response
