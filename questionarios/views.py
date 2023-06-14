@@ -116,7 +116,7 @@ def view_questionario(request, id):
                 .prefetch_related('criterioitem_set',
                                 'criterioitem_set__item_avaliacao',
                                 Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
-                                'criterioitem_set__resposta_set__linkevidencia_set',
+                                Prefetch('criterioitem_set__resposta_set__linkevidencia_set', queryset=Resposta.objects.filter(questionario=q)),
                                 'criterioitem_set__resposta_set__justificativaevidencia_set',
                                 'criterioitem_set__resposta_set__imagemevidencia_set',
                                 Prefetch('criterioitem_set__respostavalidacao_set', queryset=RespostaValidacao.objects.filter(validacao=q.validacao)),
@@ -129,7 +129,7 @@ def view_questionario(request, id):
             .select_related('avaliacao','dimensao')\
             .prefetch_related('criterioitem_set',
                     'criterioitem_set__item_avaliacao',
-                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                    Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
                     'criterioitem_set__resposta_set__linkevidencia_set',
                     'criterioitem_set__resposta_set__justificativaevidencia_set',
                     'criterioitem_set__resposta_set__imagemevidencia_set',
@@ -323,7 +323,7 @@ def change_resposta(request, id):
                     imagem = get_object_or_404(ImagemEvidencia, pk=i)
                     if len(request.FILES) != 0:
                         if len(imagem.imagem) > 0:
-                            os.remove(imagem.imagem.path)     
+                            imagem.delete()    
                         imagem.imagem = l
                     imagem.save() 
 
