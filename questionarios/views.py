@@ -367,6 +367,7 @@ def change_resposta(request, id):
 def exporta_csv(request, id):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Questionário-{}.csv"'.format(id)
+    response.write(u'\ufeff'.encode('utf8'))
 
     q = Questionario.objects.get(pk=id)
 
