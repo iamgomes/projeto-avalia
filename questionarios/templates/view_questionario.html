@@ -87,14 +87,9 @@
             {% endif %}
         {% endif %}
 
-        <div class="dropdown d-inline">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                Exportar <i class="mdi mdi-chevron-down"></i>
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="{% url 'exporta_csv' q.id %}">CSV</a>
-            </div>
-        </div>
+        <a href="{% url 'exporta_csv' q.id %}" class="btn btn-secondary d-inline" type="button" >
+            <i class="mdi mdi-file"></i> Exportar
+        </a>
 
         <div class="card mt-3">
             <div class="card-body">

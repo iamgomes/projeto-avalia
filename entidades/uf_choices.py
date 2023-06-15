@@ -13,6 +13,7 @@ class UfChoices(TextChoices):
     MA = 'MA', 'Maranhão'
     MG = 'MG', 'Minas Gerais'
     MT = 'MT', 'Mato Grosso'
+    MS = 'MS', 'Mato Grosso do Sul'
     PA = 'PA', 'Pará'
     PB = 'PB', 'Paraíba'
     PE = 'PE', 'Pernambuco'
