@@ -33,6 +33,7 @@ class User(AbstractUser):
     celular = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(unique=True)
 
+    @property
     def nome_completo(self):
         return '{} {}'.format(self.first_name, self.last_name)
     

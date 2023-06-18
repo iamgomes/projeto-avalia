@@ -17,11 +17,11 @@ def add_usuario(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             entidade = form.cleaned_data['entidade']
-            usuario_entidade = User.objects.exclude(entidade__poder='T').filter(entidade__in=entidade)
+            #usuario_entidade = User.objects.exclude(entidade__poder='T').filter(entidade__in=entidade)
             
-            if usuario_entidade.exists():
-                messages.warning(request, "Esta UG já está vinculada a outro usuário! Tente outra, por favor.")
-                return render(request, 'add_usuario.html', {'form': form})
+            #if usuario_entidade.exists():
+            #    messages.warning(request, "Esta UG já está vinculada a outro usuário! Tente outra, por favor.")
+            #    return render(request, 'add_usuario.html', {'form': form})
             
             user = form.save()
             user.entidade.set(entidade)
