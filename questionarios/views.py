@@ -47,7 +47,7 @@ def add_questionario(request, id):
         entidade = request.POST.get('entidade')
         site = request.POST.get('site')
 
-        q = Questionario.objects.get(avaliacao_id=avaliacao.id, entidade_id=entidade)
+        q = Questionario.objects.filter(avaliacao_id=avaliacao.id, entidade_id=entidade)
 
         if not q:
 
@@ -94,7 +94,7 @@ def add_questionario(request, id):
                     return redirect(reverse('add_resposta', args=(questionario.id,)))
 
         else:
-            messages.error(request, "Desculpe, esta Unidade Gestora já possui avaliação vinculada ao usuário {} (@{}).".format(q.usuario.nome_completo, q.usuario))
+            messages.error(request, "Desculpe, esta Unidade Gestora já possui avaliação vinculada ao usuário {} (@{}).".format(q.first().usuario.nome_completo, q.first().usuario))
             return redirect(reverse('home'))
 
 
