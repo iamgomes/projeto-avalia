@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
     CriterioItem, Tramitacao, JustificativaEvidencia, Criterio, Resposta
 from validacoes.models import RespostaValidacao
@@ -320,14 +320,20 @@ def change_resposta(request, id):
                             imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
                             imagem_evidencia.save()
 
-            if id_imagens:
+            if id_imagens and imagens:
                 for i, l in zip(id_imagens,imagens):
                     imagem = get_object_or_404(ImagemEvidencia, pk=i)
+
                     if len(request.FILES) != 0:
                         if len(imagem.imagem) > 0:
                             imagem.delete()    
                         imagem.imagem = l
-                    imagem.save() 
+                    imagem.save()
+            else:
+                for i in imagens:
+                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                    imagem_evidencia.save()
+
 
             if resposta.criterio_item.item_avaliacao.id == 1:
                 if not resposta.justificativaevidencia_set.all():
@@ -395,3 +401,10 @@ def exporta_csv(request, id):
                                     'Atende' if r.resposta == True else 'Não Atende'])
 
     return response
+
+
+@login_required
+def delete_imagem(request, id):
+    imagem = get_object_or_404(ImagemEvidencia, pk=id)
+    imagem.delete()
+    return JsonResponse({'mensagem':'Imagem removida com sucesso!'})
