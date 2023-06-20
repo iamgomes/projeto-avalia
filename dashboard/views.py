@@ -139,7 +139,7 @@ def exporta_csv_visao_geral(request):
     entidades = Entidade.objects.filter(municipio__uf=request.user.municipio.uf).select_related('municipio').prefetch_related('questionario_set')
 
     writer = csv.writer(response, delimiter=';')
-    writer.writerow(['Unidade Gestora','Município', 'Poder', 'Status', 'Índice', 'Nível', 'Setor Atual', 'Validação'])
+    writer.writerow(['Unidade Gestora','Município', 'Poder', 'Status', 'Índice', 'Nível', 'Setor Atual'])
 
     for e in entidades:
         writer.writerow([e.nome, e.municipio, e.get_poder_display(),
@@ -147,7 +147,6 @@ def exporta_csv_visao_geral(request):
                          e.questionario_set.all().first().indice if e.questionario_set.all().first() else '', 
                          e.questionario_set.all().first().nivel if e.questionario_set.all().first() else '', 
                          e.questionario_set.all().first().tramitacao_set.all().first().get_setor_display() if e.questionario_set.all().first() else '', 
-                        exec('try:e.questionario_set.all().first().validacao.usuario.nome_completo\nexcept:""') 
                         ])
     return response
 
