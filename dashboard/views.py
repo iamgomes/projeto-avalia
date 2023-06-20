@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from entidades.models import Entidade, Municipio
@@ -11,6 +12,7 @@ from notifications.signals import notify
 from django.db.models import Q
 from rolepermissions.decorators import has_permission_decorator
 import datetime
+import csv
 
 
 def tramitar_atricon(request, id):
@@ -127,3 +129,27 @@ def visao_geral(request):
             tramitar_atricon(request, formCheck1)
 
     return redirect(reverse('visao_geral'))
+
+
+def exporta_csv_visao_geral(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="VisãoGeral.csv"'
+    response.write(u'\ufeff'.encode('utf8'))
+
+    entidades = Entidade.objects.filter(municipio__uf=request.user.municipio.uf).select_related('municipio').prefetch_related('questionario_set')
+
+    writer = csv.writer(response, delimiter=';')
+    writer.writerow(['Unidade Gestora','Município', 'Poder', 'Status', 'Índice', 'Nível', 'Setor Atual', 'Validação'])
+
+    for e in entidades:
+        writer.writerow([e.nome, e.municipio, e.get_poder_display(),
+                         e.questionario_set.all().first().get_status_display() if e.questionario_set.all().first() else 'Não Iniciado', 
+                         e.questionario_set.all().first().indice if e.questionario_set.all().first() else '', 
+                         e.questionario_set.all().first().nivel if e.questionario_set.all().first() else '', 
+                         e.questionario_set.all().first().tramitacao_set.all().first().get_setor_display() if e.questionario_set.all().first() else '', 
+                        exec('try:e.questionario_set.all().first().validacao.usuario.nome_completo\nexcept:""') 
+                        ])
+    return response
+
+
+

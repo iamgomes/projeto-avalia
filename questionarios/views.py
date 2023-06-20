@@ -112,7 +112,7 @@ def view_questionario(request, id):
         .select_related('avaliacao','usuario','entidade','validacao').prefetch_related('tramitacao_set','resposta_set',).first()
     #questionario = q.avaliacao.criterio_set.filter(matriz__in=['C', q.entidade.poder])
     try:
-        if  q.validacao:
+        if  q.validacao.set_all():
             questionario = Criterio.objects.filter(avaliacao__questionario=q.id).filter(matriz__in=['C', q.entidade.poder])\
                 .select_related('avaliacao','dimensao')\
                 .prefetch_related('criterioitem_set',
@@ -136,8 +136,6 @@ def view_questionario(request, id):
                     'criterioitem_set__resposta_set__justificativaevidencia_set',
                     'criterioitem_set__resposta_set__imagemevidencia_set',
                     )
-
-
 
     if request.method == 'GET':
         tramitacao = Tramitacao.objects.filter(questionario_id=q.id).select_related('usuario', 'questionario')
@@ -389,7 +387,7 @@ def exporta_csv(request, id):
                         'criterioitem_set__resposta_set__imagemevidencia_set',
                         )
 
-    writer = csv.writer(response)
+    writer = csv.writer(response, delimiter=';')
     writer.writerow(['Matriz','Dimensão', 'Cod.', 'Critério', 'Classificação', 'Item de Avaliação', 'Resposta'])
 
     for i in questionario:

@@ -200,15 +200,21 @@
                         <form method='post'>
                             {% csrf_token %}
 
-                            {% if user|can:'atribuir_validador' %}
+                            
                             <div class="btn-toolbar" role="toolbar">
+                                {% if user|can:'atribuir_validador' %}
                                 <div class="btn-group mb-3 me-2">
-                                    <a href="" class="btn btn-primary d-inline" type="button" data-bs-toggle="modal" data-bs-target="#atribuicao" >
+                                    <a class="btn btn-primary d-inline" type="button" data-bs-toggle="modal" data-bs-target="#atribuicao" >
                                         Atribuir / Tramitar
                                     </a>
                                 </div>
+                                {% endif %}
+                                <div class="btn-group mb-3 me-2">
+                                    <a href="{% url 'exporta_csv_visao_geral' %}" class="btn btn-secondary d-inline" type="button" >
+                                        <i class="mdi mdi-file"></i> Exportar
+                                    </a>
+                                </div>
                             </div>
-                            {% endif %}
 
                             {% if entidades %}
                             <div class="table-responsive">
