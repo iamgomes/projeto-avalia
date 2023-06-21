@@ -44,6 +44,14 @@ class Validacao(models.Model):
                     nivel = 'Ouro'
                 if self.nota_validacao >= 75 and self.nota_validacao < 85:
                     nivel = 'Prata'
+                if self.nota_validacao >= 50 and self.nota_validacao < 75:
+                    nivel = 'Intermediário'
+                if self.nota_validacao >= 30 and self.nota_validacao < 50:
+                    nivel = 'Básico'
+                if self.nota_validacao >= 1 and self.nota_validacao < 30:
+                    nivel = 'Inicial'
+                if self.nota_validacao < 1:
+                    nivel = 'Inexistente'
             else:
                 if self.nota_validacao >= 75:
                     nivel = 'Elevado'
