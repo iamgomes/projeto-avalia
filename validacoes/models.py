@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum
 from questionarios.models import Questionario, Resposta, CriterioItem
+import os
 
 
 class Validacao(models.Model):
@@ -107,11 +108,16 @@ class LinkEvidenciaValidacao(models.Model):
     link_validacao = models.TextField()
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
+
     
+def get_file_path(instance, filename):
+    nome_arquivo, ext = filename.split('.') 
+    filename = '{}-{}-{}-{}.{}'.format(instance.resposta_validacao.validacao.usuario,instance.resposta_validacao.validacao.id,instance.resposta_validacao.id,nome_arquivo,ext)
+    return os.path.join('imagem_evidencia_validacao', filename)
 
 class ImagemEvidenciaValidacao(models.Model):
     resposta_validacao = models.ForeignKey(RespostaValidacao, on_delete=models.CASCADE)
-    imagem_validacao = models.FileField(upload_to='imagem_evidencia_validacao')
+    imagem_validacao = models.FileField(upload_to=get_file_path)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 

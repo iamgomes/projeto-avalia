@@ -12,11 +12,12 @@ from entidades.models import Entidade
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import datetime
-import os
 import csv
 from django.db.models import Q
 from notifications.signals import notify
 from django.db.models import Prefetch
+import pathlib
+from django.conf import settings
 
 
 @login_required
@@ -167,7 +168,6 @@ def view_questionario(request, id):
 @login_required
 def add_resposta(request, id):
     q = Questionario.objects.get(pk=id)
-    #questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
     .select_related('avaliacao','dimensao')\
     .prefetch_related('criterioitem_set','itens_avaliacao')

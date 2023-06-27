@@ -94,7 +94,7 @@ def visao_geral(request):
         if setor_filtro != '' and setor_filtro is not None:
             questionarios = questionarios.filter(pk__in=tramitacao.filter(setor=setor_filtro).values_list('questionario', flat=True))
             entidades = entidades.filter(pk__in=[q.entidade.id for q in questionarios])
-            municipios = municipios.filter(pk=entidades.first().municipio.pk) if entidades else municipios
+            municipios = municipios.filter(pk=entidades.first().municipio.pk)
         if status_filtro != '' and status_filtro is not None:
             if status_filtro == 'NI':
                 questionarios = questionarios.filter(status='NI')

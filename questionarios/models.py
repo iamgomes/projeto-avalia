@@ -4,6 +4,7 @@ from django.db.models import Sum
 from entidades.models import Entidade
 from avaliacoes.models import Avaliacao
 from django.db.models import Q
+import os
 
 
 #Antiga tabela Dimensao
@@ -248,9 +249,15 @@ class LinkEvidencia(models.Model):
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
     
 
+def get_file_path(instance, filename):
+    nome_arquivo, ext = filename.split('.') 
+    filename = '{}-{}-{}-{}.{}'.format(instance.resposta.questionario.usuario,instance.resposta.questionario.id,instance.resposta.id,nome_arquivo,ext)
+    return os.path.join('imagem_evidencia', filename)
+
+
 class ImagemEvidencia(models.Model):
     resposta = models.ForeignKey(Resposta, on_delete=models.CASCADE)
-    imagem = models.FileField(upload_to='imagem_evidencia')
+    imagem = models.FileField(upload_to=get_file_path)
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 

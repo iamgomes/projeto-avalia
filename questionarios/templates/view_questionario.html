@@ -132,9 +132,9 @@
                                                         {% for c in a.criterioitem_set.all %}
                                                             {% for r in c.resposta_set.all %}
                                                                 {% if r.resposta == True %}
-                                                                    <mark>{{c.item_avaliacao}}</mark>
+                                                                    <mark>{{r.criterio_item.item_avaliacao}}</mark>
                                                                 {% else %}
-                                                                    <del>{{c.item_avaliacao}}</del>
+                                                                    <del>{{r.criterio_item.item_avaliacao}}</del>
                                                                 {% endif %}
 
                                                                 <p class="card-text">
@@ -170,50 +170,11 @@
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </div>
-                                                            </footer>
-                                                            <br>
-
                                                             {% endfor %}
-
-                                                            {% if q.validacao %}
-                                                            <footer class="blockquote-footer font-size-15 m-0">
-                                                            Itens atendidos pela Validador: <br>
-                                                                {% for r in c.respostavalidacao_set.all %}
-                                                                    {% if r.resposta_validacao == True %}
-                                                                        <mark>{{c.item_avaliacao}}</mark>
-                                                                    {% else %}
-                                                                        <del>{{c.item_avaliacao}}</del>
-                                                                    {% endif %}        
-
-                                                                    <p class="card-text">
-                                                                        <small >
-                                                                            {% for link in r.linkevidenciavalidacao_set.all %}
-                                                                                <a href="{{ link.link }}" target="_blank">{{ link.link_validacao }}</a>
-                                                                            {% endfor %}
-                                                                        </small>
-                                                                      
-                                                                    </p>
-
-                                                                    <div class='input-group'>
-                                                                        {% for img in r.imagemevidenciavalidacao_set.all %}
-                                                                            {% if img.imagem_validacao %}
-                                                                                <div class="popup-gallery">
-                                                                                    <a class="float-start" href="{{ img.imagem_validacao.url }}" title="{{ img.imagem_validacao }}">
-                                                                                        <div class="img-fluid">
-                                                                                            <img width="70" src='{{ img.imagem_validacao.url }}' alt="{{ img.imagem_validacao }}">
-                                                                                        </div>
-                                                                                    </a>
-                                                                                </div>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </div>
-
-                                                                {% endfor %}
-                                                            </footer>
-                                                            {% endif %}
-
                                                         {% endfor %}
-                                                        
+                                                        </footer>
+                                                        <br>
+                                                         
                                                     </div>
                                                 </div>
                                             </div>
