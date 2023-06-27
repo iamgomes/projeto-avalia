@@ -109,15 +109,10 @@ class LinkEvidenciaValidacao(models.Model):
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
-    
-def get_file_path(instance, filename):
-    nome_arquivo, ext = filename.split('.') 
-    filename = '{}-{}-{}-{}.{}'.format(instance.resposta_validacao.validacao.usuario,instance.resposta_validacao.validacao.id,instance.resposta_validacao.id,nome_arquivo,ext)
-    return os.path.join('imagem_evidencia_validacao', filename)
 
 class ImagemEvidenciaValidacao(models.Model):
     resposta_validacao = models.ForeignKey(RespostaValidacao, on_delete=models.CASCADE)
-    imagem_validacao = models.FileField(upload_to=get_file_path)
+    imagem_validacao = models.FileField(upload_to='imagem_evidencia_validacao')
     created_at = models.DateField(auto_now=False, auto_now_add=True)
     updated_at = models.DateField(auto_now=True, auto_now_add=False)
 
