@@ -16,8 +16,7 @@ import csv
 from django.db.models import Q
 from notifications.signals import notify
 from django.db.models import Prefetch
-import pathlib
-from django.conf import settings
+from .minhas_funcoes import altera_imagem
 
 
 @login_required
@@ -212,7 +211,7 @@ def add_resposta(request, id):
                 if imagens:
                     if d.id == 1:
                         for i in imagens:
-                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
                             imagem_evidencia.save()
 
                 if justificativa:
@@ -249,7 +248,6 @@ def add_resposta(request, id):
 @login_required
 def change_resposta(request, id):
     q = Questionario.objects.get(pk=id)
-    #questionario = q.avaliacao.criterio_set.filter(Q(matriz='C') | Q(matriz=q.entidade.poder))
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
     .select_related('avaliacao','dimensao')\
     .prefetch_related('criterioitem_set',
@@ -315,7 +313,7 @@ def change_resposta(request, id):
                 if not resposta.imagemevidencia_set.all():
                     if imagens_novo:
                         for i in imagens_novo:
-                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
                             imagem_evidencia.save()
 
             if id_imagens and imagens:
@@ -325,11 +323,11 @@ def change_resposta(request, id):
                     if len(request.FILES) != 0:
                         if len(imagem.imagem) > 0:
                             imagem.delete()    
-                        imagem.imagem = l
+                        imagem.imagem = altera_imagem(l, resposta)
                     imagem.save()
             else:
                 for i in imagens:
-                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=i)
+                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
                     imagem_evidencia.save()
 
 

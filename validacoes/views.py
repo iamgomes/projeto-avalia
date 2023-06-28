@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import JsonResponse
 from . models import RespostaValidacao, Validacao, LinkEvidenciaValidacao, ImagemEvidenciaValidacao,\
     JustificativaEvidenciaValidacao, RespostaValidacao
 from questionarios.models import Questionario, Resposta, Criterio
@@ -12,6 +12,7 @@ from django.db.models import Q
 import datetime
 from notifications.signals import notify
 from django.db.models import Prefetch
+from questionarios.minhas_funcoes import altera_imagem_validacao
 
 
 @login_required
@@ -78,7 +79,7 @@ def add_resposta_validacao(request, id, id_validacao):
 
             if imagens:
                 for i in imagens:
-                    imagem_validacao = ImagemEvidenciaValidacao(resposta_validacao_id=resposta_validacao.id, imagem_validacao=i)
+                    imagem_validacao = ImagemEvidenciaValidacao(resposta_validacao_id=resposta_validacao.id, imagem_validacao=altera_imagem_validacao(i,resposta_validacao))
                     imagem_validacao.save()
 
             if justificativa:
@@ -178,17 +179,21 @@ def change_resposta_validacao(request, id):
                 if not resposta.imagemevidenciavalidacao_set.all():
                     if imagens_novo:
                         for i in imagens_novo:
-                            imagem_evidencia = ImagemEvidenciaValidacao(resposta_validacao_id=resposta.id, imagem_validacao=i)
+                            imagem_evidencia = ImagemEvidenciaValidacao(resposta_validacao_id=resposta.id, imagem_validacao=altera_imagem_validacao(i,resposta))
                             imagem_evidencia.save()
 
-            if id_imagens:
+            if id_imagens and imagens:
                 for i, l in zip(id_imagens,imagens):
                     imagem = get_object_or_404(ImagemEvidenciaValidacao, pk=i)
                     if len(request.FILES) != 0:
                         if len(imagem.imagem_validacao) > 0:
-                            os.remove(imagem.imagem_validacao.path)     
-                        imagem.imagem_validacao = l
+                            imagem.delete()   
+                        imagem.imagem_validacao = altera_imagem_validacao(l,resposta)
                     imagem.save()
+            else:
+                for i in imagens:
+                    imagem_evidencia = ImagemEvidenciaValidacao(resposta_validacao_id=resposta.id, imagem_validacao=altera_imagem_validacao(i,resposta))
+                    imagem_evidencia.save()
 
             if resposta.criterio_item.item_avaliacao.id == 1:
                 if not resposta.justificativaevidenciavalidacao_set.all():
@@ -231,3 +236,10 @@ def delete_validacao(request, id):
     questionario.save()
     
     return redirect(reverse('minhas_validacoes'))
+
+
+@login_required
+def delete_imagem_validacao(request, id):
+    imagem = get_object_or_404(ImagemEvidenciaValidacao, pk=id)
+    imagem.delete()
+    return JsonResponse({'mensagem':'Imagem removida com sucesso!'})
