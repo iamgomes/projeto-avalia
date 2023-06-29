@@ -20,7 +20,7 @@ def alterar_nome_imagem_banco(id_imagem):
     nome_arquivo = imagem.imagem.name.split('/')[1]
     
     # Definir o novo nome da imagem
-    novo_nome_imagem = f'imagem_evidencia/{nome_arquivo}'
+    novo_nome_imagem = f'imagem_evidencia/{imagem.resposta.questionario.usuario}-{imagem.resposta.id}-{imagem.resposta.questionario.id}-{nome_arquivo}'
     
     # Criar uma nova conexão com o cliente do S3
     s3_client = boto3.client('s3')
