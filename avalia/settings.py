@@ -183,4 +183,4 @@ EMAIL_HOST_PASSWORD = 'jmcfjwsevguhytxu'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240 # higher than the count of fields
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
