@@ -16,7 +16,6 @@ def alterar_nome_imagem_banco(id_imagem):
     # Obter o nome do bucket e a chave da imagem no S3
     bucket = 'avalia-desenvolvimento'
     chave = f'static/{nome_imagem}'
-
     nome_arquivo = imagem.imagem.name.split('/')[1]
     
     # Definir o novo nome da imagem
@@ -29,7 +28,7 @@ def alterar_nome_imagem_banco(id_imagem):
     s3_client.copy_object(
         Bucket=bucket,
         CopySource={'Bucket': bucket, 'Key': chave},
-        Key=novo_nome_imagem
+        Key=f'static/{novo_nome_imagem}'
     )
     
     # Excluir a imagem antiga no S3
