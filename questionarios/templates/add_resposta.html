@@ -108,7 +108,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="imagem" class="form-label">Imagem</label>
-                                                    <input type="file" id="imagem" class="form-control-sm" name="imagem-{{a.id}}-{{d.id}}" accept="image/png, image/jpeg" >
+                                                    <input type="file" onchange="verificaExtensao(this)" id="imagem" class="form-control-sm" name="imagem-{{a.id}}-{{d.id}}" accept="image/png, image/jpeg" >
                                                     <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                 </div>
                                                 {% endfor %}                                              
@@ -188,6 +188,18 @@
                         this.innerHTML = 'Salvo'
                     }, timeout);
                 };
+            </script>
+
+            <script>
+                function verificaExtensao($input) {
+                    var extPermitidas = ['jpg', 'png'];
+                    var extArquivo = $input.value.split('.').pop();
+                
+                    if(typeof extPermitidas.find(function(ext){ return extArquivo == ext; }) == 'undefined') {
+                        alert('Extensão "' + extArquivo + '" não permitida!');
+                        $input.value = '';
+                    }
+                }
             </script>
 
 {% endblock 'script' %}

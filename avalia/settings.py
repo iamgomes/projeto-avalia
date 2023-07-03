@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'notifications',
     'storages',
     'mathfilters',
-    "debug_toolbar",
+    'debug_toolbar',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -184,3 +185,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TAKS_SERIALIZER = 'json'

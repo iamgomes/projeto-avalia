@@ -172,11 +172,11 @@
                                                                 </div>
                                                             {% endfor %}
                                                         </div>
-                                                        <input id="imagem" type="file" class="form-control-sm" name="imagem-{{r.id}}" accept="image/png, image/jpeg">
+                                                        <input id="imagem" type="file" onchange="verificaExtensao(this)" class="form-control-sm" name="imagem-{{r.id}}" accept="image/png, image/jpeg">
                                                         <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                         {% else %}
                                                             <div class="mb-3">
-                                                                <input id="imagem" type="file" class="form-control-sm" name="imagem_novo-{{r.id}}" accept="image/png, image/jpeg">
+                                                                <input id="imagem" type="file" onchange="verificaExtensao(this)" class="form-control-sm" name="imagem_novo-{{r.id}}" accept="image/png, image/jpeg">
                                                                 <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                             </div>
                                                         {% endif %}
@@ -266,6 +266,18 @@
                     this.innerHTML = 'Salvo'
                 }, timeout);
             };
+        </script>
+
+        <script>
+            function verificaExtensao($input) {
+                var extPermitidas = ['jpg', 'png'];
+                var extArquivo = $input.value.split('.').pop();
+            
+                if(typeof extPermitidas.find(function(ext){ return extArquivo == ext; }) == 'undefined') {
+                    alert('Extensão "' + extArquivo + '" não permitida!');
+                    $input.value = '';
+                }
+            }
         </script>
 
 {% endblock 'script' %}
