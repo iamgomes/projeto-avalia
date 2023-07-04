@@ -268,18 +268,6 @@
             };
         </script>
 
-        <script>
-            function verificaExtensao($input) {
-                var extPermitidas = ['jpg', 'png'];
-                var extArquivo = $input.value.split('.').pop();
-            
-                if(typeof extPermitidas.find(function(ext){ return extArquivo == ext; }) == 'undefined') {
-                    alert('Extensão "' + extArquivo + '" não permitida!');
-                    $input.value = '';
-                }
-            }
-        </script>
-
 {% endblock 'script' %}
 
 {% endblock 'body' %}

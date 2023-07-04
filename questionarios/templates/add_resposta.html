@@ -153,6 +153,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-steps/1.1.0/jquery.steps.min.js"></script>
         <script src="{% static 'stepform/js/script.js' %}"></script>
+        <script src="{% static 'js/deleta_imagem.js' %}"></script>
 
         <script>
             btn = document.querySelector(".loader-salvar"),
@@ -188,18 +189,6 @@
                         this.innerHTML = 'Salvo'
                     }, timeout);
                 };
-            </script>
-
-            <script>
-                function verificaExtensao($input) {
-                    var extPermitidas = ['jpg', 'png'];
-                    var extArquivo = $input.value.split('.').pop();
-                
-                    if(typeof extPermitidas.find(function(ext){ return extArquivo == ext; }) == 'undefined') {
-                        alert('Extensão "' + extArquivo + '" não permitida!');
-                        $input.value = '';
-                    }
-                }
             </script>
 
 {% endblock 'script' %}

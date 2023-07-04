@@ -12,7 +12,7 @@ function deleta_imagem(id){
             $(`#imagem-thumb-${id}`).remove();
         }
         });
-}
+};
 
 
 function deleta_imagem_validacao(id){
@@ -29,4 +29,15 @@ function deleta_imagem_validacao(id){
             $(`#imagem-thumb-${id}`).remove();
         }
         });
-}
+};
+
+
+function verificaExtensao($input) {
+    var extPermitidas = ['jpg', 'jpeg', 'png', 'JPEG', 'PNG'];
+    var extArquivo = $input.value.split('.').pop();
+
+    if(typeof extPermitidas.find(function(ext){ return extArquivo == ext; }) == 'undefined') {
+        alert('Extensão "' + extArquivo + '" não permitida!');
+        $input.value = '';
+    }
+};
