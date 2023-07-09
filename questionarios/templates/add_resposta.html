@@ -98,17 +98,17 @@
                                                 {% for d in a.itens_avaliacao.all|slice:":1" %}
                                                 <div id="box-{{a.id}}" class='input-group' style="display:none">
                                                     <div class="mb-3">
-                                                        <label for="link-{{a.id}}" class="form-label">Links</label>
+                                                        <label for="link-{{a.id}}" class="form-label">Links (Obrigatório)</label>
                                                         <textarea id="link-{{a.id}}" class="form-control" rows="3" cols="200" name="link-{{a.id}}" placeholder="Insira um link por linha."></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Justificativa</label>
-                                                    <textarea rows="3" cols="200" class="form-control" name="justificativa-{{a.id}}-{{d.id}}"></textarea>
+                                                    <textarea rows="3" cols="200" class="form-control" name="justificativa-{{a.id}}"></textarea>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="imagem" class="form-label">Imagem</label>
-                                                    <input type="file" onchange="verificaExtensao(this)" id="imagem" class="form-control-sm" name="imagem-{{a.id}}-{{d.id}}" accept="image/png, image/jpeg" >
+                                                    <input type="file" onchange="verificaExtensao(this)" id="imagem" class="form-control-sm" name="imagem-{{a.id}}" accept="image/png, image/jpeg" >
                                                     <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                 </div>
                                                 {% endfor %}                                              

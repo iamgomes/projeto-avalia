@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exemplo AJAX</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>Exemplo de Atualização AJAX</h1>
+  {% for i in q  %}
+
+    <p>{{i.entidade}}</p>
+    <div id="status-{{i.id}}"></div>
+    <div id="indice-{{i.id}}"></div>
+    <div id="nivel-{{i.id}}"></div>
+    <div id="essenciais-{{i.id}}"></div>
+
+    <script>
+        $(document).ready(function() {
+          function atualizarInformacoes() {
+            $.ajax({
+                url: '/questionarios/get_status_avaliacao/{{i.id}}',  // URL da view do Django que retorna os dados
+              type: 'GET',
+              success: function(response) {
+                // Atualizar as informações específicas no frontend
+                $('#status-{{i.id}}').text(response.status);
+                $('#indice-{{i.id}}').text(response.indice);
+                $('#nivel-{{i.id}}').text(response.nivel);
+                $('#essenciais-{{i.id}}').text(response.essenciais);
+              },
+              error: function(xhr) {
+                // Tratar erros, se houver algum
+                console.log(xhr.responseText);
+              }
+            });
+          }
+    
+          // Chamar a função para atualizar as informações inicialmente
+          atualizarInformacoes();
+    
+          // Agendar atualizações periódicas (por exemplo, a cada 2 segundos)
+          setInterval(atualizarInformacoes, 2000);
+        });
+      </script>
+  
+  {% endfor %}
+</body>
+</html>

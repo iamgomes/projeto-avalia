@@ -133,12 +133,12 @@
                                                         <div class="mb-3">
                                                             {% if r.linkevidencia_set.all %}
                                                                 {% for link in r.linkevidencia_set.all %}
-                                                                    <label for="link-{{a.id}}" class="form-label">Links</label>
+                                                                    <label for="link-{{a.id}}" class="form-label">Links (Obrigatório)</label>
                                                                     <input class="hidden" name="id_link-{{r.id}}" value="{{link.id}}">
                                                                     <textarea id="link-{{a.id}}" class="form-control" rows="3" cols="200" name="link-{{r.id}}" placeholder="Insira um link por linha.">{{link.link}}</textarea>
                                                                 {% endfor %}
                                                             {% else %}
-                                                                <label for="links" class="form-label">Links</label>
+                                                                <label for="links" class="form-label">Links (Obrigatório)</label>
                                                                 <textarea id="links" class="form-control" rows="3" cols="200" name="link_novo-{{r.id}}" placeholder="Insira um link por linha."></textarea>
                                                             {% endif %}
                                                         </div>

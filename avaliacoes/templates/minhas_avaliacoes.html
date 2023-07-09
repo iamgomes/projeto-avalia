@@ -8,19 +8,62 @@
 
         <!-- Sweet Alert-->
         <link href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% endblock 'head' %}
 
 
 {% block 'body' %}
 
+<script>
+    Swal.fire("Our First Alert");
+</script>
+
 {% if messages %}
     {% for message in messages  %}
-        <div class="alert {{message.tags}} alert-dismissible fade show" role="alert">
-            <i class="mdi mdi-check-all me-2"></i>
-            {{message}}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <div id="task">
+                <i class="mdi mdi-check-all me-2"></i> 
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <script>
+            $(document).ready(function() {
+              function atualizarTask() {
+                $.ajax({
+                    url: '/celery-progress/{{request.session.task_id}}',  // URL da view do Django que retorna os dados
+                  type: 'GET',
+                  success: function(response) {
+                    // Atualizar as informações específicas no frontend
+
+                    if (response.state == "FAILURE") {
+                        $('#task').text('Falhou!');
+                    }
+                    if (response.state == "PENDING"){
+                        $('#task').text('Salvando...');
+                    }
+                    if (response.state == "SUCCESS"){
+                        $('#task').text('Salvo com sucesso!');
+                        window.setTimeout( function(){ 
+                            location.reload();
+                        }, 1000 );
+                    }
+                    
+                  },
+                  error: function(xhr) {
+                    // Tratar erros, se houver algum
+                    console.log(xhr.responseText);
+                  },
+                });
+              }
+        
+              // Chamar a função para atualizar as informações inicialmente
+              atualizarTask();
+        
+              // Agendar atualizações periódicas (por exemplo, a cada 2 segundos)
+              setInterval(atualizarTask, 2000);
+            });
+          </script>
     {% endfor %}
 {% endif %}
 
@@ -58,7 +101,7 @@
                                 {% for q in questionarios %}
                                 <tr>
                                     <td>{{ q.id }}/{{ q.avaliacao.ano_exercicio}}</td>
-                                    <td>
+                                    <td id='entidade-{{q.id}}'>
                                         <a href="{% url 'view_questionario' q.id %}">
                                             <h6 class="mb-0">{{ q.entidade }}</h6>
                                             <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
@@ -133,7 +176,7 @@
                                         </a>
                                     {% endif %}
                                     </td>
-                                </tr>    
+                                </tr>
                                 {% endfor %}
                             </tbody><!-- end tbody -->
                         </table> <!-- end table -->
@@ -148,6 +191,7 @@
     </div>
     <!-- end col -->
 </div>
+<div id="status"></div>
 
 {% block 'script' %}
 

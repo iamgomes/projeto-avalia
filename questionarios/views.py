@@ -17,7 +17,124 @@ from django.db.models import Q
 from notifications.signals import notify
 from django.db.models import Prefetch
 from .minhas_funcoes import altera_imagem
+from .tasks import add_resposta_task, change_resposta_task
+import pickle
+import time
 
+
+@login_required
+def get_status_avaliacao(request, id):
+    # Obter os dados do banco de dados ou de qualquer outra fonte
+    dados = Questionario.objects.get(pk=id)  # Dados obtidos do banco de dados ou qualquer outra fonte
+
+    context = {
+        'id': dados.id,
+        'status': dados.status,
+        'status_nome': dados.get_status_display(),
+        'indice': dados.indice,
+        'nivel': dados.nivel,
+        'essenciais': dados.essenciais,}
+
+    return JsonResponse(context)
+
+
+def dados(request):
+    q = Questionario.objects.all()
+    return render(request, 'dados.html', {'q':q})
+
+
+
+@login_required
+def add_resposta(request, id):
+    start_time = time.time()
+
+    q = Questionario.objects.get(pk=id)
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set','itens_avaliacao')
+
+    if request.method == 'GET':
+        return render(request, 'add_resposta.html', {'questionario':questionario, 'q':q})
+    
+    elif request.method == 'POST':
+        data = request.POST
+        files = request.FILES
+
+        #serializando as imagens
+        dicionario_imagens = {}
+        for chave, valor in files.lists():
+            dados_imagem = {
+                'nome': valor[0].name,
+                'conteudo': valor[0].read(),
+                'tipo_conteudo': valor[0].content_type,
+                'tamanho': valor[0].size,
+                'charset': valor[0].charset,
+            }
+
+            dicionario_imagens[chave] = pickle.dumps(dados_imagem)
+
+        result = add_resposta_task.delay(data, dicionario_imagens, id)
+
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f'Tempo de execução: {round(duration, 2)} segundos')
+
+        request.session["task_id"] = result.task_id
+
+        messages.info(request, "Estamos salvando sua avaliação! Para retornar, basta editá-la.")
+        return redirect(reverse('minhas_avaliacoes'))
+    
+
+@login_required
+def change_resposta(request, id):
+    start_time = time.time()
+
+    q = Questionario.objects.get(pk=id)
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set',
+                        'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                        'criterioitem_set__resposta_set__linkevidencia_set',
+                        'criterioitem_set__resposta_set__justificativaevidencia_set',
+                        'criterioitem_set__resposta_set__imagemevidencia_set',
+                        )
+
+    if request.method == 'GET':
+        q.status = 'E'
+        q.save()
+        return render(request, 'resposta_form.html', {'questionario':questionario, 'q':q})
+
+    
+    if request.method == 'POST':
+        data = request.POST
+        files = request.FILES
+
+        #serializando as imagens
+        dicionario_imagens = {}
+        for chave, valor in files.lists():
+            dados_imagem = {
+                'nome': valor[0].name,
+                'conteudo': valor[0].read(),
+                'tipo_conteudo': valor[0].content_type,
+                'tamanho': valor[0].size,
+                'charset': valor[0].charset,
+            }
+
+            dicionario_imagens[chave] = pickle.dumps(dados_imagem)
+
+        result = change_resposta_task.delay(data, dicionario_imagens, id)
+
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f'Tempo de execução: {round(duration, 2)} segundos')
+
+        request.session["task_id"] = result.task_id
+
+        messages.info(request, "Estamos editando sua avaliação! Para retornar, basta editá-la.")
+        return redirect(reverse('minhas_avaliacoes'))
+        
+    
 
 @login_required
 def add_questionario(request, id):
@@ -165,7 +282,9 @@ def view_questionario(request, id):
 
 
 @login_required
-def add_resposta(request, id):
+def add_resposta2(request, id):
+    start_time = time.time()
+
     q = Questionario.objects.get(pk=id)
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
     .select_related('avaliacao','dimensao')\
@@ -186,11 +305,11 @@ def add_resposta(request, id):
         for c in questionario:
 
             links = request.POST.get('link-{}'.format(c.id))
+            imagens = request.FILES.getlist('imagem-{}'.format(c.id))
+            justificativa = request.POST.get('justificativa-{}'.format(c.id))
 
             for d in c.itens_avaliacao.all():
                 form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
-                imagens = request.FILES.getlist('imagem-{}-{}'.format(c.id, d.id))
-                justificativa = request.POST.get('justificativa-{}-{}'.format(c.id, d.id))
 
                 criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
                 
@@ -226,27 +345,41 @@ def add_resposta(request, id):
                 q.status = 'E'
                 q.save()
                 messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')
                 return redirect(reverse('minhas_avaliacoes'))
             else:
                 q.status = 'F'
                 q.save()
-                messages.success(request, "Avaliação finalizada com sucesso!")                
+                messages.success(request, "Avaliação finalizada com sucesso!")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')               
                 return redirect(reverse('minhas_avaliacoes'))
         if request.user.funcao == 'V' or request.user.funcao == 'C':
             if acao == 'Salvar':
                 q.status = 'E'
                 q.save()
                 messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')
                 return redirect(reverse('minhas_avaliacoes'))
             else:
                 q.status = 'V'
                 q.save()
-                messages.success(request, "Avaliação finalizada com sucesso!")                
+                messages.success(request, "Avaliação finalizada com sucesso!")  
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')              
                 return redirect(reverse('minhas_avaliacoes'))
                 
 
 @login_required
-def change_resposta(request, id):
+def change_resposta2(request, id):
+    start_time = time.time()
+
     q = Questionario.objects.get(pk=id)
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
     .select_related('avaliacao','dimensao')\
@@ -349,22 +482,34 @@ def change_resposta(request, id):
                 q.status = 'E'
                 q.save()
                 messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')
                 return redirect(reverse('minhas_avaliacoes'))
             else:
                 q.status = 'F'
                 q.save()
-                messages.success(request, "Avaliação alterada com sucesso!")                
+                messages.success(request, "Avaliação alterada com sucesso!")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')                
                 return redirect(reverse('minhas_avaliacoes'))
         if request.user.funcao == 'V' or request.user.funcao == 'C':
             if acao == 'Salvar':
                 q.status = 'E'
                 q.save()
                 messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')
                 return redirect(reverse('minhas_avaliacoes'))
             else:
                 q.status = 'V'
                 q.save()
-                messages.success(request, "Avaliação alterada com sucesso!")                
+                messages.success(request, "Avaliação alterada com sucesso!")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')                
                 return redirect(reverse('minhas_avaliacoes'))
 
 

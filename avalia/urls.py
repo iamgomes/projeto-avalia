@@ -18,6 +18,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('chaining/', include('smart_selects.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
+    path('celery-progress/', include('celery_progress.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = 'Avalia'

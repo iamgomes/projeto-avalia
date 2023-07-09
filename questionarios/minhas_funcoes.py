@@ -4,7 +4,33 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
 import boto3
 from questionarios.models import ImagemEvidencia
+import pickle
+from io import BytesIO
 
+
+def desserializar_imagem(imagem):
+    dados_desserializados = pickle.loads(imagem)
+    # Recuperar os valores dos dados desserializados
+    conteudo = dados_desserializados['conteudo']
+    nome = dados_desserializados['nome']
+    tipo_conteudo = dados_desserializados['tipo_conteudo']
+    tamanho = dados_desserializados['tamanho']
+    charset = dados_desserializados['charset']
+
+    # Criar um objeto BytesIO a partir do conteúdo desserializado
+    buffer = BytesIO(conteudo)
+
+    # Criar uma instância de InMemoryUploadedFile
+    arquivo_retornado = InMemoryUploadedFile(
+        buffer,
+        None,  # Use None ou forneça o caminho do arquivo se disponível
+        nome,
+        tipo_conteudo,
+        tamanho,
+        charset,
+    )
+
+    return arquivo_retornado
 
 def alterar_nome_imagem_banco(id_imagem):
     # Buscar imagem no banco de dados pelo ID
@@ -37,7 +63,6 @@ def alterar_nome_imagem_banco(id_imagem):
     # Atualizar o nome da imagem no banco de dados
     imagem.imagem.name = novo_nome_imagem
     imagem.save()
-
 
 
 def altera_imagem(imagem, resposta):

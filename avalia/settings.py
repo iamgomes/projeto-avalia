@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com', 'avalia.atricon.org.br','www.avalia.atricon.org.br']
+ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com', 'avalia.atricon.org.br', 'www.avalia.atricon.org.br']
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'storages',
     'mathfilters',
     'debug_toolbar',
-    #'django_celery_results',
+    'django_celery_results',
+    'celery_progress',
 ]
 
 MIDDLEWARE = [
@@ -186,10 +187,9 @@ EMAIL_USE_TLS = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
-"""
+# Configuração do Celery
+CELERY_BROKER_URL = 'redis://localhost'
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TAKS_SERIALIZER = 'json'
-"""

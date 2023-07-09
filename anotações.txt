@@ -9,13 +9,13 @@ git tag -a v0.1 -m "version 0.1"
 git push origin v0.1
 
 Criar branch
-git branch MinhaNovaBrach
+git branch desenv
 aternar branch
-git checkout MinhaNovaBrach
+git checkout desenv
 Push branch especifica
-git push -u origin MinhaNovaBrach
+git push -u origin desenv
 Mesclar
-git merge MinhaNovaBrach
+git merge desenv
 
 Sincronizar permissoes
 python manage.py sync_roles
