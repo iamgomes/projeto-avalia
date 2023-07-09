@@ -188,7 +188,10 @@ EMAIL_USE_TLS = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 # Configuração do Celery
-CELERY_BROKER_URL = 'redis://localhost'
+#localhost
+#CELERY_BROKER_URL = 'redis://localhost'
+#Heroku Desenv
+CELERY_BROKER_URL = 'redis-13500.c98.us-east-1-4.ec2.cloud.redislabs.com:13500'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
