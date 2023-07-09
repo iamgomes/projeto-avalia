@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com', 'avalia.atricon.org.br', 'www.avalia.atricon.org.br']
+ALLOWED_HOSTS = ['locahost', '127.0.0.1', 'avalia.herokuapp.com', 'avalia-desenv-6040e7c98228.herokuapp.com', 'avalia.atricon.org.br', 'www.avalia.atricon.org.br']
 
 INTERNAL_IPS = ['127.0.0.1']
 
