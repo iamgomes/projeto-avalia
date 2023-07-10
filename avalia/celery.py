@@ -7,6 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'avalia.settings')
 app = Celery('avalia')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+app.conf.task_time_limit = 600
 
 
 @app.task(bind=True, ignore_result=True)
