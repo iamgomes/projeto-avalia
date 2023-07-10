@@ -5,7 +5,6 @@ import sys
 import boto3
 from questionarios.models import ImagemEvidencia
 import pickle
-from io import BytesIO
 
 
 def desserializar_imagem(imagem):

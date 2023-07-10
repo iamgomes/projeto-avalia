@@ -17,35 +17,115 @@ from django.db.models import Q
 from notifications.signals import notify
 from django.db.models import Prefetch
 from .minhas_funcoes import altera_imagem
-from .tasks import add_resposta_task, change_resposta_task
+from .tasks import add_resposta_task, change_resposta_task, add_img_task
 import pickle
 import time
 
 
 @login_required
-def get_status_avaliacao(request, id):
-    # Obter os dados do banco de dados ou de qualquer outra fonte
-    dados = Questionario.objects.get(pk=id)  # Dados obtidos do banco de dados ou qualquer outra fonte
+def add_resposta(request, id):
+    start_time = time.time()
 
-    context = {
-        'id': dados.id,
-        'status': dados.status,
-        'status_nome': dados.get_status_display(),
-        'indice': dados.indice,
-        'nivel': dados.nivel,
-        'essenciais': dados.essenciais,}
+    q = Questionario.objects.get(pk=id)
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set','itens_avaliacao')
+    hoje = datetime.datetime.now()
+    inicio = q.avaliacao.data_inicial
+    fim = q.avaliacao.data_final
 
-    return JsonResponse(context)
+    if request.method == 'GET':
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            return render(request, 'add_resposta.html', {'questionario':questionario, 'q':q})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
+            return redirect(reverse('minhas_avaliacoes'))
+    
+    elif request.method == 'POST':
 
+        for c in questionario:
 
-def dados(request):
-    q = Questionario.objects.all()
-    return render(request, 'dados.html', {'q':q})
+            links = request.POST.get('link-{}'.format(c.id))
+            imagem = request.FILES.get('imagem-{}'.format(c.id))
+            justificativa = request.POST.get('justificativa-{}'.format(c.id))           
+            
+            for d in c.itens_avaliacao.all():
+                form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
 
+                criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
+                
+                if form == 'on':
+                    resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id, resposta=True)
+                    resposta.save()
 
+                    if links:
+                        #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
+                        if d.id == 1:
+                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
+                            link_evidencia.save()
+
+                else: 
+                    resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id)
+                    resposta.save()
+
+                if imagem:
+                    if d.id == 1:
+                        dados_imagem = {
+                            'nome': imagem.name,
+                            'conteudo': imagem.read(),
+                            'tipo_conteudo': imagem.content_type,
+                            'tamanho': imagem.size,
+                            'charset': imagem.charset,
+                        }
+                        pickle.dumps(dados_imagem)
+                            
+                        add_img_task.delay(pickle.dumps(dados_imagem), resposta.id)
+
+                if justificativa:
+                    if d.id == 1:
+                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
+                        justifica.save()
+
+        acao = request.POST.get('acao') 
+            
+        if request.user.funcao == 'A':
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'F'
+                q.save()
+                messages.success(request, "Avaliação finalizada com sucesso!")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')               
+                return redirect(reverse('minhas_avaliacoes'))
+        if request.user.funcao == 'V' or request.user.funcao == 'C':
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'V'
+                q.save()
+                messages.success(request, "Avaliação finalizada com sucesso!")  
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f'Tempo de execução: {round(duration, 2)} segundos')              
+                return redirect(reverse('minhas_avaliacoes'))
+            
 
 @login_required
-def add_resposta(request, id):
+def add_resposta2(request, id):
     start_time = time.time()
 
     q = Questionario.objects.get(pk=id)

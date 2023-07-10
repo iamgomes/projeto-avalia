@@ -6,6 +6,18 @@ from .minhas_funcoes import altera_imagem, desserializar_imagem
 from django.db.models import Prefetch
 from django.shortcuts import redirect, get_object_or_404
 import time
+from io import BytesIO
+from PIL import Image
+from django.core.files.base import ContentFile
+
+
+@shared_task
+def add_img_task(imagem_bytes, resposta):
+    # Cria uma instância do modelo Imagem
+    imagem_evidencia = ImagemEvidencia(resposta_id=resposta, imagem=altera_imagem(desserializar_imagem(imagem_bytes), resposta))
+    imagem_evidencia.save()
+
+    return {'response':'Succes'}
 
 
 @shared_task

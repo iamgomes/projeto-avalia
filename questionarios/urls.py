@@ -9,7 +9,4 @@ urlpatterns = [
     path('<int:id>/view/', views.view_questionario, name='view_questionario'),
     path('<int:id>/exporta_csv/', views.exporta_csv, name='exporta_csv'),
     path('imagem/<int:id>/delete/', views.delete_imagem, name='delete_imagem'),
-    path('dados/', views.dados, name='dados'),
-    path('get_status_avaliacao/<int:id>/', views.get_status_avaliacao, name='get_status_avaliacao'),
-
 ]
