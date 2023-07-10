@@ -129,11 +129,9 @@ def change_resposta_task(form_data, form_files, id):
             justificativa_novo = None
 
         try:
-            id_imagens = form_data['id_imagem-{}'.format(i.id)]         
-            imagens = form_files['imagem-{}'.format(i.id)]
+            imagem_subs = form_files['imagem_subs-{}'.format(i.id)]
         except:
-            id_imagens = None        
-            imagens = None
+            imagem_subs = None
 
         try:
             imagens_novo = form_files['imagem_novo-{}'.format(i.id)]
@@ -171,17 +169,10 @@ def change_resposta_task(form_data, form_files, id):
                     imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(desserializar_imagem(imagens_novo), resposta))
                     imagem_evidencia.save()
 
-        if id_imagens != None and imagens:
-            imagem = get_object_or_404(ImagemEvidencia, pk=id_imagens)
-
-            if len(form_files) != 0:
-                if len(imagem.imagem) > 0:
-                    imagem.delete()    
-                imagem.imagem = altera_imagem(desserializar_imagem(imagens), resposta)
-            imagem.save()
-        elif imagens != None:
-            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(desserializar_imagem(imagens), resposta))
+        if imagem_subs:
+            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(desserializar_imagem(imagem_subs), resposta))
             imagem_evidencia.save()
+
 
         if resposta.criterio_item.item_avaliacao.id == 1:
             if not resposta.justificativaevidencia_set.all():

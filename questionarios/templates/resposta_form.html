@@ -170,10 +170,12 @@
                                                                     <input class="hidden" name="id_imagem-{{r.id}}" value="{{img.id}}">
                                                                     <i style="cursor: pointer;" onclick="deleta_imagem({{img.id}})" class="mdi mdi-window-close font-size-18 text-danger" title='Remover'></i>
                                                                 </div>
+                                                                <div id="img-subs-{{img.id}}" style="display:none">
+                                                                    <input id="imagem" type="file" onchange="verificaExtensao(this)" class="form-control-sm" name="imagem_subs-{{r.id}}" accept="image/png, image/jpeg">
+                                                                    <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
+                                                                </div>
                                                             {% endfor %}
                                                         </div>
-                                                        <input id="imagem" type="file" onchange="verificaExtensao(this)" class="form-control-sm" name="imagem-{{r.id}}" accept="image/png, image/jpeg">
-                                                        <span class="text-muted font-size-10">Arquivos suportdados: JPEG, PNG</span>
                                                         {% else %}
                                                             <div class="mb-3">
                                                                 <input id="imagem" type="file" onchange="verificaExtensao(this)" class="form-control-sm" name="imagem_novo-{{r.id}}" accept="image/png, image/jpeg">

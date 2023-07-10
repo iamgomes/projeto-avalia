@@ -10,6 +10,7 @@ function deleta_imagem(id){
             console.log('Apagado!');
             $('#mensagem').text('Imagem removida!!!')
             $(`#imagem-thumb-${id}`).remove();
+            $(`#img-subs-${id}`).show();
         }
         });
 };

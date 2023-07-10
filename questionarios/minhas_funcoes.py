@@ -69,8 +69,9 @@ def altera_imagem(imagem, resposta):
     nome_arquivo = f'{resposta.questionario.usuario}-{resposta.id}-{resposta.questionario.id}-{imagem}'
     img = Image.open(imagem)
     img = img.convert('RGB')
+    img.thumbnail((750, 750))
     output = BytesIO()
-    img.save(output, format='JPEG', quality=80)
+    img.save(output, format='JPEG', quality=100)
     output.seek(0)
     img_final = InMemoryUploadedFile(output,'ImageField',nome_arquivo,'image/jpeg',sys.getsizeof(output),None)
     return img_final
