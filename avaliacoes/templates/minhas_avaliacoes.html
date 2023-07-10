@@ -22,49 +22,51 @@
 {% if messages %}
     {% for message in messages  %}
         <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <div id="task">
-                <i class="mdi mdi-check-all me-2"></i> 
-            </div>
+            <i class="mdi mdi-check-all me-2"></i> {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <script>
-            $(document).ready(function() {
-              function atualizarTask() {
-                $.ajax({
-                    url: '/celery-progress/{{request.session.task_id}}',  // URL da view do Django que retorna os dados
-                  type: 'GET',
-                  success: function(response) {
-                    // Atualizar as informações específicas no frontend
-
-                    if (response.state == "FAILURE") {
-                        $('#task').text('Falhou!');
-                    }
-                    if (response.state == "PENDING"){
-                        $('#task').text('Salvando...');
-                    }
-                    if (response.state == "SUCCESS"){
-                        $('#task').text('Salvo com sucesso!');
-                        window.setTimeout( function(){ 
-                            location.reload();
-                        }, 1000 );
-                    }
-                    
-                  },
-                  error: function(xhr) {
-                    // Tratar erros, se houver algum
-                    console.log(xhr.responseText);
-                  },
-                });
-              }
-        
-              // Chamar a função para atualizar as informações inicialmente
-              atualizarTask();
-        
-              // Agendar atualizações periódicas (por exemplo, a cada 2 segundos)
-              setInterval(atualizarTask, 2000);
-            });
-          </script>
     {% endfor %}
+    <script>
+        $(document).ready(function() {
+          function atualizarTask() {
+            $.ajax({
+                url: '/celery-progress/{{request.session.task_id}}',  // URL da view do Django que retorna os dados
+              type: 'GET',
+              success: function(response) {
+                // Atualizar as informações específicas no frontend
+
+                if (response.state == "FAILURE") {
+                    $(`.task-{{request.session.id_questionario}}`).text('Falhou!');
+                }
+                if (response.state == "PENDING"){
+                    $(`.task-{{request.session.id_questionario}}`).html("<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
+                    document.querySelector('.button-ask-{{request.session.id_questionario}}').disabled = true;
+                    document.querySelector('.button-view-{{request.session.id_questionario}}').disabled = true;
+                    document.querySelector('.button-delete-{{request.session.id_questionario}}').disabled = true;
+                    document.querySelector('.link-{{request.session.id_questionario}}').removeAttribute("href");
+                }
+                if (response.state == "SUCCESS"){
+                    $(`.task-{{request.session.id_questionario}}`).text(`Salvo com sucesso!`);
+                    window.setTimeout( function(){ 
+                        location.reload();
+                    }, 1000 );
+                }
+                
+              },
+              error: function(xhr) {
+                // Tratar erros, se houver algum
+                console.log(xhr.responseText);
+              },
+            });
+          }
+    
+          // Chamar a função para atualizar as informações inicialmente
+          atualizarTask();
+    
+          // Agendar atualizações periódicas (por exemplo, a cada 1 segundo)
+          setInterval(atualizarTask, 1000);
+        });
+      </script>
 {% endif %}
 
 <!-- start page title -->
@@ -101,13 +103,13 @@
                                 {% for q in questionarios %}
                                 <tr>
                                     <td>{{ q.id }}/{{ q.avaliacao.ano_exercicio}}</td>
-                                    <td id='entidade-{{q.id}}'>
-                                        <a href="{% url 'view_questionario' q.id %}">
+                                    <td>
+                                        <a class="link-{{q.id}}" href="{% url 'view_questionario' q.id %}">
                                             <h6 class="mb-0">{{ q.entidade }}</h6>
                                             <footer class="blockquote-footer font-size-12 m-0">{{ q.avaliacao }}</footer>
                                         </a>
                                     </td>
-                                    <td>
+                                    <td class="task-{{q.id}}">
                                         <i class="ri-checkbox-blank-circle-fill font-size-10
                                         {% if q.status == 'I' %} 
                                             text-primary
@@ -162,18 +164,18 @@
                                     <td>
                                     {% if not q.resposta_set.all %}
                                         {% if not q.status == 'NS' %}
-                                            <a href="{% url 'add_resposta' q.id %}" class="btn btn-primary waves-effect waves-light btn-sm" data-toggle="tooltip" title="Responder">
+                                            <button href="{% url 'add_resposta' q.id %}" class="btn btn-primary waves-effect waves-light btn-sm button-ask-{{q.id}}" data-toggle="tooltip" title="Responder">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
-                                            </a>
+                                            </button>
                                         {% endif %}
                                     {% endif %}
-                                    <a href="{% url 'view_questionario' q.id %}" class="btn btn-light waves-effect waves-light btn-sm" data-toggle="tooltip" title="Visualizar">
+                                    <button href="{% url 'view_questionario' q.id %}" class="btn btn-light waves-effect waves-light btn-sm button-view-{{q.id}}" data-toggle="tooltip" title="Visualizar">
                                         <i class="mdi mdi-eye font-size-16"></i>
-                                    </a>
+                                    </button>
                                     {% if q.tramitacao_set.all.first.setor == user.setor %}
-                                        <a onclick='delete_questionario({{q.id}})' class="btn btn-danger waves-effect waves-light btn-sm" data-toggle="tooltip" title="Excluir">
+                                        <button onclick='delete_questionario({{q.id}})' class="btn btn-danger waves-effect waves-light btn-sm button-delete-{{q.id}}" data-toggle="tooltip" title="Excluir">
                                             <i class="mdi mdi-trash-can font-size-16"></i>
-                                        </a>
+                                        </button>
                                     {% endif %}
                                     </td>
                                 </tr>

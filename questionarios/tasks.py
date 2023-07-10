@@ -5,7 +5,7 @@ import datetime
 from .minhas_funcoes import altera_imagem, desserializar_imagem
 from django.db.models import Prefetch
 from django.shortcuts import redirect, get_object_or_404
-
+import time
 
 
 @shared_task
@@ -79,7 +79,8 @@ def add_resposta_task(form_data, form_files, id):
             q.status = 'V'
             q.save()
 
-    return {'response':'Succes', 'questionario':q.id}
+    return {'response':'Succes'}
+
 
 @shared_task
 def change_resposta_task(form_data, form_files, id):
@@ -213,4 +214,4 @@ def change_resposta_task(form_data, form_files, id):
             q.status = 'V'
             q.save()
 
-    return {'response':'Succes', 'questionario':q.id}
+    return {'response':'Succes'}

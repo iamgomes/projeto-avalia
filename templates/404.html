@@ -1,10 +1,11 @@
+{% load i18n static %}
 <!doctype html>
 <html lang="en">
 
     <head>
         
         <meta charset="utf-8" />
-        <title>Erro de Sistema | Avalia</title>
+        <title>404 | Avalia</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
         <meta content="Themesdesign" name="author" />
@@ -14,7 +15,7 @@
         <!-- Bootstrap Css -->
         <link href="{% static 'assets/css/bootstrap.min.css' %}" id="bootstrap-style" rel="stylesheet" type="text/css" />
         <!-- Icons Css -->
-        <link href="{% static 'assets/css/icons.min.css' %} " rel="stylesheet" type="text/css" />
+        <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
         <!-- App Css-->
         <link href="{% static 'assets/css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
 
@@ -29,10 +30,10 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="ex-page-content text-center">
-                                    <h1 class="">500</h1>
-                                    <h3 class="">Internal Server Error</h3><br>
+                                    <h1>404!</h1>
+                                    <h3>Desculpe, página não encontrada!</h3><br>
             
-                                    <a class="btn btn-info mb-5 waves-effect waves-light" href="{% url 'home' %}">Back to Dashboard</a>
+                                    <a class="btn btn-info mb-5 waves-effect waves-light" href="{% url 'home' %}">Ir para home</a>
                                 </div>
                             </div>
                         </div>
@@ -40,5 +41,6 @@
                 </div>
             </div>
         </div>
+
     </body>
 </html>

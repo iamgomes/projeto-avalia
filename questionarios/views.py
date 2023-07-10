@@ -80,8 +80,9 @@ def add_resposta(request, id):
         print(f'Tempo de execução: {round(duration, 2)} segundos')
 
         request.session["task_id"] = result.task_id
+        request.session["id_questionario"] = q.id
 
-        messages.info(request, "Estamos salvando sua avaliação! Para retornar, basta editá-la.")
+        messages.info(request, "Estamos salvando sua avaliação...")
         return redirect(reverse('minhas_avaliacoes'))
     
 
@@ -130,8 +131,9 @@ def change_resposta(request, id):
         print(f'Tempo de execução: {round(duration, 2)} segundos')
 
         request.session["task_id"] = result.task_id
+        request.session["id_questionario"] = q.id
 
-        messages.info(request, "Estamos editando sua avaliação! Para retornar, basta editá-la.")
+        messages.info(request, "Estamos salvando sua avaliação...")
         return redirect(reverse('minhas_avaliacoes'))
         
     

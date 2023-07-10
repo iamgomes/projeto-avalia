@@ -23,3 +23,6 @@ urlpatterns = [
 
 admin.site.site_header = 'Avalia'
 admin.site.index_title = 'Administração'
+
+handler404 = "avalia.exception.handler404"
+handler500 = "avalia.exception.handler500"
