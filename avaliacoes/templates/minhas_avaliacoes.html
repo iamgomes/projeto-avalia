@@ -164,12 +164,12 @@
                                     <td>
                                     {% if not q.resposta_set.all %}
                                         {% if not q.status == 'NS' %}
-                                            <button href="{% url 'add_resposta' q.id %}" class="btn btn-primary waves-effect waves-light btn-sm button-ask-{{q.id}}" data-toggle="tooltip" title="Responder">
+                                            <button onclick="window.location.href='{% url 'add_resposta' q.id %}'" class="btn btn-primary waves-effect waves-light btn-sm button-ask-{{q.id}}" data-toggle="tooltip" title="Responder">
                                                 <i class="mdi mdi-file-document-edit font-size-16"></i>
                                             </button>
                                         {% endif %}
                                     {% endif %}
-                                    <button href="{% url 'view_questionario' q.id %}" class="btn btn-light waves-effect waves-light btn-sm button-view-{{q.id}}" data-toggle="tooltip" title="Visualizar">
+                                    <button onclick="window.location.href='{% url 'view_questionario' q.id %}'" class="btn btn-light waves-effect waves-light btn-sm button-view-{{q.id}}" data-toggle="tooltip" title="Visualizar">
                                         <i class="mdi mdi-eye font-size-16"></i>
                                     </button>
                                     {% if q.tramitacao_set.all.first.setor == user.setor %}
