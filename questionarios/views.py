@@ -21,10 +21,203 @@ from .tasks import add_resposta_task, change_resposta_task, add_img_task
 import pickle
 import time
 
-            
 
 @login_required
 def add_resposta(request, id):
+    q = Questionario.objects.get(pk=id)
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set','itens_avaliacao')
+    hoje = datetime.datetime.now()
+    inicio = q.avaliacao.data_inicial
+    fim = q.avaliacao.data_final
+
+    if request.method == 'GET':
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            return render(request, 'add_resposta.html', {'questionario':questionario, 'q':q})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
+            return redirect(reverse('minhas_avaliacoes'))
+    
+    elif request.method == 'POST':
+
+        for c in questionario:
+
+            links = request.POST.get('link-{}'.format(c.id))
+            imagens = request.FILES.getlist('imagem-{}'.format(c.id))
+            justificativa = request.POST.get('justificativa-{}'.format(c.id))
+
+            for d in c.itens_avaliacao.all():
+                form = request.POST.get('item_avaliacao-{}-{}'.format(c.id, d.id))
+
+                criterio_item = CriterioItem.objects.filter(criterio_id=c.id).filter(item_avaliacao_id=d.id)
+                
+                if form == 'on':
+                    resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id, resposta=True)
+                    resposta.save()
+
+                    if links:
+                        #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
+                        if d.id == 1:
+                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
+                            link_evidencia.save()
+
+                else: 
+                    resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id)
+                    resposta.save()
+
+                if imagens:
+                    if d.id == 1:
+                        for i in imagens:
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
+                            imagem_evidencia.save()
+
+                if justificativa:
+                    if d.id == 1:
+                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
+                        justifica.save()
+
+        acao = request.POST.get('acao') 
+            
+        if request.user.funcao == 'A':
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'F'
+                q.save()
+                messages.success(request, "Avaliação finalizada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
+        if request.user.funcao == 'V' or request.user.funcao == 'C':
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'V'
+                q.save()
+                messages.success(request, "Avaliação finalizada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
+            
+
+@login_required
+def change_resposta(request, id):
+    q = Questionario.objects.get(pk=id)
+    questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
+    .select_related('avaliacao','dimensao')\
+    .prefetch_related('criterioitem_set',
+                        'criterioitem_set__item_avaliacao',
+                        Prefetch('criterioitem_set__resposta_set', queryset=Resposta.objects.filter(questionario=q)),
+                        'criterioitem_set__resposta_set__linkevidencia_set',
+                        'criterioitem_set__resposta_set__justificativaevidencia_set',
+                        'criterioitem_set__resposta_set__imagemevidencia_set',
+                        )
+    hoje = datetime.datetime.now()
+    inicio = q.avaliacao.data_inicial
+    fim = q.avaliacao.data_final
+
+    if request.method == 'GET':
+        if hoje.timestamp() >= inicio.timestamp() and hoje.timestamp() <= fim.timestamp():
+            q.status = 'E'
+            q.save()
+            return render(request, 'resposta_form.html', {'questionario':questionario, 'q':q})
+        else:
+            messages.warning(request, "Desculpe, você está fora do prazo deste projeto.")
+            return redirect(reverse('view_questionario', args=(q.id,)))
+    
+    if request.method == 'POST':
+        for i in q.resposta_set.all():
+            id_resposta = request.POST.get('id_resposta-{}'.format(i.id))            
+            form = request.POST.get('resposta-{}'.format(i.id))
+            id_link = request.POST.get('id_link-{}'.format(i.id))            
+            form_link = request.POST.get('link-{}'.format(i.id))
+            form_link_novo = request.POST.get('link_novo-{}'.format(i.id))
+            imagens_novo = request.FILES.getlist('imagem_novo-{}'.format(i.id))
+            imagem_subs = request.FILES.getlist('imagem_subs-{}'.format(i.id))
+            id_justificativa = request.POST.get('id_justificativa-{}'.format(i.id))
+            justificativa = request.POST.get('justificativa-{}'.format(i.id))
+            justificativa_novo = request.POST.get('justificativa_novo-{}'.format(i.id))
+            
+            resposta = get_object_or_404(Resposta, pk=id_resposta)
+
+            if form == 'on':
+                resposta.resposta = True
+                resposta.save()
+
+                if resposta.criterio_item.item_avaliacao.id == 1:
+                    if not resposta.linkevidencia_set.all():
+                        if form_link_novo:
+                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=form_link_novo)
+                            link_evidencia.save()
+
+                if id_link:
+                    link = get_object_or_404(LinkEvidencia, pk=id_link)
+                    link.link = form_link
+                    link.save()
+                            
+            else:
+                if resposta.criterio_item.item_avaliacao.id == 1:
+                    if resposta.linkevidencia_set.all():
+                        resposta.linkevidencia_set.all().delete()
+
+                resposta.resposta = False
+                resposta.save()
+
+            if resposta.criterio_item.item_avaliacao.id == 1:
+                if not resposta.imagemevidencia_set.all():
+                    if imagens_novo:
+                        for i in imagens_novo:
+                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
+                            imagem_evidencia.save()
+
+            if imagem_subs:
+                for i in imagem_subs:
+                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
+                    imagem_evidencia.save()
+
+
+            if resposta.criterio_item.item_avaliacao.id == 1:
+                if not resposta.justificativaevidencia_set.all():
+                    if justificativa_novo:
+                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa_novo)
+                        justifica.save()
+
+            if id_justificativa:
+                justifica = get_object_or_404(JustificativaEvidencia, pk=id_justificativa)
+                justifica.justificativa = justificativa
+                justifica.save()
+
+        acao = request.POST.get('acao') 
+            
+        if request.user.funcao == 'A':
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'F'
+                q.save()
+                messages.success(request, "Avaliação alterada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
+        if request.user.funcao == 'V' or request.user.funcao == 'C':
+            if acao == 'Salvar':
+                q.status = 'E'
+                q.save()
+                messages.info(request, "Avaliação salva com sucesso! Para retornar, basta editá-la.")
+                return redirect(reverse('minhas_avaliacoes'))
+            else:
+                q.status = 'V'
+                q.save()
+                messages.success(request, "Avaliação alterada com sucesso!")                
+                return redirect(reverse('minhas_avaliacoes'))
+            
+
+@login_required
+def add_resposta2(request, id):
     start_time = time.time()
 
     q = Questionario.objects.get(pk=id)
@@ -66,7 +259,7 @@ def add_resposta(request, id):
     
 
 @login_required
-def change_resposta(request, id):
+def change_resposta2(request, id):
     start_time = time.time()
 
     q = Questionario.objects.get(pk=id)
