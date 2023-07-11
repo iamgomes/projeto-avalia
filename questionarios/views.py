@@ -44,7 +44,7 @@ def add_resposta(request, id):
         for c in questionario:
 
             links = request.POST.get('link-{}'.format(c.id))
-            imagens = request.FILES.getlist('imagem-{}'.format(c.id))
+            #imagens = request.FILES.getlist('imagem-{}'.format(c.id))
             justificativa = request.POST.get('justificativa-{}'.format(c.id))
 
             for d in c.itens_avaliacao.all():
@@ -59,23 +59,21 @@ def add_resposta(request, id):
                     if links:
                         #TODO: melhorar essa solução. Aqui estou salvando os links no primeiro item do critério apenas.
                         if d.id == 1:
-                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=links)
-                            link_evidencia.save()
+                            resposta.linkevidencia_set.create(link=links)
 
                 else: 
                     resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id)
                     resposta.save()
 
-                if imagens:
-                    if d.id == 1:
-                        for i in imagens:
-                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
-                            imagem_evidencia.save()
+#                if imagens:
+#                    if d.id == 1:
+#                        for i in imagens:
+#                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
+#                            imagem_evidencia.save()
 
                 if justificativa:
                     if d.id == 1:
-                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa)
-                        justifica.save()
+                        resposta.justificativaevidencia_set.create(justificativa=justificativa)
 
         acao = request.POST.get('acao') 
             
@@ -135,8 +133,8 @@ def change_resposta(request, id):
             id_link = request.POST.get('id_link-{}'.format(i.id))            
             form_link = request.POST.get('link-{}'.format(i.id))
             form_link_novo = request.POST.get('link_novo-{}'.format(i.id))
-            imagens_novo = request.FILES.getlist('imagem_novo-{}'.format(i.id))
-            imagem_subs = request.FILES.getlist('imagem_subs-{}'.format(i.id))
+#            imagens_novo = request.FILES.getlist('imagem_novo-{}'.format(i.id))
+#            imagem_subs = request.FILES.getlist('imagem_subs-{}'.format(i.id))
             id_justificativa = request.POST.get('id_justificativa-{}'.format(i.id))
             justificativa = request.POST.get('justificativa-{}'.format(i.id))
             justificativa_novo = request.POST.get('justificativa_novo-{}'.format(i.id))
@@ -150,13 +148,10 @@ def change_resposta(request, id):
                 if resposta.criterio_item.item_avaliacao.id == 1:
                     if not resposta.linkevidencia_set.all():
                         if form_link_novo:
-                            link_evidencia = LinkEvidencia(resposta_id=resposta.id, link=form_link_novo)
-                            link_evidencia.save()
+                            resposta.linkevidencia_set.create(link=form_link_novo)
 
                 if id_link:
-                    link = get_object_or_404(LinkEvidencia, pk=id_link)
-                    link.link = form_link
-                    link.save()
+                    resposta.linkevidencia_set.filter(pk=id_link).update(link=form_link)
                             
             else:
                 if resposta.criterio_item.item_avaliacao.id == 1:
@@ -166,29 +161,26 @@ def change_resposta(request, id):
                 resposta.resposta = False
                 resposta.save()
 
-            if resposta.criterio_item.item_avaliacao.id == 1:
-                if not resposta.imagemevidencia_set.all():
-                    if imagens_novo:
-                        for i in imagens_novo:
-                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
-                            imagem_evidencia.save()
+#            if resposta.criterio_item.item_avaliacao.id == 1:
+#                if not resposta.imagemevidencia_set.all():
+#                    if imagens_novo:
+#                        for i in imagens_novo:
+#                            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
+#                            imagem_evidencia.save()
 
-            if imagem_subs:
-                for i in imagem_subs:
-                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
-                    imagem_evidencia.save()
+ #           if imagem_subs:
+ #               for i in imagem_subs:
+ #                   imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(i, resposta))
+ #                   imagem_evidencia.save()
 
 
             if resposta.criterio_item.item_avaliacao.id == 1:
                 if not resposta.justificativaevidencia_set.all():
                     if justificativa_novo:
-                        justifica = JustificativaEvidencia(resposta_id=resposta.id, justificativa=justificativa_novo)
-                        justifica.save()
+                         resposta.justificativaevidencia_set.create(justificativa=justificativa_novo)
 
             if id_justificativa:
-                justifica = get_object_or_404(JustificativaEvidencia, pk=id_justificativa)
-                justifica.justificativa = justificativa
-                justifica.save()
+                resposta.justificativaevidencia_set.filter(pk=id_justificativa).update(justificativa = justificativa)
 
         acao = request.POST.get('acao') 
             
