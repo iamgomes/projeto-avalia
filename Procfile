@@ -1,1 +1,1 @@
-web: gunicorn --workers=5 avalia.wsgi --log-file -
+web: gunicorn --worker-class=gevent --worker-connections=2000 --workers=5 avalia.wsgi --log-file -
