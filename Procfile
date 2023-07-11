@@ -1,2 +1,1 @@
-web: gunicorn avalia.wsgi --log-file -
-celery: celery -A avalia  worker --pool=solo -l info --concurrency 1
+web: gunicorn --workers=5 avalia.wsgi --log-file -
