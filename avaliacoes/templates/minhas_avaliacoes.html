@@ -15,10 +15,6 @@
 
 {% block 'body' %}
 
-<script>
-    Swal.fire("Our First Alert");
-</script>
-
 {% if messages %}
     {% for message in messages  %}
         <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -26,47 +22,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
-    <script>
-        $(document).ready(function() {
-          function atualizarTask() {
-            $.ajax({
-                url: '/celery-progress/{{request.session.task_id}}',  // URL da view do Django que retorna os dados
-              type: 'GET',
-              success: function(response) {
-                // Atualizar as informações específicas no frontend
-
-                if (response.state == "FAILURE") {
-                    $(`.task-{{request.session.id_questionario}}`).text('Falhou!');
-                }
-                if (response.state == "PENDING"){
-                    $(`.task-{{request.session.id_questionario}}`).html("<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
-                    document.querySelector('.button-ask-{{request.session.id_questionario}}').disabled = true;
-                    document.querySelector('.button-view-{{request.session.id_questionario}}').disabled = true;
-                    document.querySelector('.button-delete-{{request.session.id_questionario}}').disabled = true;
-                    document.querySelector('.link-{{request.session.id_questionario}}').removeAttribute("href");
-                }
-                if (response.state == "SUCCESS"){
-                    $(`.task-{{request.session.id_questionario}}`).text(`Salvo com sucesso!`);
-                    window.setTimeout( function(){ 
-                        location.reload();
-                    }, 1000 );
-                }
-                
-              },
-              error: function(xhr) {
-                // Tratar erros, se houver algum
-                console.log(xhr.responseText);
-              },
-            });
-          }
-    
-          // Chamar a função para atualizar as informações inicialmente
-          atualizarTask();
-    
-          // Agendar atualizações periódicas (por exemplo, a cada 1 segundo)
-          setInterval(atualizarTask, 1000);
-        });
-      </script>
 {% endif %}
 
 <!-- start page title -->
