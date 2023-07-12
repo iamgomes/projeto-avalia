@@ -190,9 +190,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 # Configuração do Celery
 #localhost
-#CELERY_BROKER_URL = 'redis://localhost'
+CELERY_BROKER_URL = 'redis://localhost'
 #Heroku Desenv
-CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+#CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
