@@ -1,2 +1,2 @@
 web: gunicorn avalia.wsgi --log-file -
-worker: celery -A avalia  worker -l INFO
+worker: avalia.celery -A avalia  worker -l INFO
