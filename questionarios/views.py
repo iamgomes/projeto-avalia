@@ -21,9 +21,9 @@ from .tasks import add_resposta_task, change_resposta_task
 import pickle
 import time
 
-""""
+
 @login_required
-def add_resposta2(request, id):
+def add_resposta(request, id):
     q = Questionario.objects.get(pk=id)
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
     .select_related('avaliacao','dimensao')\
@@ -206,9 +206,10 @@ def change_resposta(request, id):
                 q.save()
                 messages.success(request, "Avaliação alterada com sucesso!")                
                 return redirect(reverse('minhas_avaliacoes'))
-"""    
 
-
+                
+                
+"""
 @login_required
 def add_resposta(request, id):
     start_time = time.time()
@@ -275,7 +276,7 @@ def change_resposta(request, id):
 
         messages.info(request, "Estamos salvando sua avaliação...")
         return redirect(reverse('minhas_avaliacoes'))
-    
+"""
 
 @login_required
 def add_questionario(request, id):
