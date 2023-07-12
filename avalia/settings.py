@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'mathfilters',
     'debug_toolbar',
     'django_celery_results',
+    'celery_progress',
 ]
 
 MIDDLEWARE = [
