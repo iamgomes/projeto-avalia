@@ -26,3 +26,4 @@ admin.site.index_title = 'Administração'
 
 handler404 = "avalia.exception.handler404"
 handler500 = "avalia.exception.handler500"
+handler503 = "avalia.exception.handler503"

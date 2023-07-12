@@ -17,13 +17,13 @@ from django.db.models import Q
 from notifications.signals import notify
 from django.db.models import Prefetch
 from .minhas_funcoes import altera_imagem
-from .tasks import add_resposta_task, change_resposta_task, add_img_task
+from .tasks import add_resposta_task, change_resposta_task
 import pickle
 import time
 
-
+""""
 @login_required
-def add_resposta(request, id):
+def add_resposta2(request, id):
     q = Questionario.objects.get(pk=id)
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
     .select_related('avaliacao','dimensao')\
@@ -206,10 +206,11 @@ def change_resposta(request, id):
                 q.save()
                 messages.success(request, "Avaliação alterada com sucesso!")                
                 return redirect(reverse('minhas_avaliacoes'))
-            
+"""    
+
 
 @login_required
-def add_resposta2(request, id):
+def add_resposta(request, id):
     start_time = time.time()
 
     q = Questionario.objects.get(pk=id)
@@ -222,22 +223,11 @@ def add_resposta2(request, id):
     
     elif request.method == 'POST':
         data = request.POST
-        files = request.FILES
 
-        #serializando as imagens
-        dicionario_imagens = {}
-        for chave, valor in files.lists():
-            dados_imagem = {
-                'nome': valor[0].name,
-                'conteudo': valor[0].read(),
-                'tipo_conteudo': valor[0].content_type,
-                'tamanho': valor[0].size,
-                'charset': valor[0].charset,
-            }
+        result = add_resposta_task.delay(data, id)
 
-            dicionario_imagens[chave] = pickle.dumps(dados_imagem)
-
-        result = add_resposta_task.delay(data, dicionario_imagens, id)
+        print(dir(result))
+        print(result.get)
 
         end_time = time.time()
         duration = end_time - start_time
@@ -251,7 +241,7 @@ def add_resposta2(request, id):
     
 
 @login_required
-def change_resposta2(request, id):
+def change_resposta(request, id):
     start_time = time.time()
 
     q = Questionario.objects.get(pk=id)
@@ -273,22 +263,8 @@ def change_resposta2(request, id):
     
     if request.method == 'POST':
         data = request.POST
-        files = request.FILES
 
-        #serializando as imagens
-        dicionario_imagens = {}
-        for chave, valor in files.lists():
-            dados_imagem = {
-                'nome': valor[0].name,
-                'conteudo': valor[0].read(),
-                'tipo_conteudo': valor[0].content_type,
-                'tamanho': valor[0].size,
-                'charset': valor[0].charset,
-            }
-
-            dicionario_imagens[chave] = pickle.dumps(dados_imagem)
-
-        result = change_resposta_task.delay(data, dicionario_imagens, id)
+        result = change_resposta_task.delay(data, id)
 
         end_time = time.time()
         duration = end_time - start_time
@@ -299,7 +275,6 @@ def change_resposta2(request, id):
 
         messages.info(request, "Estamos salvando sua avaliação...")
         return redirect(reverse('minhas_avaliacoes'))
-        
     
 
 @login_required

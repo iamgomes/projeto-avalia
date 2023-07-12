@@ -2,26 +2,13 @@ from celery import shared_task
 from . models import Avaliacao, Questionario, Resposta, LinkEvidencia, ImagemEvidencia, \
     CriterioItem, Tramitacao, JustificativaEvidencia, Criterio, Resposta
 import datetime
-from .minhas_funcoes import altera_imagem, desserializar_imagem
 from django.db.models import Prefetch
 from django.shortcuts import redirect, get_object_or_404
 import time
-from io import BytesIO
-from PIL import Image
-from django.core.files.base import ContentFile
 
 
 @shared_task
-def add_img_task(imagem_bytes, resposta):
-    # Cria uma instância do modelo Imagem
-    imagem_evidencia = ImagemEvidencia(resposta_id=resposta, imagem=altera_imagem(desserializar_imagem(imagem_bytes), resposta))
-    imagem_evidencia.save()
-
-    return {'response':'Succes'}
-
-
-@shared_task
-def add_resposta_task(form_data, form_files, id):
+def add_resposta_task(form_data, id):
 
     q = Questionario.objects.get(pk=id)
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
@@ -31,11 +18,6 @@ def add_resposta_task(form_data, form_files, id):
     for c in questionario:
 
         links = form_data['link-{}'.format(c.id)]
-
-        try:
-            imagens = form_files['imagem-{}'.format(c.id)]
-        except:
-            imagens = None
             
         justificativa = form_data['justificativa-{}'.format(c.id)]
 
@@ -61,10 +43,6 @@ def add_resposta_task(form_data, form_files, id):
                 resposta = Resposta(questionario_id=q.id, criterio_item_id=criterio_item[0].id)
                 resposta.save()
 
-            if imagens:
-                if d.id == 1:
-                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(desserializar_imagem(imagens), resposta))
-                    imagem_evidencia.save()
 
             if justificativa:
                 if d.id == 1:
@@ -95,7 +73,7 @@ def add_resposta_task(form_data, form_files, id):
 
 
 @shared_task
-def change_resposta_task(form_data, form_files, id):
+def change_resposta_task(form_data, id):
 
     q = Questionario.objects.get(pk=id)
     questionario = Criterio.objects.filter(avaliacao=q.avaliacao).filter(matriz__in=['C', q.entidade.poder])\
@@ -139,16 +117,6 @@ def change_resposta_task(form_data, form_files, id):
             justificativa_novo = form_data['justificativa_novo-{}'.format(i.id)]
         except:
             justificativa_novo = None
-
-        try:
-            imagem_subs = form_files['imagem_subs-{}'.format(i.id)]
-        except:
-            imagem_subs = None
-
-        try:
-            imagens_novo = form_files['imagem_novo-{}'.format(i.id)]
-        except:
-            imagens_novo = None
         
         resposta = get_object_or_404(Resposta, pk=id_resposta)
 
@@ -174,17 +142,6 @@ def change_resposta_task(form_data, form_files, id):
 
             resposta.resposta = False
             resposta.save()
-
-        if resposta.criterio_item.item_avaliacao.id == 1:
-            if not resposta.imagemevidencia_set.all():
-                if imagens_novo:
-                    imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(desserializar_imagem(imagens_novo), resposta))
-                    imagem_evidencia.save()
-
-        if imagem_subs:
-            imagem_evidencia = ImagemEvidencia(resposta_id=resposta.id, imagem=altera_imagem(desserializar_imagem(imagem_subs), resposta))
-            imagem_evidencia.save()
-
 
         if resposta.criterio_item.item_avaliacao.id == 1:
             if not resposta.justificativaevidencia_set.all():

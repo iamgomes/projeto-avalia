@@ -1,1 +1,2 @@
-web: gunicorn --worker-class=gevent --worker-connections=2000 --workers=5 avalia.wsgi --timeout 600 --log-file -
+web: gunicorn avalia.wsgi --log-file -
+worker: celery -A avalia  worker -l INFO

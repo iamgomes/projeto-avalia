@@ -6,8 +6,12 @@ def handler404(request, *args, **argv):
     response.status_code = 404
     return response
 
-
 def handler500(request, *args, **argv):
     response = render(request, '500.html')
     response.status_code = 500
+    return response
+
+def handler503(request, *args, **argv):
+    response = render(request, '503.html')
+    response.status_code = 503
     return response
